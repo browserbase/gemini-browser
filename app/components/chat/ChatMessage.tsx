@@ -1,7 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { BrowserStep } from "../../types/ChatFeed";
 
 interface ChatMessageProps {
@@ -94,14 +93,11 @@ export default function ChatMessage({
               step.text && <div>{step.text}</div>
             ) : (
               <>
-                {/* Reasoning inline with streaming effect */}
-                <ReasoningStream
-                  key={step.stepNumber}
-                  reasoning={step.reasoning || ""}
-                  className={isSystemMessage ? "text-gray-200" : "text-[#2E191E]"}
-                />
-
-                {/* Keep the step text below reasoning if present */}
+                {step.reasoning && (
+                  <div className={isSystemMessage ? "text-gray-200" : "text-[#2E191E]"}>
+                    {step.reasoning}
+                  </div>
+                )}
                 {step.text && <div>{step.text}</div>}
               </>
             )}
@@ -210,78 +206,5 @@ function SystemMessageContent({
         }
       })()}
     </>
-  );
-}
-
-function ReasoningStream({ reasoning, className }: { reasoning: string; className?: string }) {
-  const [base, setBase] = useState(() => reasoning || "");
-  const [chunk, setChunk] = useState("");
-  const prevRef = useRef(reasoning || "");
-  const targetRef = useRef(reasoning || "");
-
-  useEffect(() => {
-    const prev = prevRef.current || "";
-    const next = reasoning || "";
-    if (next === prev) return;
-    targetRef.current = next;
-
-    if (!next) {
-      setBase("");
-      setChunk("");
-      prevRef.current = "";
-      return;
-    }
-
-    if (next.startsWith(prev)) {
-      // Pure append
-      setBase(prev);
-      setChunk(next.slice(prev.length));
-      return;
-    }
-
-    // Longest common prefix diff
-    let i = 0;
-    const max = Math.min(prev.length, next.length);
-    while (i < max && prev.charCodeAt(i) === next.charCodeAt(i)) i++;
-
-    // If only a small tail changed, keep most of prev to reduce flicker
-    const nearTailRewrite = i >= prev.length - 8;
-    if (nearTailRewrite) {
-      setBase(prev.substring(0, i));
-      setChunk(next.substring(i));
-    } else {
-      setBase(next.substring(0, i));
-      setChunk(next.substring(i));
-    }
-  }, [reasoning]);
-
-  const onDone = () => {
-    if (!chunk) return;
-    const target = targetRef.current || "";
-    setBase(target);
-    prevRef.current = target;
-    setChunk("");
-  };
-
-  if (!base && !chunk) return null;
-
-  return (
-    <div className={className}>
-      <span>{base}</span>
-      <AnimatePresence>
-        {chunk && (
-          <motion.span
-            key={base.length}
-            initial={{ opacity: 0.2, y: 1 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.25, ease: "easeOut" }}
-            onAnimationComplete={onDone}
-          >
-            {chunk}
-          </motion.span>
-        )}
-      </AnimatePresence>
-    </div>
   );
 }
