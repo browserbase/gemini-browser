@@ -53,9 +53,6 @@ importers:
       usehooks-ts:
         specifier: ^3.1.1
         version: 3.1.1(react@19.1.1)
-      zod:
-        specifier: ^3.25.76
-        version: 3.25.76
     devDependencies:
       '@eslint/eslintrc':
         specifier: ^3
@@ -2682,7 +2679,6 @@ snapshots:
       pino: 9.9.0
       pino-pretty: 13.1.1
       playwright: 1.55.0
-      stagehand: link:../../../Library/pnpm/global/5/node_modules/stagehand
       ws: 8.18.3
       zod: 3.25.76
       zod-to-json-schema: 3.24.6(zod@3.25.76)
