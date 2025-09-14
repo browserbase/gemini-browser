@@ -60,13 +60,6 @@ export function useAgentStream({
   }, []);
 
   const parseLog = useCallback((raw: string): AgentLog | null => {
-    if (raw.startsWith("💭 ")) {
-      return { kind: "thought", text: raw.slice(2).trim() };
-    }
-    const stepMatch = raw.match(/^Step (\d+):\s*(.+)$/i);
-    if (stepMatch) {
-      return { kind: "summary", step: parseInt(stepMatch[1], 10), text: stepMatch[2] };
-    }
     const execMatch = raw.match(/^Executing step\s+(\d+)/i);
     if (execMatch) {
       return { kind: "summary", step: parseInt(execMatch[1], 10), text: "" };
@@ -238,24 +231,6 @@ export function useAgentStream({
               instruction: parsed.text,
             };
             return { ...prev, logs: newLogs, steps: [...prev.steps, newStep] };
-          }
-
-          if (parsed.kind === "thought") {
-            if (prev.steps.length === 0) {
-              // create a placeholder step 1 to hold the thought
-              const placeholder: BrowserStep = {
-                stepNumber: stepCounterRef.current,
-                text: "",
-                reasoning: parsed.text,
-                tool: "MESSAGE",
-                instruction: "",
-              };
-              return { ...prev, logs: newLogs, steps: [...prev.steps, placeholder] };
-            }
-            const updated = prev.steps.map((s, idx, arr) =>
-              idx === arr.length - 1 ? { ...s, reasoning: parsed.text } : s
-            );
-            return { ...prev, logs: newLogs, steps: updated };
           }
 
           if (parsed.kind === "action") {
