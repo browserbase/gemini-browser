@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { useState, useEffect, useCallback, useRef } from "react";
+import React from "react";
 import { useWindowSize } from "usehooks-ts";
 import posthog from "posthog-js";
 
