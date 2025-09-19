@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { SessionControls } from "./SessionControls";
 import { RotateCcwIcon } from "lucide-react";
