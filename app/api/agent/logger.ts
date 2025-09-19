@@ -7,8 +7,9 @@ export function createStagehandUserLogger(
   options?: { forwardStepEvents?: boolean }
 ) {
   const forwardSteps = options?.forwardStepEvents ?? false;
+  let lastReasoningMessage: string | null = null;
 
-  return (logLine: LogLine) => {
+  const logger = (logLine: LogLine) => {
     const msg = (logLine?.message ?? "").toString().toLowerCase();
     const category = logLine?.category ?? "";
 
@@ -45,6 +46,13 @@ export function createStagehandUserLogger(
       msg.includes("created action from") ||
       msg.includes("computer action type") ||
       (msg.includes("processed") && msg.includes("items"));
+
+    // Always capture reasoning messages for final output
+    if (msg.includes("reasoning:")) {
+      const reasoningText = logLine.message.replace(/^reasoning:\s*/i, "");
+      lastReasoningMessage = reasoningText;
+      console.log(`[SSE] captured reasoning`, { message: reasoningText });
+    }
 
     const shouldForward = !isTechnical && (
       isNavigation ||
@@ -85,6 +93,10 @@ export function createStagehandUserLogger(
       }
     }
   };
+
+  return Object.assign(logger, {
+    getLastReasoning: () => lastReasoningMessage
+  });
 }
 
 

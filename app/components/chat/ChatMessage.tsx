@@ -45,13 +45,50 @@ export default function ChatMessage({
   const isCompletionMessage =
     step.tool === "MESSAGE" && step.reasoning === "Task execution completed";
 
+  const isFinalAnswer =
+    step.tool === "MESSAGE" && step.instruction === "Final Answer";
+
   const isPreemptive =
     step.tool === "MESSAGE" &&
     !isUserInput &&
     !isSystemMessage &&
-    !isCompletionMessage;
+    !isCompletionMessage &&
+    !isFinalAnswer;
 
   if (isPreemptive && !(step.reasoning && step.reasoning.length > 0)) return null;
+
+  // Special styling for final answer
+  if (isFinalAnswer) {
+    return (
+      <motion.div
+        className="font-ppsupply -mx-4 md:-mx-6 mt-6"
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
+      >
+        <div
+          className="w-full relative"
+          style={{
+            backgroundColor: "rgba(230, 255, 230, 0.85)",
+            backdropFilter: "blur(8px)",
+            borderTop: "2px solid #4CAF50",
+            borderBottom: "2px solid #4CAF50",
+          }}
+        >
+          <div className="p-6">
+            <div className="flex items-center gap-2 mb-3">
+              <span className="text-xs font-semibold text-green-700 uppercase tracking-wider">
+                ✓ Final Answer
+              </span>
+            </div>
+            <div className="text-[#2E191E] leading-relaxed whitespace-pre-wrap">
+              {step.text}
+            </div>
+          </div>
+        </div>
+      </motion.div>
+    );
+  }
 
   return (
     <motion.div

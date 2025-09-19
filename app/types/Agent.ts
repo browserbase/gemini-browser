@@ -51,12 +51,13 @@ export interface DoneEventData {
   message?: string;
   success?: boolean;
   completed?: boolean;
+  finalMessage?: string;
 }
 
 export interface UseAgentStreamProps {
   sessionId: string | null;
   goal: string | null;
   onStart?: (data: StartEventData) => void;
-  onDone?: (data: DoneEventData) => void;
+  onDone?: (data?: DoneEventData) => void;
   onError?: (error: string) => void;
 }

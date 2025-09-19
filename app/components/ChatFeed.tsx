@@ -175,7 +175,8 @@ export default function ChatFeed({
     }));
   }, [initialMessage]);
 
-  const handleDone = useCallback(() => {
+  const handleDone = useCallback((payload?: any) => {
+    console.log("Agent completed with payload:", payload);
     setHasEnded(true);
     // Terminate session
     if (uiState.sessionId) {
