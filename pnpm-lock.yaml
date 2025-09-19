@@ -14,9 +14,6 @@ importers:
       '@browserbasehq/stagehand':
         specifier: file:/Users/kylejeong/Desktop/private-cua-exp/stagehand-ts
         version: file:../private-cua-exp/stagehand-ts(deepmerge@4.3.1)(dotenv@16.6.1)(react@19.1.1)(zod@3.25.76)
-      '@tailwindcss/typography':
-        specifier: ^0.5.19
-        version: 0.5.19(tailwindcss@3.4.17)
       '@vercel/analytics':
         specifier: ^1.4.1
         version: 1.5.0(next@15.1.6(@opentelemetry/api@1.9.0)(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(react@19.1.1)
@@ -224,7 +221,6 @@ packages:
 
   '@browserbasehq/stagehand@file:../private-cua-exp/stagehand-ts':
     resolution: {directory: ../private-cua-exp/stagehand-ts, type: directory}
-    hasBin: true
     peerDependencies:
       deepmerge: ^4.3.1
       dotenv: ^16.4.5
@@ -2758,16 +2754,6 @@ packages:
     resolution: {integrity: sha512-b+1eJOlsR9K8HJpow9Ok3fiWOWSIcIzXodvv0rQjVoOVNpWMpxf1wZNpt4y9h10odCNrqnYp1OBzRktckBe3sA==}
     hasBin: true
 
-  vfile-message@4.0.3:
-    resolution: {integrity: sha512-QTHzsGd1EhbZs4AsQ20JX1rC3cOlt/IWJruk893DfLRr57lcnOeMaWG4K0JrRta4mIJZKth2Au3mM3u03/JWKw==}
-
-  vfile@6.0.3:
-    resolution: {integrity: sha512-KzIbH/9tXat2u30jf+smMwFCsno4wHVdNmzFyL+T/L3UGqqk6JKfVqOFOZEpZSHADH1k40ab6NUIXZq422ov3Q==}
-
-  web-streams-polyfill@3.3.3:
-    resolution: {integrity: sha512-d2JWLCivmZYTSIoge9MsgFCZrt571BikcWGYkjC1khllbTeDlGqZ2D8vD8E/lJa8WGWbb7Plm8/XJYV7IJHZZw==}
-    engines: {node: '>= 8'}
-
   web-streams-polyfill@4.0.0-beta.3:
     resolution: {integrity: sha512-QW95TCTaHmsYfHDybGMwO5IJIM93I/6vTRk+daHTWFPhwh+C8Cg7j7XyKrwrj8Ib6vYXe0ocYNrmzY4xAAN6ug==}
     engines: {node: '>= 14'}
@@ -2994,7 +2980,7 @@ snapshots:
     transitivePeerDependencies:
       - encoding
 
-  '@browserbasehq/stagehand@file:../private-cua-exp/stagehand-ts(deepmerge@4.3.1)(dotenv@16.6.1)(react@19.1.1)(zod@3.25.76)':
+  '@browserbasehq/stagehand@file:../../private-cua-exp/stagehand-ts(deepmerge@4.3.1)(dotenv@16.6.1)(react@19.1.1)(zod@3.25.76)':
     dependencies:
       '@anthropic-ai/sdk': 0.39.0
       '@browserbasehq/sdk': 2.6.0
@@ -6054,18 +6040,6 @@ snapshots:
   util-deprecate@1.0.2: {}
 
   uuid@9.0.1: {}
-
-  vfile-message@4.0.3:
-    dependencies:
-      '@types/unist': 3.0.3
-      unist-util-stringify-position: 4.0.0
-
-  vfile@6.0.3:
-    dependencies:
-      '@types/unist': 3.0.3
-      vfile-message: 4.0.3
-
-  web-streams-polyfill@3.3.3: {}
 
   web-streams-polyfill@4.0.0-beta.3: {}
 
