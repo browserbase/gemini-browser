@@ -144,11 +144,7 @@ export default function Home() {
               <div className="p-8 md:p-10 lg:p-12 flex flex-col items-center gap-8 md:gap-10">
                 <div className="flex flex-col items-center gap-3 md:gap-5">
                   <h1 className="text-2xl md:text-3xl lg:text-4xl font-ppneue text-gray-900 text-center">
-<<<<<<< HEAD
                     Google CUA Browser
-=======
-                    Google Browser
->>>>>>> 4115299 (small updates)
                   </h1>
                   <p className="text-base md:text-lg font-ppsupply text-gray-500 text-center">
                     Hit run to watch AI browse the web.
