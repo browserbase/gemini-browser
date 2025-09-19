@@ -13,11 +13,7 @@ interface NavBarProps {
 }
 
 export default function NavBar({
-<<<<<<< HEAD
   title = "Google CUA Browser",
-=======
-  title = "Google Browser",
->>>>>>> 4115299 (small updates)
   showCloseButton = false,
   onClose,
   showGitHubButton = true,

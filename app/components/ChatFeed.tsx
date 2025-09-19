@@ -170,11 +170,7 @@ export default function ChatFeed({
     }));
   }, [initialMessage]);
 
-<<<<<<< HEAD
   const handleDone = useCallback((payload?: unknown) => {
-=======
-  const handleDone = useCallback((payload?: any) => {
->>>>>>> 91757c2 ( changes)
     console.log("Agent completed with payload:", payload);
     setHasEnded(true);
     // Terminate session
