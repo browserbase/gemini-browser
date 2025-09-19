@@ -13,11 +13,29 @@ export default function ChatMessagesList({
   chatContainerRef,
   isMobile,
 }: ChatMessagesListProps) {
-  // Filter out empty first steps
+  // Check if we have a final answer
+  const hasFinalAnswer = steps.some(step => step.tool === "MESSAGE" && step.instruction === "Final Answer");
+
+  // Filter out empty first steps and final answer
   const filteredSteps = steps.filter((step, index) => {
     // Hide first step if it's empty or placeholder
     if (index === 0 && step.tool === "MESSAGE" && !step.text?.trim() && !step.reasoning?.trim()) {
       return false;
+    }
+    // Hide final answer (it will be shown outside the list)
+    if (step.tool === "MESSAGE" && step.instruction === "Final Answer") {
+      return false;
+    }
+    // If we have a final answer, also hide the last MESSAGE step before it (which often contains duplicate answer text)
+    if (hasFinalAnswer && step.tool === "MESSAGE") {
+      // Find if this is the last non-final-answer MESSAGE step
+      const nonFinalMessages = steps.filter(s =>
+        s.tool === "MESSAGE" && s.instruction !== "Final Answer"
+      );
+      const lastMessage = nonFinalMessages[nonFinalMessages.length - 1];
+      if (lastMessage === step) {
+        return false;
+      }
     }
     return true;
   });

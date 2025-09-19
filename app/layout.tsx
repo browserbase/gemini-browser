@@ -17,13 +17,13 @@ const ppNeue = localFont({
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"),
-  title: "Gemini Browser",
+  title: "Google Browser",
   description: "Watch AI browse the web, for free",
   openGraph: {
     images: ["/og.png"],
-    title: "Gemini Browser",
+    title: "Google Browser",
     description: "Watch AI browse the web, for free",
-    url: "https://gemini.browserbase.com",
+    url: "https://google.browserbase.com",
   },
   icons: {
     icon: [
