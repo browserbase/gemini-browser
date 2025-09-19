@@ -12,6 +12,7 @@ import { SessionLiveURLs } from "@browserbasehq/sdk/resources/index.mjs";
 import BrowserTabs from "./ui/BrowserTabs";
 import NavBar from "./NavBar";
 import PinnedGoalMessage from "./chat/PinnedGoalMessage";
+import PinnedFinalAnswer from "./chat/PinnedFinalAnswer";
 import ChatMessagesList from "./chat/ChatMessagesList";
 import ChatInput from "./chat/ChatInput";
 import { useAgentStream } from "../hooks/useAgentStream";
@@ -175,7 +176,8 @@ export default function ChatFeed({
     }));
   }, [initialMessage]);
 
-  const handleDone = useCallback(() => {
+  const handleDone = useCallback((payload?: any) => {
+    console.log("Agent completed with payload:", payload);
     setHasEnded(true);
     // Terminate session
     if (uiState.sessionId) {
@@ -257,7 +259,7 @@ export default function ChatFeed({
       exit="exit"
     >
       <NavBar
-        title="Gemini Browser"
+        title="Google Browser"
         showCloseButton={true}
         onClose={onClose}
         showGitHubButton={false}
@@ -318,7 +320,11 @@ export default function ChatFeed({
 
             {/* Chat sidebar */}
             <div
-              className="w-full md:w-[450px] min-w-0 md:min-w-[360px] px-4 pb-4 md:px-6 md:pb-6 flex flex-col flex-1 overflow-hidden"
+              className={`w-full md:w-[450px] min-w-0 md:min-w-[360px] px-4 md:px-6 ${
+                uiState.steps.find(step => step.tool === "MESSAGE" && step.instruction === "Final Answer")
+                  ? ""
+                  : "pb-4 md:pb-6"
+              } flex flex-col flex-1 overflow-hidden`}
               style={{
                 height: isMobile
                   ? "calc(100vh - 300px)"
@@ -339,6 +345,16 @@ export default function ChatFeed({
                 chatContainerRef={chatContainerRef}
                 isMobile={isMobile}
               />
+
+              {/* Final Answer - displayed outside the list with same padding as PinnedGoalMessage */}
+              {(() => {
+                const finalAnswer = uiState.steps.find(
+                  step => step.tool === "MESSAGE" && step.instruction === "Final Answer"
+                );
+                return finalAnswer ? (
+                  <PinnedFinalAnswer message={finalAnswer.text || ""} />
+                ) : null;
+              })()}
 
               {/* Chat Input */}
               <ChatInput

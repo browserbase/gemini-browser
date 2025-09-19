@@ -13,7 +13,7 @@ interface NavBarProps {
 }
 
 export default function NavBar({
-  title = "Gemini Browser",
+  title = "Google Browser",
   showCloseButton = false,
   onClose,
   showGitHubButton = true,
@@ -38,7 +38,7 @@ export default function NavBar({
         >
           <Image
             src="/favicon.svg"
-            alt="Gemini Browser"
+            alt="Google Browser"
             className="w-8 h-8"
             width={32}
             height={32}

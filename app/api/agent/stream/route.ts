@@ -101,6 +101,8 @@ export async function GET(request: Request) {
         hasInstructions: true,
       });
 
+      const logger = createStagehandUserLogger(send, { forwardStepEvents: false });
+
       const stagehand = new Stagehand({
         env: "BROWSERBASE",
         browserbaseSessionID: sessionId,
@@ -121,7 +123,7 @@ export async function GET(request: Request) {
         useAPI: false,
         verbose: 2,
         disablePino: true,
-        logger: createStagehandUserLogger(send, { forwardStepEvents: false }),
+        logger: logger,
       });
       stagehandRef = stagehand;
 
@@ -158,8 +160,13 @@ export async function GET(request: Request) {
         send("metrics", stagehand.metrics);
         } catch {}
 
-          console.log(`[SSE] done`, { success: result.success, completed: result.completed });
-          send("done", result);
+          const finalMessage = logger.getLastReasoning();
+          console.log(`[SSE] done`, {
+            success: result.success,
+            completed: result.completed,
+            finalMessage: finalMessage
+          });
+          send("done", { ...result, finalMessage });
 
         await cleanup(stagehand);
       } catch (error) {

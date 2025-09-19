@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "@browserbasehq/sdk": "^2.6.0",
-    "@browserbasehq/stagehand": "file:/Users/kylejeong/Desktop/private-cua-exp/stagehand-ts",
+    "@browserbasehq/stagehand": "file:/Users/miguel-browserbase/Documents/private-cua-exp/stagehand-ts",
     "@vercel/analytics": "^1.4.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -44,5 +44,6 @@
     "tailwindcss": "^3.4.1",
     "typescript": "^5",
     "typescript-eslint": "^8.41.0"
-  }
+  },
+  "packageManager": "pnpm@10.12.1+sha512.f0dda8580f0ee9481c5c79a1d927b9164f2c478e90992ad268bbb2465a736984391d6333d2c327913578b2804af33474ca554ba29c04a8b13060a717675ae3ac"
 }

@@ -323,10 +323,32 @@ export function useAgentStream({
     es.addEventListener("done", (e) => {
       try {
         const payload = JSON.parse((e as MessageEvent).data);
-        setState((prev) => ({
-          ...prev,
-          isFinished: true,
-        }));
+        console.log("[useAgentStream] Done event received:", payload);
+
+        // If there's a final message, add it as the last step
+        if (payload.finalMessage) {
+          console.log("[useAgentStream] Adding final message as step");
+          setState((prev) => {
+            const finalStep: BrowserStep = {
+              stepNumber: prev.steps.length + 1,
+              text: payload.finalMessage,
+              reasoning: "",
+              tool: "MESSAGE",
+              instruction: "Final Answer",
+            };
+            console.log("[useAgentStream] Final step created:", finalStep);
+            return {
+              ...prev,
+              steps: [...prev.steps, finalStep],
+              isFinished: true,
+            };
+          });
+        } else {
+          setState((prev) => ({
+            ...prev,
+            isFinished: true,
+          }));
+        }
 
         onDoneRef.current?.(payload);
         // Clear the session promise for this goal to allow future runs
