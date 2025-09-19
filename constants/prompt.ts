@@ -21,6 +21,4 @@ Rules:
 - Do NOT use keyboard shortcuts (Control/Meta combos). Always click an input, then type text.
 - If typing fails, click the target input again and retype. Avoid Ctrl/Meta keys entirely.
 - Prefer large, visible elements; avoid clicking near window edges.
-
-IMPORTANT: The browser viewport is locked at exactly 1024x768 pixels and cannot be resized. Use these fixed dimensions when planning your actions and coordinate calculations.
 `;
