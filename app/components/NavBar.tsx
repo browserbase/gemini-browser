@@ -13,7 +13,7 @@ interface NavBarProps {
 }
 
 export default function NavBar({
-  title = "Gemini Browser",
+  title = "Google Browser",
   showCloseButton = false,
   onClose,
   showGitHubButton = true,
