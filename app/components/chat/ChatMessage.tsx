@@ -1,31 +1,15 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { BrowserStep } from "../../types/ChatFeed";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import { BrowserStep } from "@/app/types/ChatFeed";
+import { toolNameMapping } from "@/constants/tools";
+import { createMarkdownComponents } from "./markdown";
 
 interface ChatMessageProps {
   step: BrowserStep;
 }
-
-const toolNameMapping: Record<string, string> = {
-  "open_web_browser": "Open Browser",
-  "type_text_at": "Type Text",
-  "click_at": "Click",
-  "scroll_document": "Scroll",
-  "scroll_at": "Scroll",
-  "MESSAGE": "Message",
-  "take_screenshot": "Screenshot",
-  "close_browser": "Close Browser",
-  "wait": "Wait",
-  "extract_text": "Extract Text",
-  "navigate": "Navigate",
-  "wait_5_seconds": "Wait 5 Seconds",
-  "go_back": "Go Back",
-  "go_forward": "Go Forward",
-  "search": "Search",
-  "key_combination": "Key Combination",
-  "hover_at": "Hover",
-};
 
 export default function ChatMessage({ step }: ChatMessageProps) {
   const isUserInput = step.tool === "MESSAGE" && step.reasoning === "User input";
@@ -54,13 +38,32 @@ export default function ChatMessage({ step }: ChatMessageProps) {
       <div className="text-sm leading-relaxed">
         <div className="space-y-2">
           {isCompletionMessage ? (
-            step.text && <div>{step.text}</div>
+            step.text && (
+              <ReactMarkdown
+                remarkPlugins={[remarkGfm]}
+                components={createMarkdownComponents("text-gray-700")}
+              >
+                {step.text}
+              </ReactMarkdown>
+            )
           ) : (
             <>
               {step.reasoning && (
-                <div className="text-[#2E191E]">{step.reasoning}</div>
+                <ReactMarkdown
+                  remarkPlugins={[remarkGfm]}
+                  components={createMarkdownComponents("text-[#2E191E]")}
+                >
+                  {step.reasoning}
+                </ReactMarkdown>
               )}
-              {step.text && <div>{step.text}</div>}
+              {step.text && (
+                <ReactMarkdown
+                  remarkPlugins={[remarkGfm]}
+                  components={createMarkdownComponents("text-gray-700")}
+                >
+                  {step.text}
+                </ReactMarkdown>
+              )}
             </>
           )}
 
