@@ -2,7 +2,6 @@
 
 import { motion } from "framer-motion";
 import { useState, useEffect, useCallback, useRef } from "react";
-import React from "react";
 import { useWindowSize } from "usehooks-ts";
 import posthog from "posthog-js";
 
@@ -101,12 +100,6 @@ export default function ChatFeed({
     };
   }, [uiState.sessionId]);
 
-  
-
-  
-
-  // Intentionally do not auto-scroll on new steps
-
   // Update the handleUserInput function
   const handleUserInput = useCallback(
     async (input: string) => {
@@ -176,7 +169,7 @@ export default function ChatFeed({
     }));
   }, [initialMessage]);
 
-  const handleDone = useCallback((payload?: any) => {
+  const handleDone = useCallback((payload?: unknown) => {
     console.log("Agent completed with payload:", payload);
     setHasEnded(true);
     // Terminate session

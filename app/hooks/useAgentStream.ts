@@ -63,10 +63,6 @@ export function useAgentStream({
     if (raw.startsWith("💭 ")) {
       return { kind: "thought", text: raw.slice(2).trim() };
     }
-    const stepMatch = raw.match(/^Step (\d+):\s*(.+)$/i);
-    if (stepMatch) {
-      return { kind: "summary", step: parseInt(stepMatch[1], 10), text: stepMatch[2] };
-    }
     const execMatch = raw.match(/^Executing step\s+(\d+)/i);
     if (execMatch) {
       return { kind: "summary", step: parseInt(execMatch[1], 10), text: "" };
@@ -309,16 +305,6 @@ export function useAgentStream({
 
     // Disable SSE 'step' duplication: logs already carry summary/action
     es.addEventListener("step", () => {});
-
-    es.addEventListener("metrics", (e) => {
-      // Skip showing metrics to users - too technical
-      try {
-        const payload = JSON.parse((e as MessageEvent).data);
-        console.log("Metrics received:", payload);
-      } catch (err) {
-        console.error("Error parsing metrics event:", err);
-      }
-    });
 
     es.addEventListener("done", (e) => {
       try {

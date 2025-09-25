@@ -56,8 +56,6 @@ export default function ChatMessagesList({
         <ChatMessage
           key={step.stepNumber ?? index}
           step={step}
-          index={index}
-          previousSteps={filteredSteps.slice(0, index)}
         />
       ))}
 
