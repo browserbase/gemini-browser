@@ -192,8 +192,8 @@ const BrowserSessionContainer: React.FC<BrowserSessionContainerProps> = ({
               sessionUrl ? (
                 <iframe
                   src={sessionUrl}
-                  className="w-full h-full border-none"
-                  sandbox="allow-same-origin allow-scripts allow-forms cursor-not-allowed pointer-events-none"
+                  className="w-full h-full border-none pointer-events-none"
+                  sandbox="allow-same-origin allow-scripts allow-forms"
                   allow="clipboard-read; clipboard-write"
                   loading="lazy"
                   referrerPolicy="no-referrer"
