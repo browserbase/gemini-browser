@@ -83,3 +83,4 @@ target/
 # pnpm
 
 test/
+.vercel

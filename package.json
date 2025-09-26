@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "@browserbasehq/sdk": "^2.6.0",
-    "@browserbasehq/stagehand": "file:/Users/miguel-browserbase/Documents/private-cua-exp/stagehand-ts",
+    "@browserbasehq/stagehand": "file:./sdk/stagehand-ts",
     "@vercel/analytics": "^1.4.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",

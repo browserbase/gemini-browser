@@ -1,0 +1,26 @@
+{
+  "experimentName": "agent/onlineMind2Web_browserbase_20250917162907",
+  "passed": [],
+  "failed": [
+    {
+      "eval": "agent/onlineMind2Web",
+      "model": "computer-use-exp-09-15",
+      "categories": ["external_agent_benchmarks"]
+    }
+  ],
+  "categories": {
+    "combination": null,
+    "regression": null,
+    "extract": null,
+    "act": null,
+    "llm_clients": null,
+    "experimental": null,
+    "observe": null,
+    "targeted_extract": null,
+    "agent": null,
+    "external_agent_benchmarks": 0
+  },
+  "models": {
+    "computer-use-exp-09-15": 0
+  }
+}
