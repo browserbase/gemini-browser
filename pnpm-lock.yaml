@@ -12,8 +12,8 @@ importers:
         specifier: ^2.6.0
         version: 2.6.0
       '@browserbasehq/stagehand':
-        specifier: file:/Users/kylejeong/Desktop/private-cua-exp/stagehand-ts
-        version: file:../private-cua-exp/stagehand-ts(deepmerge@4.3.1)(dotenv@16.6.1)(react@19.1.1)(zod@3.25.76)
+        specifier: file:/Users/miguel-browserbase/Documents/private-cua-exp/stagehand-ts
+        version: file:../../private-cua-exp/stagehand-ts(deepmerge@4.3.1)(dotenv@16.6.1)(react@19.1.1)(zod@3.25.76)
       '@vercel/analytics':
         specifier: ^1.4.1
         version: 1.5.0(next@15.1.6(@opentelemetry/api@1.9.0)(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(react@19.1.1)
@@ -219,8 +219,9 @@ packages:
   '@browserbasehq/sdk@2.6.0':
     resolution: {integrity: sha512-83iXP5D7xMm8Wyn66TUaUrgoByCmAJuoMoZQI3sGg3JAiMlTfnCIMqyVBoNSaItaPIkaCnrsj6LiusmXV2X9YA==}
 
-  '@browserbasehq/stagehand@file:../private-cua-exp/stagehand-ts':
-    resolution: {directory: ../private-cua-exp/stagehand-ts, type: directory}
+  '@browserbasehq/stagehand@file:../../private-cua-exp/stagehand-ts':
+    resolution: {directory: ../../private-cua-exp/stagehand-ts, type: directory}
+    hasBin: true
     peerDependencies:
       deepmerge: ^4.3.1
       dotenv: ^16.4.5
@@ -2980,7 +2981,7 @@ snapshots:
     transitivePeerDependencies:
       - encoding
 
-  '@browserbasehq/stagehand@file:../../private-cua-exp/stagehand-ts(deepmerge@4.3.1)(dotenv@16.6.1)(react@19.1.1)(zod@3.25.76)':
+  '@browserbasehq/stagehand@file:sdk/stagehand-ts(deepmerge@4.3.1)(dotenv@16.6.1)(react@19.1.1)(zod@3.25.76)':
     dependencies:
       '@anthropic-ai/sdk': 0.39.0
       '@browserbasehq/sdk': 2.6.0
