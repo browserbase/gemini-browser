@@ -86,7 +86,7 @@ async function createSession(timezone?: string) {
       width: 2560,
       height: 1440,
     },
-    //@ts-expect-error
+    //@ts-expect-error - not present in the types, but valid
     os: "windows",
     blockAds: true,
     advancedStealth: true
