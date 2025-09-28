@@ -13,7 +13,7 @@ interface NavBarProps {
 }
 
 export default function NavBar({
-  title = "Google Browser",
+  title = "Google CUA Browser",
   showCloseButton = false,
   onClose,
   showGitHubButton = true,
@@ -21,7 +21,7 @@ export default function NavBar({
 }: NavBarProps) {
   return (
     <motion.nav
-      className={`flex justify-between items-center px-4 pt-4 sm:px-8 sm:py-4 bg-white border-b border-[#CAC8C7] shadow-sm relative z-10 ${className}`}
+      className={`flex justify-between items-center px-4 py-3 sm:px-8 sm:py-4 bg-white border-b border-[#CAC8C7] shadow-sm relative z-10 ${className}`}
       initial={{ y: -20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ delay: 0.2 }}
@@ -38,7 +38,7 @@ export default function NavBar({
         >
           <Image
             src="/favicon.svg"
-            alt="Google Browser"
+            alt="Google CUA Browser"
             className="w-8 h-8"
             width={32}
             height={32}

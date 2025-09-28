@@ -252,7 +252,7 @@ export default function ChatFeed({
       exit="exit"
     >
       <NavBar
-        title="Google Browser"
+        title="Google CUA Browser"
         showCloseButton={true}
         onClose={onClose}
         showGitHubButton={false}
