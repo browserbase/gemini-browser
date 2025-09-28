@@ -17,11 +17,11 @@ const ppNeue = localFont({
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"),
-  title: "Google Browser",
+  title: "Google CUA Browser",
   description: "Watch AI browse the web, for free",
   openGraph: {
     images: ["/og.png"],
-    title: "Google Browser",
+    title: "Google CUA Browser",
     description: "Watch AI browse the web, for free",
     url: "https://google.browserbase.com",
   },

@@ -158,7 +158,7 @@ export default function ChatFeed({
   );
 
   const handleStart = useCallback((data: { sessionId: string; goal?: string; model?: string; init?: unknown; startedAt?: string }) => {
-    posthog.capture("gemini_cua_start", {
+    posthog.capture("google_cua_start", {
       goal: initialMessage,
       sessionId: data.sessionId,
     });
@@ -252,7 +252,7 @@ export default function ChatFeed({
       exit="exit"
     >
       <NavBar
-        title="Google Browser"
+        title="Google CUA Browser"
         showCloseButton={true}
         onClose={onClose}
         showGitHubButton={false}
