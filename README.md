@@ -1,24 +1,25 @@
-# Gemini Browser
+# Google CUA Browser
 
-A powerful browser automation playground powered by Google's Gemini new Computer Use Agent and Browserbase. This free demo showcases the capabilities of AI-driven browser automation using Stagehand and Gemini's computer-use capabilities.
-
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fyour-repo%2Fgemini-browser&env=GOOGLE_API_KEY,BROWSERBASE_API_KEY,BROWSERBASE_PROJECT_ID&envDescription=API%20keys%20needed%20to%20run%20Gemini%20Browser&envLink=https%3A%2F%2Fgithub.com%2Fyour-repo%2Fgemini-browser%23environment-variables)
+A powerful browser automation playground powered by Google's new Computer Use Agent and Browserbase. This free demo showcases the capabilities of AI-driven browser automation using Stagehand and Google's computer-use capabilities.
 
 ## Features
 
-- 🤖 **AI-Powered Browser Control**: Uses Google's Gemini Computer Use model to interact with web pages naturally
+- 🤖 **AI-Powered Browser Control**: Uses Google's Computer Use model to interact with web pages naturally
 - 🌐 **Real Browser Environment**: Runs on actual Chrome browsers via Browserbase
 - 🎯 **Natural Language Commands**: Simply describe what you want to do in plain English
 - 📊 **Real-time Feedback**: Watch the AI navigate, click, type, and interact with websites
+- 📝 **Rich Markdown Support**: AI responses rendered with proper formatting, code blocks, and typography
 - 🔄 **Session Management**: Persistent browser sessions with tab management
+- 🖼️ **Non-Interactive Preview**: View-only browser iframe prevents accidental user interference
 
 ## Tech Stack
 
 - **Frontend**: Next.js 15 with TypeScript, React 19, and Tailwind CSS
-- **AI Model**: Google Gemini Computer Use (computer-use-exp-07-16)
+- **AI Model**: Google Computer Use
 - **Browser Automation**: Browserbase + Stagehand
 - **Streaming**: Server-Sent Events (SSE) for real-time updates
 - **UI Components**: Framer Motion animations, Lucide React icons
+- **Markdown Rendering**: ReactMarkdown with GitHub Flavored Markdown support
 - **Analytics**: PostHog for user tracking
 
 ## Prerequisites
@@ -31,8 +32,8 @@ A powerful browser automation playground powered by Google's Gemini new Computer
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/browserbase/gemini-browser.git
-   cd gemini-browser
+   git clone https://github.com/browserbase/google-cua-browser.git
+   cd -browser
    ```
 
 2. **Install dependencies:**
@@ -49,7 +50,7 @@ A powerful browser automation playground powered by Google's Gemini new Computer
 
    Then edit `.env.local` with your API keys:
    ```env
-   # Google Gemini API Configuration
+   # Google API Configuration
    GOOGLE_API_KEY=your_google_api_key_here
 
    # Browserbase Configuration
@@ -65,7 +66,7 @@ A powerful browser automation playground powered by Google's Gemini new Computer
    ```
 
    **Get your API keys:**
-   - Google Gemini API: [Google AI Studio](https://aistudio.google.com/apikey)
+   - Google API: [Google AI Studio](https://aistudio.google.com/apikey)
    - Browserbase: [Browserbase Dashboard](https://www.browserbase.com)
 
 4. **Start the development server:**
@@ -86,13 +87,15 @@ A powerful browser automation playground powered by Google's Gemini new Computer
    - "Navigate to GitHub and explore trending repositories"
    - "Fill out the contact form on this page"
 3. **Watch the Magic**: The AI will interpret your request and perform the actions
-4. **View Results**: See real-time updates and screenshots as the agent works
+4. **View Results**: See real-time updates with rich markdown formatting including code blocks, lists, and formatted text
 
 ## Key Components
 
 - **Stream API** (`/api/agent/stream`): Handles real-time agent execution with SSE
 - **Session Management** (`/api/session`): Creates and manages Browserbase sessions
-- **Agent Integration**: Uses Stagehand with Gemini for browser automation
+- **Agent Integration**: Uses Stagehand with Google's Computer Use for browser automation
+- **Markdown Chat**: AI responses support rich text formatting with code syntax highlighting
+- **Browser Preview**: Non-interactive iframe for viewing agent actions without user interference
 - **UI Components**: Modern, animated interface with real-time updates
 
 ## Codebase Optimization
@@ -101,8 +104,9 @@ This project has been optimized for production deployment:
 
 - **Clean Dependencies**: Removed all unused npm packages and dev dependencies
 - **Asset Optimization**: Eliminated unused images, fonts, and static files
-- **Type Safety**: Cleaned up unused TypeScript types and interfaces
+- **Type Safety**: Cleaned up unused TypeScript types and interfaces with proper ReactMarkdown component typing
 - **Bundle Size**: Reduced bundle size by removing dead code and unused imports
+- **UI Components**: Modular markdown rendering components for consistent styling
 - **Performance**: Optimized for Vercel deployment with proper runtime configuration
 
 ## Available Scripts
@@ -140,7 +144,7 @@ The agent is configured with specific behaviors:
 ## Troubleshooting
 
 - **Session fails to start**: Check your Browserbase API credentials
-- **Agent not responding**: Verify your Google API key has access to Gemini Computer Use
+- **Agent not responding**: Verify your Google API key has access to Google Computer Use
 - **Timeout errors**: Complex tasks may exceed the 10-minute limit
 - **Connection issues**: Ensure stable internet connection for browser streaming
 
@@ -156,5 +160,5 @@ MIT
 
 - [Browserbase](https://browserbase.com) for browser infrastructure
 - [Stagehand](https://github.com/browserbasehq/stagehand) for automation framework
-- [Google Gemini](https://deepmind.google/technologies/gemini/) for AI capabilities
+- [Google AI Studio](https://aistudio.google.com/) for AI capabilities
 - [Vercel](https://vercel.com) for hosting and edge functions

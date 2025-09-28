@@ -90,7 +90,7 @@ export default function Home() {
       setIsChatVisible(true);
 
       try {
-        posthog.capture("gemini_cua_submit_message", {
+        posthog.capture("google_cua_submit_message", {
           message: finalMessage,
         });
       } catch (e) {
