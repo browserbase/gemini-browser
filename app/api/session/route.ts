@@ -86,7 +86,7 @@ async function createSession(timezone?: string) {
       width: 2560,
       height: 1440,
     },
-    // @ts-ignore
+    // @ts-expect-error - os is not a valid property
     os: "windows",
     blockAds: true,
     advancedStealth: true

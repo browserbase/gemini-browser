@@ -31,7 +31,7 @@ export default function NavBar({
     >
       <div className="flex items-center gap-2">
         <a
-          href="https://browserbase.com/computer-use"
+          href="https://www.browserbase.com/cua/google"
           target="_blank"
           rel="noopener noreferrer"
           className="flex items-center gap-3 hover:opacity-90 transition-opacity duration-200"
@@ -50,7 +50,7 @@ export default function NavBar({
       </div>
       <div className="flex items-center gap-2">
         <a
-          href="https://browserbase.com/computer-use"
+          href="https://www.browserbase.com/cua/google"
           target="_blank"
           rel="noopener noreferrer"
         >
@@ -69,7 +69,7 @@ export default function NavBar({
         </a>
         {showGitHubButton && (
           <a
-            href="https://github.com/browserbase/cua-browser"
+            href="https://github.com/browserbase/google-cua-browser"
             target="_blank"
             rel="noopener noreferrer"
           >
