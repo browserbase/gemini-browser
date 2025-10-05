@@ -14,6 +14,7 @@ const sessionCreationPromises = new Map<
 export function useAgentStream({
   sessionId,
   goal,
+  isFromSearchParam = false,
   onStart,
   onDone,
   onError,
@@ -162,6 +163,7 @@ export function useAgentStream({
       const params = new URLSearchParams({
         sessionId: currentSessionId!,
         goal,
+        fromChat: String(isFromSearchParam),
       });
 
       const es = new EventSource(`/api/agent/stream?${params.toString()}`);
@@ -387,7 +389,7 @@ export function useAgentStream({
         eventSourceRef.current.close();
       }
     };
-  }, [sessionId, goal, parseLog, isEmptyObject]);
+  }, [sessionId, goal, parseLog, isEmptyObject, isFromSearchParam]);
 
   return {
     ...state,

@@ -307,6 +307,7 @@ export default function Home() {
         <ChatFeed
           key={`chat-feed-${initialMessage}`}
           initialMessage={initialMessage}
+          isFromSearchParam={!!chatParam}
           onClose={() => setIsChatVisible(false)}
         />
       )}
