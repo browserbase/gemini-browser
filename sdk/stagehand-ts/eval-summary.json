@@ -1,10 +1,55 @@
 {
-  "experimentName": "agent/onlineMind2Web_browserbase_20250917162907",
+  "experimentName": "agent/onlineMind2Web_browserbase_20251002204912",
   "passed": [],
   "failed": [
     {
       "eval": "agent/onlineMind2Web",
-      "model": "computer-use-exp-09-15",
+      "model": "computer-use-preview-10-2025",
+      "categories": ["external_agent_benchmarks"]
+    },
+    {
+      "eval": "agent/onlineMind2Web",
+      "model": "computer-use-preview-10-2025",
+      "categories": ["external_agent_benchmarks"]
+    },
+    {
+      "eval": "agent/onlineMind2Web",
+      "model": "computer-use-preview-10-2025",
+      "categories": ["external_agent_benchmarks"]
+    },
+    {
+      "eval": "agent/onlineMind2Web",
+      "model": "computer-use-preview-10-2025",
+      "categories": ["external_agent_benchmarks"]
+    },
+    {
+      "eval": "agent/onlineMind2Web",
+      "model": "computer-use-preview-10-2025",
+      "categories": ["external_agent_benchmarks"]
+    },
+    {
+      "eval": "agent/onlineMind2Web",
+      "model": "computer-use-preview-10-2025",
+      "categories": ["external_agent_benchmarks"]
+    },
+    {
+      "eval": "agent/onlineMind2Web",
+      "model": "computer-use-preview-10-2025",
+      "categories": ["external_agent_benchmarks"]
+    },
+    {
+      "eval": "agent/onlineMind2Web",
+      "model": "computer-use-preview-10-2025",
+      "categories": ["external_agent_benchmarks"]
+    },
+    {
+      "eval": "agent/onlineMind2Web",
+      "model": "computer-use-preview-10-2025",
+      "categories": ["external_agent_benchmarks"]
+    },
+    {
+      "eval": "agent/onlineMind2Web",
+      "model": "computer-use-preview-10-2025",
       "categories": ["external_agent_benchmarks"]
     }
   ],
@@ -21,6 +66,6 @@
     "external_agent_benchmarks": 0
   },
   "models": {
-    "computer-use-exp-09-15": 0
+    "computer-use-preview-10-2025": 0
   }
 }

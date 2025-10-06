@@ -130,6 +130,7 @@ export class Evaluator {
           name: "EvaluationResult",
           schema: EvaluationSchema,
         },
+        // temperature: 1,
       },
     });
 
@@ -238,6 +239,7 @@ export class Evaluator {
           name: "BatchEvaluationResult",
           schema: BatchEvaluationSchema,
         },
+        // temperature: 1,
       },
     });
 
@@ -334,6 +336,7 @@ export class Evaluator {
           name: "EvaluationResult",
           schema: EvaluationSchema,
         },
+        // temperature: 1,
       },
     });
 

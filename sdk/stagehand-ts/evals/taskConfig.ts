@@ -113,7 +113,8 @@ const DEFAULT_AGENT_MODELS = process.env.EVAL_AGENT_MODELS
       // "computer-use-preview-2025-03-11",
       // "claude-sonnet-4-20250514",
       // "claude-opus-4-1-20250805",
-      "computer-use-preview-09-2025",
+      // "claude-sonnet-4-5-20250929",
+      "computer-use-preview-10-2025",
       // "computer-use-exp-07-16",
     ];
 

@@ -1,9 +1,11 @@
 import {
-  // GoogleGenAI,
+  GoogleGenAI,
   Content,
   Part,
   GenerateContentResponse,
   FunctionCall,
+  GenerateContentConfig,
+  Tool,
 } from "@google/genai";
 import { LogLine } from "../../types/log";
 import {
@@ -17,7 +19,6 @@ import { AgentScreenshotProviderError } from "@/types/stagehandErrors";
 import { buildGoogleCUASystemPrompt } from "@/lib/prompt";
 import { compressGoogleConversationImages } from "./utils/imageCompression";
 import { mapKeyToPlaywright } from "./utils/cuaKeyMapping";
-/* eslint-disable @typescript-eslint/no-explicit-any */
 
 /**
  * Client for Google's Computer Use Assistant API
@@ -25,6 +26,7 @@ import { mapKeyToPlaywright } from "./utils/cuaKeyMapping";
  */
 export class GoogleCUAClient extends AgentClient {
   private apiKey: string;
+  private client: GoogleGenAI;
   private currentViewport = { width: 1288, height: 711 };
   private currentUrl?: string;
   private screenshotProvider?: () => Promise<string>;
@@ -32,6 +34,7 @@ export class GoogleCUAClient extends AgentClient {
   private history: Content[] = [];
   private environment: "ENVIRONMENT_BROWSER" | "ENVIRONMENT_DESKTOP" =
     "ENVIRONMENT_BROWSER";
+  private generateContentConfig: GenerateContentConfig;
 
   constructor(
     type: AgentType,
@@ -45,6 +48,11 @@ export class GoogleCUAClient extends AgentClient {
     this.apiKey =
       (clientOptions?.apiKey as string) || process.env.GEMINI_API_KEY || "";
 
+    // Initialize the Google Generative AI client
+    this.client = new GoogleGenAI({
+      apiKey: this.apiKey,
+    });
+
     // Get environment if specified
     if (
       clientOptions?.environment &&
@@ -52,6 +60,24 @@ export class GoogleCUAClient extends AgentClient {
     ) {
       this.environment = clientOptions.environment as typeof this.environment;
     }
+
+    // Initialize the generation config (similar to Python's _generate_content_config)
+    this.generateContentConfig = {
+      temperature: 1,
+      topP: 0.95,
+      topK: 40,
+      maxOutputTokens: 8192,
+      // systemInstruction: this.userProvidedInstructions
+      //   ? { parts: [{ text: this.userProvidedInstructions }] }
+      //   : { parts: [{ text: buildGoogleCUASystemPrompt() }] },
+      tools: [
+        {
+          computerUse: {
+            environment: this.environment,
+          },
+        } as Tool,
+      ],
+    };
 
     // Store client options for reference
     this.clientOptions = {
@@ -176,6 +202,16 @@ export class GoogleCUAClient extends AgentClient {
     this.history = [
       {
         role: "user",
+        parts: [
+          {
+            text:
+              "System prompt: " +
+              (buildGoogleCUASystemPrompt().content as string),
+          },
+        ],
+      },
+      {
+        role: "user",
         parts,
       },
     ];
@@ -204,50 +240,9 @@ export class GoogleCUAClient extends AgentClient {
       );
       const compressedHistory = compressedResult.items;
 
-      // Get response from the model
-      // Note: The computer_use tool configuration is passed as a regular object
-      // The Google API will recognize this format
-      // Build the request body directly to match the API format
-      const requestBody: any = {
-        contents: compressedHistory,
-        generationConfig: {
-          temperature: 1,
-          topP: 0.95,
-          topK: 40,
-          maxOutputTokens: 8192,
-        },
-        tools: [
-          {
-            computerUse: {
-              environment: this.environment,
-            },
-          },
-        ],
-      };
-
-      // Add system instruction if provided
-      if (this.userProvidedInstructions) {
-        requestBody.systemInstruction = {
-          parts: [{ text: this.userProvidedInstructions }],
-        };
-      } else {
-        requestBody.systemInstruction = {
-          parts: [{ text: buildGoogleCUASystemPrompt() }],
-        };
-      }
-
-      // Make direct API call with exponential backoff retry
-      const apiUrl = `https://generativelanguage.googleapis.com/v1alpha/models/${this.modelName}:generateContent?key=${this.apiKey}`;
-
-      // Add required headers similar to the Python SDK
-      const headers: Record<string, string> = {
-        "Content-Type": "application/json",
-        "User-Agent": "google-genai-sdk/1.27.0",
-        "x-goog-api-client": "google-genai-sdk/1.27.0",
-      };
-
-      // Retry logic with exponential backoff
-      const maxRetries = 3;
+      // Use the SDK's generateContent method with retry logic (matching Python's get_model_response)
+      const maxRetries = 5;
+      const baseDelayS = 1;
       let lastError: Error | null = null;
       let response: GenerateContentResponse | null = null;
 
@@ -255,55 +250,44 @@ export class GoogleCUAClient extends AgentClient {
         try {
           // Add exponential backoff delay for retries
           if (attempt > 0) {
-            const delay = Math.pow(2, attempt) * 1000; // 2^attempt seconds
+            const delay = baseDelayS * Math.pow(2, attempt) * 1000; // Convert to ms
             logger({
               category: "agent",
-              message: `Retrying API call (attempt ${attempt + 1}/${maxRetries}) after ${delay}ms delay`,
+              message: `Generating content failed on attempt ${attempt + 1}. Retrying in ${delay / 1000} seconds...`,
               level: 2,
             });
             await new Promise((resolve) => setTimeout(resolve, delay));
           }
 
-          const fetchResponse = await fetch(apiUrl, {
-            method: "POST",
-            headers,
-            body: JSON.stringify(requestBody),
+          // Use the SDK's generateContent method - following Python SDK pattern
+          response = await this.client.models.generateContent({
+            model: this.modelName,
+            contents: compressedHistory,
+            config: this.generateContentConfig,
           });
 
-          if (!fetchResponse.ok) {
-            const errorText = await fetchResponse.text();
-            throw new Error(
-              `API request failed: ${fetchResponse.status} ${fetchResponse.statusText}. ${errorText}`,
-            );
-          }
-
-          const apiResponse =
-            (await fetchResponse.json()) as GenerateContentResponse;
-
           // Check if we have valid response content
-          if (
-            !apiResponse.candidates ||
-            !apiResponse.candidates[0] ||
-            !apiResponse.candidates[0].content ||
-            !apiResponse.candidates[0].content.parts ||
-            apiResponse.candidates[0].content.parts.length === 0
-          ) {
-            throw new Error("Response missing expected content structure");
+          if (!response.candidates || response.candidates.length === 0) {
+            throw new Error("Response has no candidates!");
           }
 
           // Success - we have a valid response
-          response = apiResponse;
           break;
         } catch (error) {
           lastError = error instanceof Error ? error : new Error(String(error));
           logger({
             category: "agent",
-            message: `API call failed (attempt ${attempt + 1}/${maxRetries}): ${lastError.message}`,
+            message: `API call error: ${lastError.message}`,
             level: 2,
           });
 
           // If this was the last attempt, throw the error
           if (attempt === maxRetries - 1) {
+            logger({
+              category: "agent",
+              message: `Generating content failed after ${maxRetries} attempts.`,
+              level: 0,
+            });
             throw lastError;
           }
         }
@@ -317,13 +301,36 @@ export class GoogleCUAClient extends AgentClient {
 
       const endTime = Date.now();
       const elapsedMs = endTime - startTime;
+      const { usageMetadata } = response;
 
       // Process the response
       const result = await this.processResponse(response, logger);
 
       // Add model response to history
       if (response.candidates && response.candidates[0]) {
-        this.history.push(response.candidates[0].content);
+        // Sanitize any out-of-range coordinates in function calls before adding to history
+        const sanitizedContent = JSON.parse(
+          JSON.stringify(response.candidates[0].content),
+        );
+        if (sanitizedContent.parts) {
+          for (const part of sanitizedContent.parts) {
+            if (part.functionCall?.args) {
+              if (
+                typeof part.functionCall.args.x === "number" &&
+                part.functionCall.args.x > 999
+              ) {
+                part.functionCall.args.x = 999;
+              }
+              if (
+                typeof part.functionCall.args.y === "number" &&
+                part.functionCall.args.y > 999
+              ) {
+                part.functionCall.args.y = 999;
+              }
+            }
+          }
+        }
+        this.history.push(sanitizedContent);
       }
 
       // Execute actions and collect function responses
@@ -394,8 +401,9 @@ export class GoogleCUAClient extends AgentClient {
             );
 
             // Create one function response for each function call
+            // Following Python SDK pattern: FunctionResponse with parts containing inline_data
             for (const functionCall of result.functionCalls) {
-              const functionResponsePart: any = {
+              const functionResponsePart: Part = {
                 functionResponse: {
                   name: functionCall.name,
                   response: {
@@ -407,7 +415,7 @@ export class GoogleCUAClient extends AgentClient {
                         }
                       : {}),
                   },
-                  data: [
+                  parts: [
                     {
                       inlineData: {
                         mimeType: "image/png",
@@ -447,8 +455,8 @@ export class GoogleCUAClient extends AgentClient {
         message: result.message,
         completed: result.completed,
         usage: {
-          input_tokens: 0, // Google API doesn't provide token counts in the same way
-          output_tokens: 0,
+          input_tokens: usageMetadata?.promptTokenCount || 0,
+          output_tokens: usageMetadata?.candidatesTokenCount || 0,
           inference_time_ms: elapsedMs,
         },
       };
@@ -489,7 +497,6 @@ export class GoogleCUAClient extends AgentClient {
         functionCalls: [],
       };
     }
-
     const candidate = response.candidates[0];
 
     // Log the raw response for debugging
@@ -632,8 +639,7 @@ export class GoogleCUAClient extends AgentClient {
         );
         // Google's type_text_at includes press_enter and clear_before_typing parameters
         const pressEnter = (args.press_enter as boolean) ?? false;
-        const clearBeforeTyping =
-          (args.clear_before_typing as boolean) ?? false;
+        const clearBeforeTyping = (args.clear_before_typing as boolean) ?? true;
 
         // For type_text_at, we need to click first then type
         // This matches the behavior expected by Google's CUA
@@ -774,6 +780,8 @@ export class GoogleCUAClient extends AgentClient {
    * Normalize coordinates from Google's 0-1000 range to actual viewport dimensions
    */
   private normalizeCoordinates(x: number, y: number): { x: number; y: number } {
+    x = Math.min(999, Math.max(0, x));
+    y = Math.min(999, Math.max(0, y));
     return {
       x: Math.floor((x / 1000) * this.currentViewport.width),
       y: Math.floor((y / 1000) * this.currentViewport.height),

@@ -155,14 +155,14 @@ declare class LLMProvider {
     static getModelProvider(modelName: AvailableModel): ModelProvider;
 }
 
-interface AgentAction {
+interface AgentAction$1 {
     type: string;
     [key: string]: unknown;
 }
-interface AgentResult {
+interface AgentResult$1 {
     success: boolean;
     message: string;
-    actions: AgentAction[];
+    actions: AgentAction$1[];
     completed: boolean;
     metadata?: Record<string, unknown>;
     usage?: {
@@ -171,13 +171,13 @@ interface AgentResult {
         inference_time_ms: number;
     };
 }
-interface AgentOptions {
+interface AgentOptions$1 {
     maxSteps?: number;
     autoScreenshot?: boolean;
     waitBetweenActions?: number;
     context?: string;
 }
-interface AgentExecuteOptions extends AgentOptions {
+interface AgentExecuteOptions$1 extends AgentOptions$1 {
     instruction: string;
 }
 type AgentProviderType = "openai" | "anthropic" | "google";
@@ -190,7 +190,7 @@ interface AgentClientOptions {
 }
 type AgentType = "openai" | "anthropic" | "google";
 interface AgentExecutionOptions {
-    options: AgentExecuteOptions;
+    options: AgentExecuteOptions$1;
     logger: (message: LogLine) => void;
     retries?: number;
 }
@@ -277,7 +277,7 @@ type ResponseInputItem = {
     output: string;
 };
 interface AgentInstance {
-    execute: (instructionOrOptions: string | AgentExecuteOptions) => Promise<AgentResult>;
+    execute: (instructionOrOptions: string | AgentExecuteOptions$1) => Promise<AgentResult$1>;
 }
 
 interface ConstructorParams {
@@ -655,14 +655,14 @@ interface GotoOptions {
     frameId?: string;
 }
 
-interface AgentAction$1 {
+interface AgentAction {
   type: string;
   [key: string]: unknown;
 }
-interface AgentResult$1 {
+interface AgentResult {
   success: boolean;
   message: string;
-  actions: AgentAction$1[];
+  actions: AgentAction[];
   completed: boolean;
   metadata?: Record<string, unknown>;
   usage?: {
@@ -671,13 +671,13 @@ interface AgentResult$1 {
     inference_time_ms: number;
   };
 }
-interface AgentOptions$1 {
+interface AgentOptions {
   maxSteps?: number;
   autoScreenshot?: boolean;
   waitBetweenActions?: number;
   context?: string;
 }
-interface AgentExecuteOptions$1 extends AgentOptions$1 {
+interface AgentExecuteOptions extends AgentOptions {
   instruction: string;
 }
 
@@ -694,7 +694,7 @@ declare class StagehandAPI {
     extract<T extends z.AnyZodObject>(options: ExtractOptions<T>): Promise<ExtractResult<T>>;
     observe(options?: ObserveOptions): Promise<ObserveResult[]>;
     goto(url: string, options?: GotoOptions): Promise<void>;
-    agentExecute(agentConfig: AgentConfig, executeOptions: AgentExecuteOptions$1): Promise<AgentResult$1>;
+    agentExecute(agentConfig: AgentConfig, executeOptions: AgentExecuteOptions): Promise<AgentResult>;
     end(): Promise<Response>;
     private execute;
     private request;
@@ -1037,9 +1037,9 @@ declare class Stagehand {
      * @returns An agent instance with execute() and setViewport() methods
      */
     agent(options?: AgentConfig): {
-        execute: (instructionOrOptions: string | AgentExecuteOptions) => Promise<AgentResult>;
+        execute: (instructionOrOptions: string | AgentExecuteOptions$1) => Promise<AgentResult$1>;
         setScreenshotCollector?: (collector: unknown) => void;
     };
 }
 
-export { type ActOptions, type ActResult, type ActionExecutionResult, type AgentAction, type AgentClientOptions, type AgentConfig, type AgentExecuteOptions, type AgentExecuteParams, type AgentExecutionOptions, type AgentHandlerOptions, type AgentInstance, type AgentOptions, type AgentProviderType, type AgentResult, AgentScreenshotProviderError, type AgentType, AnnotatedScreenshotText, type AnthropicContentBlock, type AnthropicJsonSchemaObject, type AnthropicMessage, type AnthropicTextBlock, type AnthropicToolResult, type AvailableModel, AvailableModelSchema, type Browser, type BrowserContext, type BrowserResult, BrowserbaseSessionNotFoundError, CaptchaTimeoutError, type ChatCompletionOptions, type ChatMessage, type ChatMessageContent, type ChatMessageImageContent, type ChatMessageTextContent, type ClientOptions, type ComputerCallItem, type ConstructorParams, ContentFrameNotFoundError, type CreateChatCompletionOptions, CreateChatCompletionResponseError, ExperimentalApiConflictError, ExperimentalNotConfiguredError, type ExtractOptions, type ExtractResult, type FunctionCallItem, type GotoOptions, HandlerNotInitializedError, type HistoryEntry, type InitResult, InvalidAISDKModelFormatError, LLMClient, type LLMResponse, LLMResponseError, LOG_LEVEL_NAMES, type LocalBrowserLaunchOptions, type LogLevel, type LogLine, type Logger, MissingEnvironmentVariableError, MissingLLMConfigurationError, type ModelProvider, type ObserveOptions, type ObserveResult, type OperatorResponse, type OperatorSummary, type Page, PlaywrightCommandException, PlaywrightCommandMethodNotSupportedException, type ResponseInputItem, type ResponseItem, Stagehand, StagehandAPIError, StagehandAPIUnauthorizedError, StagehandClickError, StagehandDefaultError, StagehandDomProcessError, StagehandElementNotFoundError, StagehandEnvironmentError, StagehandError, StagehandEvalError, StagehandFunctionName, StagehandHttpError, StagehandIframeError, StagehandInitError, StagehandInvalidArgumentError, type StagehandMetrics, StagehandMissingArgumentError, StagehandNotInitializedError, StagehandResponseBodyError, StagehandResponseParseError, StagehandServerError, StagehandShadowRootMissingError, StagehandShadowSegmentEmptyError, StagehandShadowSegmentNotFoundError, type ToolUseItem, UnsupportedAISDKModelProviderError, UnsupportedModelError, UnsupportedModelProviderError, XPathResolutionError, type ZodPathSegments, ZodSchemaValidationError, defaultExtractSchema, operatorResponseSchema, operatorSummarySchema, pageTextSchema };
+export { type ActOptions, type ActResult, type ActionExecutionResult, type AgentAction$1 as AgentAction, type AgentClientOptions, type AgentConfig, type AgentExecuteOptions$1 as AgentExecuteOptions, type AgentExecuteParams, type AgentExecutionOptions, type AgentHandlerOptions, type AgentInstance, type AgentOptions$1 as AgentOptions, type AgentProviderType, type AgentResult$1 as AgentResult, AgentScreenshotProviderError, type AgentType, AnnotatedScreenshotText, type AnthropicContentBlock, type AnthropicJsonSchemaObject, type AnthropicMessage, type AnthropicTextBlock, type AnthropicToolResult, type AvailableModel, AvailableModelSchema, type Browser, type BrowserContext, type BrowserResult, BrowserbaseSessionNotFoundError, CaptchaTimeoutError, type ChatCompletionOptions, type ChatMessage, type ChatMessageContent, type ChatMessageImageContent, type ChatMessageTextContent, type ClientOptions, type ComputerCallItem, type ConstructorParams, ContentFrameNotFoundError, type CreateChatCompletionOptions, CreateChatCompletionResponseError, ExperimentalApiConflictError, ExperimentalNotConfiguredError, type ExtractOptions, type ExtractResult, type FunctionCallItem, type GotoOptions, HandlerNotInitializedError, type HistoryEntry, type InitResult, InvalidAISDKModelFormatError, LLMClient, type LLMResponse, LLMResponseError, LOG_LEVEL_NAMES, type LocalBrowserLaunchOptions, type LogLevel, type LogLine, type Logger, MissingEnvironmentVariableError, MissingLLMConfigurationError, type ModelProvider, type ObserveOptions, type ObserveResult, type OperatorResponse, type OperatorSummary, type Page, PlaywrightCommandException, PlaywrightCommandMethodNotSupportedException, type ResponseInputItem, type ResponseItem, Stagehand, StagehandAPIError, StagehandAPIUnauthorizedError, StagehandClickError, StagehandDefaultError, StagehandDomProcessError, StagehandElementNotFoundError, StagehandEnvironmentError, StagehandError, StagehandEvalError, StagehandFunctionName, StagehandHttpError, StagehandIframeError, StagehandInitError, StagehandInvalidArgumentError, type StagehandMetrics, StagehandMissingArgumentError, StagehandNotInitializedError, StagehandResponseBodyError, StagehandResponseParseError, StagehandServerError, StagehandShadowRootMissingError, StagehandShadowSegmentEmptyError, StagehandShadowSegmentNotFoundError, type ToolUseItem, UnsupportedAISDKModelProviderError, UnsupportedModelError, UnsupportedModelProviderError, XPathResolutionError, type ZodPathSegments, ZodSchemaValidationError, defaultExtractSchema, operatorResponseSchema, operatorSummarySchema, pageTextSchema };
