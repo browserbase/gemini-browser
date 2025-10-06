@@ -7,38 +7,43 @@ type BrowserbaseRegion =
   | "eu-central-1"
   | "ap-southeast-1";
 
-// Exact timezone matches for east coast cities
-const exactTimezoneMap: Record<string, BrowserbaseRegion> = {
-  "America/New_York": "us-east-1",
-  "America/Detroit": "us-east-1",
-  "America/Toronto": "us-east-1",
-  "America/Montreal": "us-east-1",
-  "America/Boston": "us-east-1",
-  "America/Chicago": "us-east-1",
-};
+// Timezone abbreviation to region mapping
+const timezoneAbbreviationMap: Record<string, BrowserbaseRegion> = {
+  // US East Coast
+  EST: "us-east-1",
+  EDT: "us-east-1",
 
-// Prefix-based region mapping
-const prefixToRegion: Record<string, BrowserbaseRegion> = {
-  America: "us-west-2",
-  US: "us-west-2",
-  Canada: "us-west-2",
-  Europe: "eu-central-1",
-  Africa: "eu-central-1",
-  Asia: "ap-southeast-1",
-  Australia: "ap-southeast-1",
-  Pacific: "ap-southeast-1",
-};
+  // US West Coast
+  PST: "us-west-2",
+  PDT: "us-west-2",
 
-// Offset ranges to regions (inclusive bounds)
-const offsetRanges: {
-  min: number;
-  max: number;
-  region: BrowserbaseRegion;
-}[] = [
-  { min: -24, max: -4, region: "us-west-2" }, // UTC-24 to UTC-4
-  { min: -3, max: 4, region: "eu-central-1" }, // UTC-3 to UTC+4
-  { min: 5, max: 24, region: "ap-southeast-1" }, // UTC+5 to UTC+24
-];
+  // US Mountain/Central - route to appropriate region
+  MST: "us-west-2",
+  MDT: "us-west-2",
+  CST: "us-east-1",
+  CDT: "us-east-1",
+
+  // Europe
+  GMT: "eu-central-1",
+  BST: "eu-central-1",
+  CET: "eu-central-1",
+  CEST: "eu-central-1",
+  EET: "eu-central-1",
+  EEST: "eu-central-1",
+  WET: "eu-central-1",
+  WEST: "eu-central-1",
+
+  // Asia-Pacific
+  JST: "ap-southeast-1", // Japan Standard Time
+  // Note: CST conflicts between US Central and China Standard - US takes priority
+  KST: "ap-southeast-1", // Korea Standard Time
+  IST: "ap-southeast-1",
+  AEST: "ap-southeast-1",
+  AEDT: "ap-southeast-1",
+  AWST: "ap-southeast-1",
+  NZST: "ap-southeast-1",
+  NZDT: "ap-southeast-1",
+};
 
 // Probability distributions for region routing
 const distributions: Record<
@@ -46,28 +51,28 @@ const distributions: Record<
   Record<BrowserbaseRegion, number>
 > = {
   "us-west-2": {
-    "us-west-2": 70,
-    "us-east-1": 15,
-    "eu-central-1": 10,
-    "ap-southeast-1": 5,
+    "us-west-2": 100,
+    "us-east-1": 0,
+    "eu-central-1": 0,
+    "ap-southeast-1": 0,
   },
   "us-east-1": {
-    "us-east-1": 70,
-    "us-west-2": 15,
-    "eu-central-1": 10,
-    "ap-southeast-1": 5,
+    "us-east-1": 100,
+    "us-west-2": 0,
+    "eu-central-1": 0,
+    "ap-southeast-1": 0,
   },
   "eu-central-1": {
-    "eu-central-1": 70,
-    "us-east-1": 12,
-    "us-west-2": 10,
-    "ap-southeast-1": 8,
+    "eu-central-1": 100,
+    "us-east-1": 0,
+    "us-west-2": 0,
+    "ap-southeast-1": 0,
   },
   "ap-southeast-1": {
-    "ap-southeast-1": 70,
-    "eu-central-1": 12,
-    "us-west-2": 10,
-    "us-east-1": 8,
+    "ap-southeast-1": 100,
+    "eu-central-1": 0,
+    "us-west-2": 0,
+    "us-east-1": 0,
   },
 };
 
@@ -89,37 +94,20 @@ function selectRegionWithProbability(
   return baseRegion;
 }
 
-function getClosestRegion(timezone?: string): BrowserbaseRegion {
+function getRegionFromTimezoneAbbr(timezoneAbbr?: string): BrowserbaseRegion {
   try {
-    if (!timezone) {
+    if (!timezoneAbbr) {
       return "us-west-2"; // Default if no timezone provided
     }
 
-    // Check exact matches first
-    if (timezone in exactTimezoneMap) {
-      return exactTimezoneMap[timezone];
+    // Direct lookup from timezone abbreviation
+    const region = timezoneAbbreviationMap[timezoneAbbr.toUpperCase()];
+    if (region) {
+      return region;
     }
 
-    // Check prefix matches
-    const prefix = timezone.split("/")[0];
-    if (prefix in prefixToRegion) {
-      return prefixToRegion[prefix];
-    }
-
-    // Use offset-based fallback
-    const date = new Date();
-    // Create a date formatter for the given timezone
-    const formatter = new Intl.DateTimeFormat("en-US", { timeZone: timezone });
-    // Get the timezone offset in minutes
-    const timeString = formatter.format(date);
-    const testDate = new Date(timeString);
-    const hourOffset = (testDate.getTime() - date.getTime()) / (1000 * 60 * 60);
-
-    const matchingRange = offsetRanges.find(
-      (range) => hourOffset >= range.min && hourOffset <= range.max
-    );
-
-    return matchingRange?.region ?? "us-west-2";
+    // Fallback to us-west-2 for unknown abbreviations
+    return "us-west-2";
   } catch {
     return "us-west-2";
   }
@@ -142,11 +130,12 @@ async function createSession(timezone?: string) {
       advancedStealth: true,
     };
 
-  const closestRegion = getClosestRegion(timezone);
-  const finalRegion = selectRegionWithProbability(closestRegion);
+  // Use timezone abbreviation to determine region
+  const closestRegion = getRegionFromTimezoneAbbr(timezone);
+  console.log("timezone abbreviation:", timezone);
+  console.log("mapped to region:", closestRegion);
 
-  console.log("timezone ", timezone);
-  console.log("getClosestRegion(timezone)", closestRegion);
+  const finalRegion = selectRegionWithProbability(closestRegion);
   console.log("finalRegion after probability routing", finalRegion);
 
   const session = await bb.sessions.create({
