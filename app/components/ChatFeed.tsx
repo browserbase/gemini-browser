@@ -19,7 +19,6 @@ import { ChatFeedProps, AgentState, BrowserStep } from "../types/ChatFeed";
 
 export default function ChatFeed({
   initialMessage,
-  isFromSearchParam = false,
   onClose,
 }: ChatFeedProps) {
   const renderCount = useRef(0);
@@ -200,7 +199,6 @@ export default function ChatFeed({
   } = useAgentStream({
     sessionId: null,
     goal: initialMessage,
-    isFromSearchParam,
     onStart: handleStart,
     onDone: handleDone,
     onError: handleError,
@@ -299,7 +297,6 @@ export default function ChatFeed({
                 isCompleted={agentFinished}
                 initialMessage={initialMessage || undefined}
                 sessionTime={sessionTime}
-                isFromSearchParam={isFromSearchParam}
                 onStop={handleDone}
                 onRestart={onClose}
               />

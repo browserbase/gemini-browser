@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { useSearchParams } from "next/navigation";
 import AnimatedButton from "./components/ui/AnimatedButton";
 import posthog from "posthog-js";
 import ChatFeed from "./components/ChatFeed";
@@ -48,29 +47,9 @@ const Tooltip = ({
 };
 
 export default function Home() {
-  const searchParams = useSearchParams();
-  const rawChatParam = searchParams.get("chat");
-  const chatParam = rawChatParam?.replace(/^["']|["']$/g, '') || null;
-  
-  const [isChatVisible, setIsChatVisible] = useState(() => !!chatParam);
-  const [initialMessage, setInitialMessage] = useState<string | null>(() => chatParam);
+  const [isChatVisible, setIsChatVisible] = useState(false);
+  const [initialMessage, setInitialMessage] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-
-  const startChat = useCallback(
-    (finalMessage: string) => {
-      setInitialMessage(finalMessage);
-      setIsChatVisible(true);
-
-      try {
-        posthog.capture("google_cua_submit_message", {
-          message: finalMessage,
-        });
-      } catch (e) {
-        console.error(e);
-      }
-    },
-    []
-  );
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -104,6 +83,22 @@ export default function Home() {
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isChatVisible]);
+
+  const startChat = useCallback(
+    (finalMessage: string) => {
+      setInitialMessage(finalMessage);
+      setIsChatVisible(true);
+
+      try {
+        posthog.capture("google_cua_submit_message", {
+          message: finalMessage,
+        });
+      } catch (e) {
+        console.error(e);
+      }
+    },
+    [setInitialMessage, setIsChatVisible]
+  );
 
   return (
     <AnimatePresence>
@@ -307,7 +302,6 @@ export default function Home() {
         <ChatFeed
           key={`chat-feed-${initialMessage}`}
           initialMessage={initialMessage}
-          isFromSearchParam={!!chatParam}
           onClose={() => setIsChatVisible(false)}
         />
       )}
