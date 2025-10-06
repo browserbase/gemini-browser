@@ -40,6 +40,55 @@ const offsetRanges: {
   { min: 5, max: 24, region: "ap-southeast-1" }, // UTC+5 to UTC+24
 ];
 
+// Probability distributions for region routing
+const distributions: Record<
+  BrowserbaseRegion,
+  Record<BrowserbaseRegion, number>
+> = {
+  "us-west-2": {
+    "us-west-2": 70,
+    "us-east-1": 15,
+    "eu-central-1": 10,
+    "ap-southeast-1": 5,
+  },
+  "us-east-1": {
+    "us-east-1": 70,
+    "us-west-2": 15,
+    "eu-central-1": 10,
+    "ap-southeast-1": 5,
+  },
+  "eu-central-1": {
+    "eu-central-1": 70,
+    "us-east-1": 12,
+    "us-west-2": 10,
+    "ap-southeast-1": 8,
+  },
+  "ap-southeast-1": {
+    "ap-southeast-1": 70,
+    "eu-central-1": 12,
+    "us-west-2": 10,
+    "us-east-1": 8,
+  },
+};
+
+function selectRegionWithProbability(
+  baseRegion: BrowserbaseRegion
+): BrowserbaseRegion {
+  const distribution = distributions[baseRegion];
+  const random = Math.random() * 100; // Generate random number between 0-100
+
+  let cumulativeProbability = 0;
+  for (const [region, probability] of Object.entries(distribution)) {
+    cumulativeProbability += probability;
+    if (random < cumulativeProbability) {
+      return region as BrowserbaseRegion;
+    }
+  }
+
+  // Fallback to base region if something goes wrong
+  return baseRegion;
+}
+
 function getClosestRegion(timezone?: string): BrowserbaseRegion {
   try {
     if (!timezone) {
@@ -81,26 +130,31 @@ async function createSession(timezone?: string) {
     apiKey: process.env.BROWSERBASE_API_KEY!,
   });
 
-  const browserSettings: Browserbase.Sessions.SessionCreateParams.BrowserSettings = {
-    viewport: {
-      width: 2560,
-      height: 1440,
-    },
-    // @ts-expect-error - os is not a valid property
-    os: "windows",
-    blockAds: true,
-    advancedStealth: true
-  };
+  const browserSettings: Browserbase.Sessions.SessionCreateParams.BrowserSettings =
+    {
+      viewport: {
+        width: 2560,
+        height: 1440,
+      },
+      // @ts-expect-error - os is not a valid property
+      os: "windows",
+      blockAds: true,
+      advancedStealth: true,
+    };
+
+  const closestRegion = getClosestRegion(timezone);
+  const finalRegion = selectRegionWithProbability(closestRegion);
 
   console.log("timezone ", timezone);
-  console.log("getClosestRegion(timezone)", getClosestRegion(timezone));
+  console.log("getClosestRegion(timezone)", closestRegion);
+  console.log("finalRegion after probability routing", finalRegion);
 
   const session = await bb.sessions.create({
     projectId: process.env.BROWSERBASE_PROJECT_ID!,
     proxies: true,
     browserSettings,
     keepAlive: true,
-    region: getClosestRegion(timezone),
+    region: finalRegion,
   });
   return {
     session,
