@@ -125,8 +125,6 @@ async function createSession(timezone?: string) {
 
   const config = await getAll<EdgeConfig>();
 
-  console.log("config", config);
-
   const { advancedStealth: advancedStealthConfig, proxies: proxiesConfig } =
     config;
 

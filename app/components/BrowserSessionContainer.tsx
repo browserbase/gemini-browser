@@ -11,6 +11,7 @@ interface BrowserSessionContainerProps {
   isCompleted: boolean;
   initialMessage: string | undefined;
   sessionTime?: number;
+  isFromSearchParam?: boolean;
   onStop?: () => void;
   onRestart?: () => void;
 }
@@ -104,6 +105,7 @@ const BrowserSessionContainer: React.FC<BrowserSessionContainerProps> = ({
   isCompleted,
   initialMessage,
   sessionTime = 0,
+  isFromSearchParam = false,
   onStop = () => {},
   onRestart = () => {},
 }) => {
@@ -192,7 +194,7 @@ const BrowserSessionContainer: React.FC<BrowserSessionContainerProps> = ({
               sessionUrl ? (
                 <iframe
                   src={sessionUrl}
-                  className="w-full h-full border-none pointer-events-none"
+                  className={`w-full h-full border-none ${!isFromSearchParam ? 'pointer-events-none' : ''}`}
                   sandbox="allow-same-origin allow-scripts allow-forms"
                   allow="clipboard-read; clipboard-write"
                   loading="lazy"
