@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
+import moment from "moment-timezone";
 import { BrowserStep } from "../types/ChatFeed";
 import {
   AgentLog,
@@ -136,14 +137,13 @@ export function useAgentStream({
           if (!promise) {
             promise = (async () => {
               // Detect timezone using moment-timezone for cleaner abbreviations
-              const getTimezoneAbbreviation = async () => {
+              const getTimezoneAbbreviation = () => {
                 try {
-                  // Only import moment-timezone on the client side
+                  // Only detect timezone on the client side
                   if (typeof window === "undefined") {
                     return "PDT"; // Server-side fallback
                   }
 
-                  const { default: moment } = await import("moment-timezone");
                   const abbr = moment.tz(moment.tz.guess()).format("z");
                   return abbr;
                 } catch {
@@ -151,7 +151,7 @@ export function useAgentStream({
                 }
               };
 
-              const timezone = await getTimezoneAbbreviation();
+              const timezone = getTimezoneAbbreviation();
 
               const sessionResponse = await fetch("/api/session", {
                 method: "POST",
