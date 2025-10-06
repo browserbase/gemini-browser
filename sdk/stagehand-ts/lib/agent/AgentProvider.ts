@@ -16,8 +16,9 @@ export const modelToAgentProviderMap: Record<string, AgentType> = {
   "claude-3-7-sonnet-latest": "anthropic",
   "claude-sonnet-4-20250514": "anthropic",
   "claude-opus-4-1-20250805": "anthropic",
+  "claude-sonnet-4-5-20250929": "anthropic",
   "computer-use-exp-07-16": "google",
-  "computer-use-preview-09-2025": "google",
+  "computer-use-preview-10-2025": "google",
 };
 
 /**

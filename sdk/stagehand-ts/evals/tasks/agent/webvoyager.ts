@@ -35,7 +35,7 @@ export const webvoyager: EvalFunction = async ({
     }
 
     await stagehand.page.goto(params.web, {
-      timeout: 75_000,
+      timeout: 120_000,
     });
 
     if (!(modelName in modelToAgentProviderMap)) {
@@ -69,7 +69,7 @@ export const webvoyager: EvalFunction = async ({
 
     screenshotCollector.start();
 
-    const maxSteps = Number(process.env.AGENT_EVAL_MAX_STEPS) || 50;
+    const maxSteps = Number(process.env.AGENT_EVAL_MAX_STEPS) || 75;
     const agentResult = await agent.execute({
       instruction: params.ques,
       maxSteps: maxSteps,
@@ -87,7 +87,7 @@ export const webvoyager: EvalFunction = async ({
 
     const evaluator = new Evaluator(stagehand);
     const evalResult = await evaluator.ask({
-      question: `Did the agent successfully complete this task: "${params.ques}"? The task might be a bit outdated or impossible to complete, in those cases lean towards YES`,
+      question: `Did the agent successfully complete this task: "${params.ques}"?`,
       screenshot: screenshots,
       agentReasoning:
         agentResult.message ||

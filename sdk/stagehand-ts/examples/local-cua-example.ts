@@ -9,6 +9,7 @@
 import { Stagehand } from "@browserbasehq/stagehand";
 import StagehandConfig from "@/stagehand.config";
 import chalk from "chalk";
+import fs from "fs";
 
 async function main() {
   console.log(
@@ -19,19 +20,20 @@ async function main() {
   const stagehand = new Stagehand({
     ...StagehandConfig,
     env: "LOCAL",
-    verbose: 1, // 0: silent, 1: info, 2: debug
+    verbose: 2, // 0: silent, 1: info, 2: debug
+    useAPI: false,
   });
   await stagehand.init();
 
   try {
     const page = stagehand.page;
-
     // Create a computer use agent
     const agent = stagehand.agent({
       provider: "google",
       // For Anthropic, use claude-sonnet-4-20250514 or claude-3-7-sonnet-latest
       // For OpenAI use computer-use-preview
-      model: "computer-use-exp-07-16",
+      model: "computer-use-preview-10-2025",
+      // model: "claude-sonnet-4-5-20250929",
       instructions: `You are a helpful assistant that can use a web browser.
       You are currently on the following page: ${page.url()}.
       Do not ask follow up questions, the user will trust your judgement.`,
@@ -41,11 +43,72 @@ async function main() {
     });
 
     // Navigate to the Browserbase careers page
-    await page.goto("https://www.browserbase.com/careers");
+    await page.goto("https://www.amazon.com");
+    fs.writeFileSync("screenshot.png", await page.screenshot());
+
     // Define the instruction for the CUA
+    // const instruction =
+    //   "Apply for the first engineer position with mock data. Don't submit the form.";
+    // console.log(`Instruction: ${chalk.white(instruction)}`);
+    // const client = await stagehand.context.newCDPSession(page);
+    // Draw a cursor on the page so we can see where it clicks
+    // await page.evaluate(() => {
+    //   // Remove any existing cursor
+    //   const existingCursor = document.getElementById('stagehand-cursor');
+    //   if (existingCursor) {
+    //     existingCursor.remove();
+    //   }
+
+    //   // Create cursor element
+    //   const cursor = document.createElement('div');
+    //   cursor.id = 'stagehand-cursor';
+    //   cursor.style.cssText = `
+    //     position: fixed;
+    //     width: 14px;
+    //     height: 14px;
+    //     background: red;
+    //     border: 2px solid white;
+    //     border-radius: 50%;
+    //     pointer-events: none;
+    //     z-index: 999999;
+    //     transform: translate(-50%, -50%);
+    //     box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+    //   `;
+    //   document.body.appendChild(cursor);
+
+    //   // Track mouse movements and update cursor position
+    //   document.addEventListener('mousemove', (e) => {
+    //     cursor.style.left = e.clientX + 'px';
+    //     cursor.style.top = e.clientY + 'px';
+    //   });
+
+    //   // Add click animation
+    //   document.addEventListener('mousedown', () => {
+    //     cursor.style.transform = 'translate(-50%, -50%) scale(1.5)';
+    //     cursor.style.background = 'darkred';
+    //   });
+
+    //   document.addEventListener('mouseup', () => {
+    //     cursor.style.transform = 'translate(-50%, -50%) scale(1)';
+    //     cursor.style.background = 'red';
+    //   });
+    // });
+
+    // await client.send("Input.dispatchMouseEvent", {
+    //   type: "mouseMoved",
+    //   x: 220,
+    //   y: 360,
+    //   button: "none",
+    // });
+    // await client.send("Input.dispatchMouseEvent", {
+    //   type: "mousePressed",
+    //   x: 220,
+    //   y: 360,
+    //   button: "left",
+    // });
+    // await page.keyboard.type("New York City");
     const instruction =
-      "Apply for the first engineer position with mock data. Don't submit the form.";
-    console.log(`Instruction: ${chalk.white(instruction)}`);
+      "Find climbing gears and sort the results by price high to low. Answer the first 3 results after sorting";
 
     // Execute the instruction
     const result = await agent.execute({

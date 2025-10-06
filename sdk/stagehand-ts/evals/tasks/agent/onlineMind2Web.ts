@@ -72,7 +72,7 @@ export const onlineMind2Web: EvalFunction = async ({
 
     screenshotCollector.start();
 
-    const maxSteps = Number(process.env.AGENT_EVAL_MAX_STEPS) || 50;
+    const maxSteps = Number(process.env.AGENT_EVAL_MAX_STEPS) || 80;
     const agentResult = await agent.execute({
       instruction: params.confirmed_task,
       maxSteps: maxSteps,

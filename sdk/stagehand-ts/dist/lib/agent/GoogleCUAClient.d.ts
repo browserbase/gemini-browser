@@ -7,12 +7,14 @@ import { AgentClient } from "./AgentClient";
  */
 export declare class GoogleCUAClient extends AgentClient {
     private apiKey;
+    private client;
     private currentViewport;
     private currentUrl?;
     private screenshotProvider?;
     private actionHandler?;
     private history;
     private environment;
+    private generateContentConfig;
     constructor(type: AgentType, modelName: string, userProvidedInstructions?: string, clientOptions?: Record<string, unknown>);
     setViewport(width: number, height: number): void;
     setCurrentUrl(url: string): void;

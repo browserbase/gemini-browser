@@ -1,6 +1,10 @@
 import { EvalFunction } from "@/types/evals";
 import { Evaluator } from "../../evaluator";
+import { modelToAgentProviderMap } from "@/lib/agent/AgentProvider";
+import { loadApiKeyFromEnv } from "@/lib/utils";
+import dotenv from "dotenv";
 
+dotenv.config();
 /**
  * Data-driven GAIA agent eval
  * - Expects per-test params injected via eval runner: { id, level, web, ques }
@@ -27,14 +31,6 @@ export const gaia: EvalFunction = async ({
     };
 
     if (!params.web || !params.ques) {
-      logger.error({
-        category: "gaia",
-        level: 0,
-        message: `Missing GAIA params (web, ques).`,
-        auxiliary: {
-          params: { value: JSON.stringify(params), type: "object" },
-        },
-      });
       return {
         _success: false,
         error: `Missing GAIA params (web, ques). Got: ${JSON.stringify(params)}`,
@@ -44,12 +40,28 @@ export const gaia: EvalFunction = async ({
         logs: logger.getLogs(),
       };
     }
-    await stagehand.page.goto(params.web);
+    await stagehand.page.goto(params.web, {
+      timeout: 120_000,
+    });
 
+    if (!(modelName in modelToAgentProviderMap)) {
+      return {
+        _success: false,
+        error: `Model ${modelName} is not supported for agent tasks. Supported models: ${Object.keys(modelToAgentProviderMap).join(", ")}`,
+        debugUrl,
+        sessionUrl,
+        logs: logger.getLogs(),
+      };
+    }
+
+    const provider = modelToAgentProviderMap[modelName];
     const agent = stagehand.agent({
       model: modelName,
-      provider: modelName.startsWith("claude") ? "anthropic" : "openai",
-      instructions: `You are a helpful assistant that must solve the task by browsing. You must produce a single line at the end like: "Final Answer: <answer>". Do not ask follow up questions. Current page: ${await stagehand.page.title()}`,
+      provider,
+      instructions: `You are a helpful assistant that must solve the task by browsing. At the end, produce a single line: "Final Answer: <answer>" summarizing the requested result (e.g., score, list, or text). Current page: ${await stagehand.page.title()}. ALWAYS OPERATE WITHIN THE PAGE OPENED BY THE USER, WHICHEVER TASK YOU ARE ATTEMPTING TO COMPLETE CAN BE ACCOMPLISHED WITHIN THE PAGE.`,
+      options: {
+        apiKey: loadApiKeyFromEnv(provider, stagehand.logger),
+      },
     });
 
     const maxSteps = Number(process.env.AGENT_EVAL_MAX_STEPS) || 50;

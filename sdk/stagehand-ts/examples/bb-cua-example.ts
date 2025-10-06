@@ -32,7 +32,7 @@ async function main() {
       provider: "google",
       // For Anthropic, use claude-sonnet-4-20250514 or claude-3-7-sonnet-latest
       // For OpenAI use computer-use-preview
-      model: "computer-use-exp-07-16",
+      model: "computer-use-preview-10-2025",
       instructions: `You are a helpful assistant that can use a web browser.
       You are currently on the following page: ${page.url()}.
       Do not ask follow up questions, the user will trust your judgement.`,
