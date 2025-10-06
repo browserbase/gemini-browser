@@ -8,9 +8,7 @@ export const maxDuration = 600;
 
 function sseEncode(event: string, data: unknown): Uint8Array {
   const encoder = new TextEncoder();
-  return encoder.encode(
-    `event: ${event}\n` + `data: ${JSON.stringify(data)}\n\n`
-  );
+  return encoder.encode(`event: ${event}\n` + `data: ${JSON.stringify(data)}\n\n`);
 }
 
 function sseComment(comment: string): Uint8Array {
@@ -20,11 +18,7 @@ function sseComment(comment: string): Uint8Array {
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
-  const [sessionId, goal, fromChat] = [
-    searchParams.get("sessionId"),
-    searchParams.get("goal"),
-    searchParams.get("fromChat") === "true",
-  ];
+  const [sessionId, goal] = [searchParams.get("sessionId"), searchParams.get("goal")];
 
   if (!sessionId || !goal) {
     return new Response(
@@ -45,14 +39,11 @@ export async function GET(request: Request) {
       }, 15000);
 
       let timeoutTimer: ReturnType<typeof setTimeout> | undefined;
-      timeoutTimer = setTimeout(
-        async () => {
-          console.log(`[SSE] Timeout reached for session ${sessionId}`);
-          send("error", { message: "Agent run timed out after 10 minutes" });
-          await cleanup();
-        },
-        10 * 60 * 1000
-      );
+      timeoutTimer = setTimeout(async () => {
+        console.log(`[SSE] Timeout reached for session ${sessionId}`);
+        send("error", { message: "Agent run timed out after 10 minutes" });
+        await cleanup();
+      }, 10 * 60 * 1000);
 
       let closed = false;
 
@@ -61,10 +52,7 @@ export async function GET(request: Request) {
         try {
           controller.enqueue(chunk);
         } catch (err) {
-          console.error(
-            `[SSE] enqueue error`,
-            err instanceof Error ? err.message : String(err)
-          );
+          console.error(`[SSE] enqueue error`, err instanceof Error ? err.message : String(err));
         }
       };
 
@@ -73,10 +61,7 @@ export async function GET(request: Request) {
         try {
           safeEnqueue(sseEncode(event, data));
         } catch (err) {
-          console.error(
-            `[SSE] send error`,
-            err instanceof Error ? err.message : String(err)
-          );
+          console.error(`[SSE] send error`, err instanceof Error ? err.message : String(err));
         }
       };
 
@@ -104,14 +89,11 @@ export async function GET(request: Request) {
       }, 15000);
 
       // Hard timeout at 10 minutes
-      timeoutTimer = setTimeout(
-        async () => {
-          console.log(`[SSE] Timeout reached for session ${sessionId}`);
-          send("error", { message: "Agent run timed out after 10 minutes" });
-          await cleanup();
-        },
-        10 * 60 * 1000
-      );
+      timeoutTimer = setTimeout(async () => {
+        console.log(`[SSE] Timeout reached for session ${sessionId}`);
+        send("error", { message: "Agent run timed out after 10 minutes" });
+        await cleanup();
+      }, 10 * 60 * 1000);
 
       console.log(`[SSE] Starting Stagehand agent run`, {
         sessionId,
@@ -119,9 +101,7 @@ export async function GET(request: Request) {
         hasInstructions: true,
       });
 
-      const logger = createStagehandUserLogger(send, {
-        forwardStepEvents: false,
-      });
+      const logger = createStagehandUserLogger(send, { forwardStepEvents: false });
 
       const stagehand = new Stagehand({
         env: "BROWSERBASE",
@@ -138,7 +118,6 @@ export async function GET(request: Request) {
               width: 1288,
               height: 711,
             },
-            solveCaptchas: !fromChat, // false if session is from a search param, true otherwise
           },
         },
         useAPI: false,
@@ -161,7 +140,7 @@ export async function GET(request: Request) {
         });
 
         const agent = stagehand.agent({
-          provider: "google",
+          provider: "google", 
           model: "computer-use-preview-10-2025",
           options: {
             apiKey: process.env.GOOGLE_API_KEY,
@@ -170,24 +149,24 @@ export async function GET(request: Request) {
         });
 
         const result = await agent.execute({
-          instruction: goal,
-          autoScreenshot: true,
-          waitBetweenActions: 200,
-          maxSteps: 100,
+            instruction: goal,
+            autoScreenshot: true,
+            waitBetweenActions: 200,
+            maxSteps: 100,
         });
 
         try {
-          console.log(`[SSE] metrics snapshot`, stagehand.metrics);
-          send("metrics", stagehand.metrics);
+        console.log(`[SSE] metrics snapshot`, stagehand.metrics);
+        send("metrics", stagehand.metrics);
         } catch {}
 
-        const finalMessage = logger.getLastReasoning();
-        console.log(`[SSE] done`, {
-          success: result.success,
-          completed: result.completed,
-          finalMessage: finalMessage,
-        });
-        send("done", { ...result, finalMessage });
+          const finalMessage = logger.getLastReasoning();
+          console.log(`[SSE] done`, {
+            success: result.success,
+            completed: result.completed,
+            finalMessage: finalMessage
+          });
+          send("done", { ...result, finalMessage });
 
         await cleanup(stagehand);
       } catch (error) {
