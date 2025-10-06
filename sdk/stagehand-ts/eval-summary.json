@@ -1,0 +1,71 @@
+{
+  "experimentName": "agent/onlineMind2Web_browserbase_20251002204912",
+  "passed": [],
+  "failed": [
+    {
+      "eval": "agent/onlineMind2Web",
+      "model": "computer-use-preview-10-2025",
+      "categories": ["external_agent_benchmarks"]
+    },
+    {
+      "eval": "agent/onlineMind2Web",
+      "model": "computer-use-preview-10-2025",
+      "categories": ["external_agent_benchmarks"]
+    },
+    {
+      "eval": "agent/onlineMind2Web",
+      "model": "computer-use-preview-10-2025",
+      "categories": ["external_agent_benchmarks"]
+    },
+    {
+      "eval": "agent/onlineMind2Web",
+      "model": "computer-use-preview-10-2025",
+      "categories": ["external_agent_benchmarks"]
+    },
+    {
+      "eval": "agent/onlineMind2Web",
+      "model": "computer-use-preview-10-2025",
+      "categories": ["external_agent_benchmarks"]
+    },
+    {
+      "eval": "agent/onlineMind2Web",
+      "model": "computer-use-preview-10-2025",
+      "categories": ["external_agent_benchmarks"]
+    },
+    {
+      "eval": "agent/onlineMind2Web",
+      "model": "computer-use-preview-10-2025",
+      "categories": ["external_agent_benchmarks"]
+    },
+    {
+      "eval": "agent/onlineMind2Web",
+      "model": "computer-use-preview-10-2025",
+      "categories": ["external_agent_benchmarks"]
+    },
+    {
+      "eval": "agent/onlineMind2Web",
+      "model": "computer-use-preview-10-2025",
+      "categories": ["external_agent_benchmarks"]
+    },
+    {
+      "eval": "agent/onlineMind2Web",
+      "model": "computer-use-preview-10-2025",
+      "categories": ["external_agent_benchmarks"]
+    }
+  ],
+  "categories": {
+    "combination": null,
+    "regression": null,
+    "extract": null,
+    "act": null,
+    "llm_clients": null,
+    "experimental": null,
+    "observe": null,
+    "targeted_extract": null,
+    "agent": null,
+    "external_agent_benchmarks": 0
+  },
+  "models": {
+    "computer-use-preview-10-2025": 0
+  }
+}

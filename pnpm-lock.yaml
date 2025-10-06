@@ -12,11 +12,8 @@ importers:
         specifier: ^2.6.0
         version: 2.6.0
       '@browserbasehq/stagehand':
-        specifier: file:/Users/kylejeong/Desktop/private-cua-exp/stagehand-ts
-        version: file:../private-cua-exp/stagehand-ts(deepmerge@4.3.1)(dotenv@16.6.1)(react@19.1.1)(zod@3.25.76)
-      '@tailwindcss/typography':
-        specifier: ^0.5.19
-        version: 0.5.19(tailwindcss@3.4.17)
+        specifier: file:./sdk/stagehand-ts
+        version: file:sdk/stagehand-ts(deepmerge@4.3.1)(dotenv@16.6.1)(react@19.1.1)(zod@3.25.76)
       '@vercel/analytics':
         specifier: ^1.4.1
         version: 1.5.0(next@15.1.6(@opentelemetry/api@1.9.0)(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(react@19.1.1)
@@ -69,6 +66,9 @@ importers:
       '@eslint/js':
         specifier: ^9.34.0
         version: 9.34.0
+      '@tailwindcss/typography':
+        specifier: ^0.5.19
+        version: 0.5.19(tailwindcss@3.4.17)
       '@types/node':
         specifier: ^20
         version: 20.19.11
@@ -222,8 +222,8 @@ packages:
   '@browserbasehq/sdk@2.6.0':
     resolution: {integrity: sha512-83iXP5D7xMm8Wyn66TUaUrgoByCmAJuoMoZQI3sGg3JAiMlTfnCIMqyVBoNSaItaPIkaCnrsj6LiusmXV2X9YA==}
 
-  '@browserbasehq/stagehand@file:../private-cua-exp/stagehand-ts':
-    resolution: {directory: ../private-cua-exp/stagehand-ts, type: directory}
+  '@browserbasehq/stagehand@file:sdk/stagehand-ts':
+    resolution: {directory: sdk/stagehand-ts, type: directory}
     hasBin: true
     peerDependencies:
       deepmerge: ^4.3.1
@@ -277,9 +277,14 @@ packages:
     resolution: {integrity: sha512-Z5kJ+wU3oA7MMIqVR9tyZRtjYPr4OC004Q4Rw7pgOKUOKkJfZ3O24nz3WYfGRpMDNmcOi3TwQOmgm7B7Tpii0w==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
 
-  '@google/genai@0.8.0':
-    resolution: {integrity: sha512-Zs+OGyZKyMbFofGJTR9/jTQSv8kITh735N3tEuIZj4VlMQXTC0soCFahysJ9NaeenRlD7xGb6fyqmX+FwrpU6Q==}
-    engines: {node: '>=18.0.0'}
+  '@google/genai@1.22.0':
+    resolution: {integrity: sha512-siETS3zTm3EGpTT4+BFc1z20xXBYfueD3gCYfxkOjuAKRk8lt8TJevDHi3zepn1oSI6NhG/LZvy0i+Q3qheObg==}
+    engines: {node: '>=20.0.0'}
+    peerDependencies:
+      '@modelcontextprotocol/sdk': ^1.11.4
+    peerDependenciesMeta:
+      '@modelcontextprotocol/sdk':
+        optional: true
 
   '@humanfs/core@0.19.1':
     resolution: {integrity: sha512-5DyQ4+1JEUzejeK1JGICcideyfUbGixgS9jNgex5nqkW+cY7WZhxBigmieN5Qnw9ZosSNVC9KQKyb+GUaGyKUA==}
@@ -2994,11 +2999,11 @@ snapshots:
     transitivePeerDependencies:
       - encoding
 
-  '@browserbasehq/stagehand@file:../private-cua-exp/stagehand-ts(deepmerge@4.3.1)(dotenv@16.6.1)(react@19.1.1)(zod@3.25.76)':
+  '@browserbasehq/stagehand@file:sdk/stagehand-ts(deepmerge@4.3.1)(dotenv@16.6.1)(react@19.1.1)(zod@3.25.76)':
     dependencies:
       '@anthropic-ai/sdk': 0.39.0
       '@browserbasehq/sdk': 2.6.0
-      '@google/genai': 0.8.0
+      '@google/genai': 1.22.0
       ai: 4.3.19(react@19.1.1)(zod@3.25.76)
       deepmerge: 4.3.1
       devtools-protocol: 0.0.1464554
@@ -3027,6 +3032,7 @@ snapshots:
       '@ai-sdk/xai': 1.2.18(zod@3.25.76)
       ollama-ai-provider: 1.2.0(zod@3.25.76)
     transitivePeerDependencies:
+      - '@modelcontextprotocol/sdk'
       - bufferutil
       - encoding
       - react
@@ -3093,7 +3099,7 @@ snapshots:
       '@eslint/core': 0.15.2
       levn: 0.4.1
 
-  '@google/genai@0.8.0':
+  '@google/genai@1.22.0':
     dependencies:
       google-auth-library: 9.15.1
       ws: 8.18.3
