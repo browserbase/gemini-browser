@@ -1,6 +1,6 @@
-import { NextResponse } from "next/server";
 import Browserbase from "@browserbasehq/sdk";
-import { get, getAll } from "@vercel/edge-config";
+import { getAll } from "@vercel/edge-config";
+import { NextResponse } from "next/server";
 
 type BrowserbaseRegion =
   | "us-west-2"
