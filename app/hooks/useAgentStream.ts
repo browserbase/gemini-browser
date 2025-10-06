@@ -1,13 +1,14 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
-import { BrowserStep } from "../types/ChatFeed";
+import moment from "moment-timezone";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   AgentLog,
-  UseAgentStreamProps,
   AgentStreamState,
   LogEvent,
+  UseAgentStreamProps,
 } from "../types/Agent";
+import { BrowserStep } from "../types/ChatFeed";
 
 // Global trackers to avoid duplicate session creation in React Strict Mode
 // by sharing a single in-flight promise across mounts for the same goal.
@@ -137,9 +138,8 @@ export function useAgentStream({
           if (!promise) {
             promise = (async () => {
               // Detect timezone using moment-timezone for simplicity
-              const getTimezoneAbbreviation = async () => {
+              const getTimezoneAbbreviation = () => {
                 try {
-                  const { default: moment } = await import("moment-timezone");
                   const abbr = moment.tz(moment.tz.guess()).format("z");
                   return abbr;
                 } catch {
@@ -147,7 +147,7 @@ export function useAgentStream({
                 }
               };
 
-              const timezone = await getTimezoneAbbreviation();
+              const timezone = getTimezoneAbbreviation();
 
               const sessionResponse = await fetch("/api/session", {
                 method: "POST",
