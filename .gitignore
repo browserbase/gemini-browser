@@ -84,3 +84,4 @@ target/
 
 test/
 .vercel
+.env*.local
