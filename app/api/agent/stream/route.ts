@@ -155,7 +155,7 @@ export async function GET(request: Request) {
         send("start", {
           sessionId,
           goal,
-          model: "computer-use-preview-09-2025",
+          model: "computer-use-preview-10-2025",
           init,
           startedAt: new Date().toISOString(),
         });
