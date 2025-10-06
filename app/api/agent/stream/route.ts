@@ -122,6 +122,7 @@ export async function GET(request: Request) {
               width: 1288,
               height: 711,
             },
+            solveCaptchas: !fromChat, // false if session is from a search param, true otherwise
           },
         },
         useAPI: false,

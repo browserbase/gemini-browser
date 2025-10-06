@@ -57,6 +57,7 @@ export interface DoneEventData {
 export interface UseAgentStreamProps {
   sessionId: string | null;
   goal: string | null;
+  isFromSearchParam?: boolean;
   onStart?: (data: StartEventData) => void;
   onDone?: (data?: DoneEventData) => void;
   onError?: (error: string) => void;
