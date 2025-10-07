@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { SessionControls } from "./SessionControls";
+import { SessionControls } from "@/app/components/SessionControls";
 import { RotateCcwIcon } from "lucide-react";
 
 interface BrowserSessionContainerProps {

@@ -1,8 +1,7 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef, Suspense } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { useSearchParams } from "next/navigation";
 import AnimatedButton from "./components/ui/AnimatedButton";
 import posthog from "posthog-js";
 import ChatFeed from "./components/ChatFeed";
@@ -47,13 +46,9 @@ const Tooltip = ({
   );
 };
 
-function HomeContent() {
-  const searchParams = useSearchParams();
-  const rawChatParam = searchParams.get("chat");
-  const chatParam = rawChatParam?.replace(/^["']|["']$/g, '') || null;
-  
-  const [isChatVisible, setIsChatVisible] = useState(() => !!chatParam);
-  const [initialMessage, setInitialMessage] = useState<string | null>(() => chatParam);
+export default function Home() {
+  const [isChatVisible, setIsChatVisible] = useState(() => false);
+  const [initialMessage, setInitialMessage] = useState<string | null>(() => null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const startChat = useCallback(
@@ -238,11 +233,11 @@ function HomeContent() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.3, delay: 0.7 }}
-                    onClick={() => startChat("Compare the features and pricing of the top 3 project management tools on Product Hunt today. Create a simple comparison for me.")}
+                    onClick={() => startChat("Find the current price of Bitcoin and Ethereum.")}
                     className="p-3 md:p-5 lg:p-6 text-sm md:text-base lg:text-xl text-[#2E191E] border border-[#CAC8C7] hover:border-[#FF3B00] hover:text-[#FF3B00] transition-colors font-ppsupply font-medium text-center overflow-hidden text-ellipsis break-words whitespace-normal md:min-h-[100px] lg:min-h-[120px] flex items-center justify-center backdrop-blur-sm bg-opacity-60 bg-[rgba(245,240,255,0.15)] hover:bg-[rgba(255,59,0,0.05)] rounded-none"
                   >
                     <div className="w-full h-full flex flex-row justify-between items-start px-3 py-2 md:px-4 md:py-3 space-y-3">
-                      <span className="text-left">Research and compare<br />trending tools</span>
+                      <span className="text-left">Get the latest crypto prices<br /></span>
                       <Search size={20} strokeWidth={1.5} className="rounded-none" />
                     </div>
                   </motion.button>
@@ -307,18 +302,9 @@ function HomeContent() {
         <ChatFeed
           key={`chat-feed-${initialMessage}`}
           initialMessage={initialMessage}
-          isFromSearchParam={!!chatParam}
           onClose={() => setIsChatVisible(false)}
         />
       )}
     </AnimatePresence>
-  );
-}
-
-export default function Home() {
-  return (
-    <Suspense fallback={<div className="min-h-screen bg-gray-50" />}>
-      <HomeContent />
-    </Suspense>
   );
 }

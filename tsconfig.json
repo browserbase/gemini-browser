@@ -18,12 +18,10 @@
         "name": "next"
       }
     ],
-    "baseUrl": ".",
     "paths": {
-      "@/*": ["./*"],
-      "@stagehand-ts/*": ["./sdk/stagehand-ts/*"]
+      "@/*": ["./*"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": ["node_modules", "sdk/**/*"]
+  "exclude": ["node_modules"]
 }

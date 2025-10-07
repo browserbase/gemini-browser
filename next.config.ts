@@ -1,5 +1,4 @@
 import type { NextConfig } from "next";
-import path from "path";
 
 const securityHeaders = [
   { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
@@ -22,11 +21,6 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  webpack: (config: any) => {
-    config.resolve.alias["@stagehand-ts"] = path.resolve(__dirname, "sdk/stagehand-ts");
-    return config;
-  },
   async headers() {
     return [
       {

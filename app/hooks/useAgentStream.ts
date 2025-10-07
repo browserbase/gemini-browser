@@ -2,13 +2,13 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import moment from "moment-timezone";
-import { BrowserStep } from "../types/ChatFeed";
+import { BrowserStep } from "@/app/types/ChatFeed";
 import {
   AgentLog,
   UseAgentStreamProps,
   AgentStreamState,
   LogEvent,
-} from "../types/Agent";
+} from "@/app/types/Agent";
 
 // Global trackers to avoid duplicate session creation in React Strict Mode
 // by sharing a single in-flight promise across mounts for the same goal.
@@ -24,7 +24,6 @@ const sessionCreationPromises = new Map<
 export function useAgentStream({
   sessionId,
   goal,
-  isFromSearchParam = false,
   onStart,
   onDone,
   onError,
@@ -218,7 +217,6 @@ export function useAgentStream({
       const params = new URLSearchParams({
         sessionId: currentSessionId!,
         goal,
-        fromChat: String(isFromSearchParam),
       });
 
       const es = new EventSource(`/api/agent/stream?${params.toString()}`);
@@ -485,7 +483,7 @@ export function useAgentStream({
         eventSourceRef.current.close();
       }
     };
-  }, [sessionId, goal, parseLog, isEmptyObject, isFromSearchParam]);
+  }, [sessionId, goal, parseLog, isEmptyObject]);
 
   return {
     ...state,
