@@ -209,7 +209,7 @@ const BrowserSessionContainer: React.FC<BrowserSessionContainerProps> = ({
                   {/* Simple loading animation that will always show when session URL is not available */}
                   <div className="flex flex-col items-center space-y-6 w-full animate-in fade-in slide-in-from-bottom-5 duration-500">
                     <h2 className="text-2xl font-semibold text-white z-10 animate-in fade-in duration-700 delay-500">
-                      Starting Google CUA Browser
+                      Starting Gemini Browser
                     </h2>
                     <div className="flex flex-col items-center space-y-4 w-full animate-in fade-in duration-700 delay-500">
                       <div className="mt-4 flex justify-center">

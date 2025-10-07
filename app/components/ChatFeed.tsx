@@ -252,7 +252,7 @@ export default function ChatFeed({
       exit="exit"
     >
       <NavBar
-        title="Google CUA Browser"
+        title="Gemini Browser"
         showCloseButton={true}
         onClose={onClose}
         showGitHubButton={false}

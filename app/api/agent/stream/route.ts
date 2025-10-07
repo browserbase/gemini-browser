@@ -137,14 +137,14 @@ export async function GET(request: Request) {
         send("start", {
           sessionId,
           goal,
-          model: "computer-use-preview-10-2025",
+          model: "gemini-2.5-computer-use-preview-10-2025",
           init,
           startedAt: new Date().toISOString(),
         });
 
         const agent = stagehand.agent({
           provider: "google", 
-          model: "computer-use-preview-10-2025",
+          model: "gemini-2.5-computer-use-preview-10-2025",
           options: {
             apiKey: process.env.GOOGLE_API_KEY,
           },

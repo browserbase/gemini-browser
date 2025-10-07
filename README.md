@@ -1,113 +1,108 @@
-# Google CUA Browser
+# Gemini CUA Browser
 
-A powerful browser automation playground powered by Google's new Computer Use Agent and Browserbase. This free demo showcases the capabilities of AI-driven browser automation using Stagehand and Google's computer-use capabilities.
+[Demo](https://gemini.browserbase.com)
+
+A powerful browser automation playground powered by Gemini's new Computer Use Agent and Browserbase. This free demo showcases the capabilities of AI-driven browser automation using Stagehand and Gemini's computer-use capabilities.
 
 ## Features
 
-- 🤖 **AI-Powered Browser Control**: Uses Google's Computer Use model to interact with web pages naturally
-- 🌐 **Real Browser Environment**: Runs on actual Chrome browsers via Browserbase
-- 🎯 **Natural Language Commands**: Simply describe what you want to do in plain English
-- 📊 **Real-time Feedback**: Watch the AI navigate, click, type, and interact with websites
-- 📝 **Rich Markdown Support**: AI responses rendered with proper formatting, code blocks, and typography
-- 🔄 **Session Management**: Persistent browser sessions with tab management
-- 🖼️ **Non-Interactive Preview**: View-only browser iframe prevents accidental user interference
+- 🤖 **Gemini Computer Use Agent**: Leverages Gemini's `computer-use-preview-10-2025` model for intelligent web interactions
+- 🌐 **Real Browser Control**: Runs on browsers via Browserbase's infrastructure
+- 🎯 **Natural Language Commands**: Describe tasks in plain English and watch the AI execute them
+- 📊 **Real-time Streaming**: Server-Sent Events (SSE) for live agent feedback and progress updates
+- 🔄 **Session Management**: Persistent browser sessions with automatic viewport management
 
 ## Tech Stack
 
-- **Frontend**: Next.js 15 with TypeScript, React 19, and Tailwind CSS
-- **AI Model**: Google Computer Use
+### Frontend
+- **Framework**: Next.js 15 with React 19 and TypeScript
+- **Styling**: Tailwind CSS with custom fonts (PP Neue, PP Supply)
+- **Animation**: Framer Motion for smooth transitions
+- **Icons**: Lucide React
+- **Markdown**: ReactMarkdown with GitHub Flavored Markdown (remark-gfm)
+
+### Backend
+- **AI Model**: Gemini Computer Use (`computer-use-preview-10-2025`)
 - **Browser Automation**: Browserbase + Stagehand
-- **Streaming**: Server-Sent Events (SSE) for real-time updates
-- **UI Components**: Framer Motion animations, Lucide React icons
-- **Markdown Rendering**: ReactMarkdown with GitHub Flavored Markdown support
+- **Agent Framework**: Stagehand with Playwright Core
+- **Streaming**: Server-Sent Events (SSE) 
+- **Runtime**: Node.js with Next.js API routes
+
+### Infrastructure
 - **Analytics**: PostHog for user tracking
+- **Configuration**: Vercel Edge Config for region distribution
+- **Deployment**: Optimized for Vercel with 600s max duration
 
 ## Prerequisites
 
 - Node.js 18.x or later
-- pnpm (recommended) or npm
-- API keys for Google AI Studio and Browserbase
+- pnpm 10.x or later (recommended)
+- API keys:
+  - [Google AI Studio](https://aistudio.google.com/apikey) - for Computer Use Agent
+  - [Browserbase](https://www.browserbase.com) - for browser infrastructure
 
 ## Getting Started
 
-1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/browserbase/google-cua-browser.git
-   cd -browser
-   ```
+### 1. Clone the repository
+```bash
+git clone https://github.com/browserbase/gemini-cua-browser.git
+cd gemini-cua-browser
+```
 
-2. **Install dependencies:**
-   ```bash
-   pnpm install
-   # or
-   npm install
-   ```
+### 2. Install dependencies
+```bash
+pnpm install
+```
 
-3. **Set up environment variables:**
-   ```bash
-   cp .env.example .env.local
-   ```
+### 3. Configure environment variables
+```bash
+cp .env.example .env.local
+```
 
-   Then edit `.env.local` with your API keys:
-   ```env
-   # Google API Configuration
-   GOOGLE_API_KEY=your_google_api_key_here
+Edit `.env.local` with your credentials:
+```env
+# Google AI Studio API Key
+GOOGLE_API_KEY=your_google_api_key
 
-   # Browserbase Configuration
-   BROWSERBASE_API_KEY=your_browserbase_api_key_here
-   BROWSERBASE_PROJECT_ID=your_browserbase_project_id_here
+# Browserbase Configuration
+BROWSERBASE_API_KEY=your_browserbase_api_key
+BROWSERBASE_PROJECT_ID=your_browserbase_project_id
 
-   # Optional: Analytics and monitoring
-   NEXT_PUBLIC_POSTHOG_KEY=your_posthog_key
-   NEXT_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com
-   
-   # Site URL (for local development)
-   NEXT_PUBLIC_SITE_URL=http://localhost:3000
-   ```
+# Optional: Analytics
+NEXT_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com
+NEXT_PUBLIC_POSTHOG_KEY=your_posthog_key
 
-   **Get your API keys:**
-   - Google API: [Google AI Studio](https://aistudio.google.com/apikey)
-   - Browserbase: [Browserbase Dashboard](https://www.browserbase.com)
+# Optional: Site URL
+NEXT_PUBLIC_SITE_URL=http://localhost:3000
 
-4. **Start the development server:**
-   ```bash
-   pnpm dev
-   # or
-   npm run dev
-   ```
+# Optional: Vercel Edge Config
+EDGE_CONFIG=your_edge_config_url
+```
 
-5. **Open your browser:**
-   Navigate to [http://localhost:3000](http://localhost:3000)
+### 4. Start the development server
+```bash
+pnpm dev
+```
+
+### 5. Open your browser
+Navigate to [http://localhost:3000](http://localhost:3000)
 
 ## Usage
 
-1. **Start a Session**: Click "New Session" to initialize a browser instance
-2. **Enter Commands**: Type natural language instructions like:
-   - "Go to google.com and search for AI news"
-   - "Navigate to GitHub and explore trending repositories"
-   - "Fill out the contact form on this page"
-3. **Watch the Magic**: The AI will interpret your request and perform the actions
-4. **View Results**: See real-time updates with rich markdown formatting including code blocks, lists, and formatted text
+1. **Enter a Command**: Type a natural language instruction or select a preset example:
+   - "What's the price of NVIDIA stock?"
+   - "Review a pull request on Github"
+   - "Browse Hacker News for trending debates"
+   - "Play a game of 2048"
 
-## Key Components
+2. **Watch the Agent**: The AI will:
+   - Create a browser session
+   - Navigate to relevant websites
+   - Interact with page elements (click, type, scroll)
+   - Take screenshots to verify actions
+   - Stream real-time progress updates
 
-- **Stream API** (`/api/agent/stream`): Handles real-time agent execution with SSE
-- **Session Management** (`/api/session`): Creates and manages Browserbase sessions
-- **Agent Integration**: Uses Stagehand with Google's Computer Use for browser automation
-- **Markdown Chat**: AI responses support rich text formatting with code syntax highlighting
-- **Browser Preview**: Non-interactive iframe for viewing agent actions without user interference
-- **UI Components**: Modern, animated interface with real-time updates
-
-## Codebase Optimization
-
-This project has been optimized for production deployment:
-
-- **Clean Dependencies**: Removed all unused npm packages and dev dependencies
-- **Asset Optimization**: Eliminated unused images, fonts, and static files
-- **Type Safety**: Cleaned up unused TypeScript types and interfaces with proper ReactMarkdown component typing
-- **Bundle Size**: Reduced bundle size by removing dead code and unused imports
-- **UI Components**: Modular markdown rendering components for consistent styling
-- **Performance**: Optimized for Vercel deployment with proper runtime configuration
+3. **View Results**: See the agent's reasoning, actions, and final response in rich markdown format
 
 ## Available Scripts
 
@@ -121,36 +116,13 @@ pnpm build
 # Start production server
 pnpm start
 
-# Run linting
+# Lint code
 pnpm lint
 ```
 
-## Configuration
-
-The agent is configured with specific behaviors:
-- Works in atomic steps (one action at a time)
-- Prefers direct navigation over search
-- Avoids risky actions unless necessary
-- Fixed viewport at 1024x768 pixels
-- Automatic screenshot capture after actions
-
-## Limitations
-
-- Maximum session duration: 10 minutes (Vercel timeout)
-- Viewport locked at 1024x768 pixels
-- No keyboard shortcuts support (uses click + type instead)
-- Browser sessions are temporary and will expire
-
-## Troubleshooting
-
-- **Session fails to start**: Check your Browserbase API credentials
-- **Agent not responding**: Verify your Google API key has access to Google Computer Use
-- **Timeout errors**: Complex tasks may exceed the 10-minute limit
-- **Connection issues**: Ensure stable internet connection for browser streaming
-
 ## Contributing
 
-This is a demo playground project. Feel free to fork and experiment!
+This is a demo project showcasing Gemini Computer Use Agent capabilities. Feel free to fork and experiment!
 
 ## License
 
@@ -158,7 +130,7 @@ MIT
 
 ## Acknowledgments
 
-- [Browserbase](https://browserbase.com) for browser infrastructure
-- [Stagehand](https://github.com/browserbasehq/stagehand) for automation framework
-- [Google AI Studio](https://aistudio.google.com/) for AI capabilities
-- [Vercel](https://vercel.com) for hosting and edge functions
+- [Browserbase](https://browserbase.com) - Browser infrastructure and remote browser sessions
+- [Stagehand](https://github.com/browserbasehq/stagehand) - Browser automation framework with AI capabilities
+- [Google AI Studio](https://aistudio.google.com/) - Computer Use Agent API
+- [Vercel](https://vercel.com) - Hosting, edge functions, and edge config

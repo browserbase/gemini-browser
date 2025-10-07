@@ -13,7 +13,7 @@ interface NavBarProps {
 }
 
 export default function NavBar({
-  title = "Google CUA Browser",
+  title = "Gemini Browser",
   showCloseButton = false,
   onClose,
   showGitHubButton = true,
@@ -31,14 +31,14 @@ export default function NavBar({
     >
       <div className="flex items-center gap-2">
         <a
-          href="https://www.browserbase.com/cua/google"
+          href="https://www.browserbase.com/cua/gemini"
           target="_blank"
           rel="noopener noreferrer"
           className="flex items-center gap-3 hover:opacity-90 transition-opacity duration-200"
         >
           <Image
             src="/favicon.svg"
-            alt="Google CUA Browser"
+            alt="Gemini Browser"
             className="w-8 h-8"
             width={32}
             height={32}
@@ -50,7 +50,7 @@ export default function NavBar({
       </div>
       <div className="flex items-center gap-2">
         <a
-          href="https://www.browserbase.com/cua/google"
+          href="https://www.browserbase.com/cua/gemini"
           target="_blank"
           rel="noopener noreferrer"
         >
@@ -69,7 +69,7 @@ export default function NavBar({
         </a>
         {showGitHubButton && (
           <a
-            href="https://github.com/browserbase/google-cua-browser"
+            href="https://github.com/browserbase/gemini-browser"
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -81,7 +81,7 @@ export default function NavBar({
                 height={20}
                 className="sm:mr-2"
               />
-              <span className="hidden sm:inline">View GitHub</span>
+              <span className="hidden sm:inline">GitHub</span>
             </button>
           </a>
         )}
