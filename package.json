@@ -1,5 +1,5 @@
 {
-  "name": "google-cua-browser",
+  "name": "gemini-browser",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -11,13 +11,14 @@
   },
   "dependencies": {
     "@browserbasehq/sdk": "^2.6.0",
-    "@browserbasehq/stagehand": "file:/Users/kylejeong/Desktop/private-cua-exp/stagehand-ts",
-    "@tailwindcss/typography": "^0.5.19",
+    "@browserbasehq/stagehand": "github:browserbase/stagehand#cheetah", 
     "@vercel/analytics": "^1.4.1",
+    "@vercel/edge-config": "^1.4.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "framer-motion": "^11.0.3",
     "lucide-react": "^0.479.0",
+    "moment-timezone": "^0.6.0",
     "next": "15.1.6",
     "playwright-core": "^1.55.0",
     "posthog-js": "^1.209.3",
@@ -32,6 +33,7 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@eslint/js": "^9.34.0",
+    "@tailwindcss/typography": "^0.5.19",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",

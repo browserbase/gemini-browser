@@ -1,6 +1,5 @@
 export interface ChatFeedProps {
     initialMessage: string | null;
-    isFromSearchParam?: boolean;
     onClose: () => void;
     url?: string;
   }

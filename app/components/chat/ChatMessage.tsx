@@ -5,7 +5,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { BrowserStep } from "@/app/types/ChatFeed";
 import { toolNameMapping } from "@/constants/tools";
-import { createMarkdownComponents } from "./markdown";
+import { createMarkdownComponents } from "@/app/components/chat/markdown";
 
 interface ChatMessageProps {
   step: BrowserStep;

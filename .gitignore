@@ -83,3 +83,5 @@ target/
 # pnpm
 
 test/
+.vercel
+.env*.local

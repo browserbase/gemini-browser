@@ -1,4 +1,7 @@
 import { motion } from "framer-motion";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import { createMarkdownComponents } from "@/app/components/chat/markdown";
 
 interface PinnedFinalAnswerProps {
   message: string;
@@ -40,9 +43,14 @@ export default function PinnedFinalAnswer({
           }}
         ></div>
 
-        <p className="break-words overflow-hidden p-6 text-ellipsis max-w-full">
-          {message}
-        </p>
+        <div className="break-words overflow-hidden p-6 text-ellipsis max-w-full">
+          <ReactMarkdown
+            remarkPlugins={[remarkGfm]}
+            components={createMarkdownComponents("text-gray-700")}
+          >
+            {message}
+          </ReactMarkdown>
+        </div>
       </motion.div>
     </div>
   );

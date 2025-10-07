@@ -5,21 +5,20 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { useWindowSize } from "usehooks-ts";
 import posthog from "posthog-js";
 
-import { SessionControls } from "./SessionControls";
-import BrowserSessionContainer from "./BrowserSessionContainer";
+import { SessionControls } from "@/app/components/SessionControls";
+import BrowserSessionContainer from "@/app/components/BrowserSessionContainer";
 import { SessionLiveURLs } from "@browserbasehq/sdk/resources/index.mjs";
-import BrowserTabs from "./ui/BrowserTabs";
-import NavBar from "./NavBar";
-import PinnedGoalMessage from "./chat/PinnedGoalMessage";
-import PinnedFinalAnswer from "./chat/PinnedFinalAnswer";
-import ChatMessagesList from "./chat/ChatMessagesList";
-import ChatInput from "./chat/ChatInput";
-import { useAgentStream } from "../hooks/useAgentStream";
-import { ChatFeedProps, AgentState, BrowserStep } from "../types/ChatFeed";
+import BrowserTabs from "@/app/components/ui/BrowserTabs";
+import NavBar from "@/app/components/NavBar";
+import PinnedGoalMessage from "@/app/components/chat/PinnedGoalMessage";
+import PinnedFinalAnswer from "@/app/components/chat/PinnedFinalAnswer";
+import ChatMessagesList from "@/app/components/chat/ChatMessagesList";
+import ChatInput from "@/app/components/chat/ChatInput";
+import { useAgentStream } from "@/app/hooks/useAgentStream";
+import { ChatFeedProps, AgentState, BrowserStep } from "@/app/types/ChatFeed";
 
 export default function ChatFeed({
   initialMessage,
-  isFromSearchParam = false,
   onClose,
 }: ChatFeedProps) {
   const renderCount = useRef(0);
@@ -200,7 +199,6 @@ export default function ChatFeed({
   } = useAgentStream({
     sessionId: null,
     goal: initialMessage,
-    isFromSearchParam,
     onStart: handleStart,
     onDone: handleDone,
     onError: handleError,
@@ -254,7 +252,7 @@ export default function ChatFeed({
       exit="exit"
     >
       <NavBar
-        title="Google CUA Browser"
+        title="Gemini Browser"
         showCloseButton={true}
         onClose={onClose}
         showGitHubButton={false}
@@ -299,7 +297,6 @@ export default function ChatFeed({
                 isCompleted={agentFinished}
                 initialMessage={initialMessage || undefined}
                 sessionTime={sessionTime}
-                isFromSearchParam={isFromSearchParam}
                 onStop={handleDone}
                 onRestart={onClose}
               />

@@ -1,6 +1,6 @@
 import { RefObject } from "react";
-import { BrowserStep } from "../../types/ChatFeed";
-import ChatMessage from "./ChatMessage";
+import { BrowserStep } from "@/app/types/ChatFeed";
+import ChatMessage from "@/app/components/chat/ChatMessage";
 
 interface ChatMessagesListProps {
   steps: BrowserStep[];
