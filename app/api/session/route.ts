@@ -139,7 +139,7 @@ async function createSession(timezone?: string) {
     regionDistribution: distributionsConfig,
   } = config;
 
-  const advancedStealth: boolean = advancedStealthConfig ?? false;
+  const advancedStealth: boolean = advancedStealthConfig ?? true;
   const proxies: boolean = proxiesConfig ?? true;
 
   // Build browserSettings conditionally
@@ -154,7 +154,7 @@ async function createSession(timezone?: string) {
       // Only set os if advancedStealth is true
       ...(advancedStealth
         ? {
-            os: "mac",
+            os: "windows",
           }
         : {
             os: "linux",
