@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, Suspense } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useSearchParams } from "next/navigation";
 import AnimatedButton from "./components/ui/AnimatedButton";
@@ -47,7 +47,7 @@ const Tooltip = ({
   );
 };
 
-export default function Home() {
+function HomeContent() {
   const searchParams = useSearchParams();
   const rawChatParam = searchParams.get("chat");
   const chatParam = rawChatParam?.replace(/^["']|["']$/g, '') || null;
@@ -312,5 +312,13 @@ export default function Home() {
         />
       )}
     </AnimatePresence>
+  );
+}
+
+export default function Home() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-gray-50" />}>
+      <HomeContent />
+    </Suspense>
   );
 }
