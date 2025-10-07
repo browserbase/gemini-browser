@@ -45,8 +45,8 @@ const timezoneAbbreviationMap: Record<string, BrowserbaseRegion> = {
   NZDT: "ap-southeast-1", // New Zealand Daylight Time
 };
 
-// Probability distributions for region routing
-const distributions: Record<
+// Default fallback distributions if edge config is not available
+const defaultDistributions: Record<
   BrowserbaseRegion,
   Record<BrowserbaseRegion, number>
 > = {
@@ -64,22 +64,27 @@ const distributions: Record<
   },
   "eu-central-1": {
     "eu-central-1": 100,
-    "us-east-1": 0,
     "us-west-2": 0,
+    "us-east-1": 0,
     "ap-southeast-1": 0,
   },
   "ap-southeast-1": {
     "ap-southeast-1": 100,
-    "eu-central-1": 0,
     "us-west-2": 0,
     "us-east-1": 0,
+    "eu-central-1": 0,
   },
 };
 
 function selectRegionWithProbability(
-  baseRegion: BrowserbaseRegion
+  baseRegion: BrowserbaseRegion,
+  distributions: Record<BrowserbaseRegion, Record<BrowserbaseRegion, number>>
 ): BrowserbaseRegion {
   const distribution = distributions[baseRegion];
+  if (!distribution) {
+    return baseRegion;
+  }
+
   const random = Math.random() * 100; // Generate random number between 0-100
 
   let cumulativeProbability = 0;
@@ -116,6 +121,9 @@ function getRegionFromTimezoneAbbr(timezoneAbbr?: string): BrowserbaseRegion {
 interface EdgeConfig {
   advancedStealth: boolean | undefined;
   proxies: boolean | undefined;
+  regionDistribution:
+    | Record<BrowserbaseRegion, Record<BrowserbaseRegion, number>>
+    | undefined;
 }
 
 async function createSession(timezone?: string) {
@@ -125,8 +133,11 @@ async function createSession(timezone?: string) {
 
   const config = await getAll<EdgeConfig>();
 
-  const { advancedStealth: advancedStealthConfig, proxies: proxiesConfig } =
-    config;
+  const {
+    advancedStealth: advancedStealthConfig,
+    proxies: proxiesConfig,
+    regionDistribution: distributionsConfig,
+  } = config;
 
   const advancedStealth: boolean = advancedStealthConfig ?? false;
   const proxies: boolean = proxiesConfig ?? true;
@@ -152,8 +163,12 @@ async function createSession(timezone?: string) {
 
   // Use timezone abbreviation to determine base region
   const closestRegion = getRegionFromTimezoneAbbr(timezone);
+
+  // Get distributions from config or use default
+  const distributions = distributionsConfig ?? defaultDistributions;
+
   // Apply probability routing for potential load balancing
-  const finalRegion = selectRegionWithProbability(closestRegion);
+  const finalRegion = selectRegionWithProbability(closestRegion, distributions);
 
   console.log("timezone abbreviation:", timezone);
   console.log("mapped to region:", closestRegion);
