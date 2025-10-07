@@ -1,5 +1,6 @@
-import { NextResponse } from "next/server";
 import Browserbase from "@browserbasehq/sdk";
+import { getAll } from "@vercel/edge-config";
+import { NextResponse } from "next/server";
 
 type BrowserbaseRegion =
   | "us-west-2"
@@ -112,21 +113,41 @@ function getRegionFromTimezoneAbbr(timezoneAbbr?: string): BrowserbaseRegion {
   }
 }
 
+interface EdgeConfig {
+  advancedStealth: boolean | undefined;
+  proxies: boolean | undefined;
+}
+
 async function createSession(timezone?: string) {
   const bb = new Browserbase({
     apiKey: process.env.BROWSERBASE_API_KEY!,
   });
 
+  const config = await getAll<EdgeConfig>();
+
+  const { advancedStealth: advancedStealthConfig, proxies: proxiesConfig } =
+    config;
+
+  const advancedStealth: boolean = advancedStealthConfig ?? false;
+  const proxies: boolean = proxiesConfig ?? true;
+
+  // Build browserSettings conditionally
   const browserSettings: Browserbase.Sessions.SessionCreateParams.BrowserSettings =
     {
       viewport: {
         width: 2560,
         height: 1440,
       },
-      //@ts-expect-error - not present in the types, but valid
-      os: "windows",
       blockAds: true,
-      advancedStealth: true,
+      advancedStealth,
+      // Only set os if advancedStealth is true
+      ...(advancedStealth
+        ? {
+            os: "mac",
+          }
+        : {
+            os: "linux",
+          }),
     };
 
   // Use timezone abbreviation to determine base region
@@ -140,7 +161,7 @@ async function createSession(timezone?: string) {
 
   const session = await bb.sessions.create({
     projectId: process.env.BROWSERBASE_PROJECT_ID!,
-    proxies: true,
+    proxies,
     browserSettings,
     keepAlive: true,
     region: finalRegion,
