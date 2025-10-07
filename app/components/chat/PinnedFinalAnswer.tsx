@@ -43,7 +43,7 @@ export default function PinnedFinalAnswer({
           }}
         ></div>
 
-        <div className="break-words overflow-hidden p-6 text-ellipsis max-w-full">
+        <div className="break-words overflow-y-auto p-6 text-ellipsis max-w-full max-h-[40vh] scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
           <ReactMarkdown
             remarkPlugins={[remarkGfm]}
             components={createMarkdownComponents("text-gray-700")}
