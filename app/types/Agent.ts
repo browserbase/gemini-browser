@@ -30,7 +30,6 @@ export interface LogEvent {
 export interface AgentStreamState {
   sessionId: string | null;
   sessionUrl: string | null;
-  connectUrl: string | null;
   steps: BrowserStep[];
   logs: LogEvent[];
   isLoading: boolean;
