@@ -131,13 +131,25 @@ async function createSession(timezone?: string) {
     apiKey: process.env.BROWSERBASE_API_KEY!,
   });
 
-  const config = await getAll<EdgeConfig>();
+  let config: EdgeConfig | undefined;
+  try {
+    // Attempt to get the Edge Config
+    config = await getAll<EdgeConfig>();
+  } catch (error) {
+    // If Edge Config is not available, fall back to default values
+    console.error("Could not get Edge Config, falling back to defaults", error);
+    config = {
+      advancedStealth: undefined,
+      proxies: undefined,
+      regionDistribution: undefined,
+    };
+  }
 
   const {
     advancedStealth: advancedStealthConfig,
     proxies: proxiesConfig,
     regionDistribution: distributionsConfig,
-  } = config;
+  } = config || {};
 
   const advancedStealth: boolean = advancedStealthConfig ?? true;
   const proxies: boolean = proxiesConfig ?? true;

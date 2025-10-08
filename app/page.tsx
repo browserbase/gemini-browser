@@ -16,17 +16,34 @@ const Tooltip = ({
   text: string;
 }) => {
   const [isHovered, setIsHovered] = useState(false);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const showTooltip = useCallback(() => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+    setIsHovered(true);
+  }, []);
+
+  const hideTooltip = useCallback(() => {
+    timeoutRef.current = setTimeout(() => {
+      setIsHovered(false);
+    }, 200);
+  }, []);
 
   return (
     <div
       className="relative"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      onMouseEnter={showTooltip}
+      onMouseLeave={hideTooltip}
     >
       {children}
       <AnimatePresence>
         {isHovered && (
           <motion.span
+            onMouseEnter={showTooltip}
+            onMouseLeave={hideTooltip}
             initial={{ opacity: 0, y: 10, scale: 0.9 }}
             animate={{ opacity: 1, y: 3, scale: 1 }}
             exit={{ opacity: 0, y: 10, scale: 0.9 }}
