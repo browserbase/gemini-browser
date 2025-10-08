@@ -17,7 +17,6 @@ const sessionCreationPromises = new Map<
   Promise<{
     sessionId: string;
     sessionUrl: string | null;
-    connectUrl: string | null;
   }>
 >();
 
@@ -34,7 +33,6 @@ export function useAgentStream({
   const [state, setState] = useState<AgentStreamState>({
     sessionId: sessionId,
     sessionUrl: null,
-    connectUrl: null,
     steps: [],
     logs: [],
     isLoading: false,
@@ -174,7 +172,6 @@ export function useAgentStream({
               return {
                 sessionId: sessionData.sessionId as string,
                 sessionUrl: (sessionData.sessionUrl as string) ?? null,
-                connectUrl: (sessionData.connectUrl as string) ?? null,
               };
             })();
             sessionCreationPromises.set(goal, promise);
@@ -188,7 +185,6 @@ export function useAgentStream({
             ...prev,
             sessionId: result.sessionId,
             sessionUrl: result.sessionUrl,
-            connectUrl: result.connectUrl,
           }));
         } catch (error) {
           const errorMessage =

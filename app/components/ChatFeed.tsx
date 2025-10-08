@@ -36,7 +36,6 @@ export default function ChatFeed({
   const agentStateRef = useRef<AgentState>({
     sessionId: null,
     sessionUrl: null,
-    connectUrl: null,
     steps: [],
     isLoading: false,
   });
@@ -44,12 +43,10 @@ export default function ChatFeed({
   const [uiState, setUiState] = useState<{
     sessionId: string | null;
     sessionUrl: string | null;
-    connectUrl: string | null;
     steps: BrowserStep[];
   }>({
     sessionId: null,
     sessionUrl: null,
-    connectUrl: null,
     steps: [],
   });
 
@@ -193,7 +190,6 @@ export default function ChatFeed({
   const {
     sessionId,
     sessionUrl,
-    connectUrl,
     steps,
     isFinished,
   } = useAgentStream({
@@ -211,10 +207,9 @@ export default function ChatFeed({
       ...prev,
       sessionId: sessionId || prev.sessionId,
       sessionUrl: sessionUrl || prev.sessionUrl,
-      connectUrl: connectUrl || prev.connectUrl,
       steps,
     }));
-  }, [sessionId, sessionUrl, connectUrl, steps]);
+  }, [sessionId, sessionUrl, steps]);
   
 
   // Spring configuration for smoother animations
