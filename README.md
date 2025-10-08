@@ -45,8 +45,8 @@ A powerful browser automation playground powered by Gemini's new Computer Use Ag
 
 ### 1. Clone the repository
 ```bash
-git clone https://github.com/browserbase/gemini-cua-browser.git
-cd gemini-cua-browser
+git clone https://github.com/browserbase/gemini-browser
+cd gemini-browser
 ```
 
 ### 2. Install dependencies
