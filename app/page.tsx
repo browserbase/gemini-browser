@@ -6,6 +6,7 @@ import AnimatedButton from "./components/ui/AnimatedButton";
 import posthog from "posthog-js";
 import ChatFeed from "./components/ChatFeed";
 import NavBar from "./components/NavBar";
+import StagehandBanner from "./components/StagehandBanner";
 import { Code, MessageCircle, Search, Grid3x3 } from "lucide-react";
 
 const Tooltip = ({
@@ -48,24 +49,23 @@ const Tooltip = ({
 
 export default function Home() {
   const [isChatVisible, setIsChatVisible] = useState(() => false);
-  const [initialMessage, setInitialMessage] = useState<string | null>(() => null);
+  const [initialMessage, setInitialMessage] = useState<string | null>(
+    () => null
+  );
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const startChat = useCallback(
-    (finalMessage: string) => {
-      setInitialMessage(finalMessage);
-      setIsChatVisible(true);
+  const startChat = useCallback((finalMessage: string) => {
+    setInitialMessage(finalMessage);
+    setIsChatVisible(true);
 
-      try {
-        posthog.capture("google_cua_submit_message", {
-          message: finalMessage,
-        });
-      } catch (e) {
-        console.error(e);
-      }
-    },
-    []
-  );
+    try {
+      posthog.capture("google_cua_submit_message", {
+        message: finalMessage,
+      });
+    } catch (e) {
+      console.error(e);
+    }
+  }, []);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -118,6 +118,9 @@ export default function Home() {
           ></div>
           {/* Top Navigation */}
           <NavBar />
+
+          {/* Stagehand Banner */}
+          <StagehandBanner />
 
           {/* Main Content */}
           <main className="flex-1 flex flex-col items-center pt-12 md:pt-16 lg:pt-20 pb-16 md:pb-24 lg:pb-32 px-6 z-10">
@@ -191,12 +194,15 @@ export default function Home() {
                     className="p-3 md:p-5 lg:p-6 text-sm md:text-base lg:text-xl text-[#2E191E] border border-[#CAC8C7] hover:border-[#FF3B00] hover:text-[#FF3B00] transition-colors font-ppsupply font-medium text-center overflow-hidden text-ellipsis break-words whitespace-normal md:min-h-[100px] lg:min-h-[120px] flex items-center justify-center backdrop-blur-sm bg-opacity-60 bg-[rgba(245,240,255,0.15)] hover:bg-[rgba(255,59,0,0.05)] rounded-none"
                   >
                     <div className="w-full h-full flex flex-row justify-between items-start px-3 py-2 md:px-4 md:py-3 space-y-3">
-                      <span className="text-left">Review a pull request<br />on Github</span>
+                      <span className="text-left">
+                        Review a pull request
+                        <br />
+                        on Github
+                      </span>
                       <Code className="" size={20} strokeWidth={1.5} />
                     </div>
-                  
                   </motion.button>
-                  
+
                   <motion.button
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -209,8 +215,16 @@ export default function Home() {
                     className="p-3 md:p-5 lg:p-6 text-sm md:text-base lg:text-xl text-[#2E191E] border border-[#CAC8C7] hover:border-[#FF3B00] hover:text-[#FF3B00] transition-colors font-ppsupply font-medium text-center overflow-hidden text-ellipsis break-words whitespace-normal md:min-h-[100px] lg:min-h-[120px] flex items-center justify-center backdrop-blur-sm bg-opacity-60 bg-[rgba(245,240,255,0.15)] hover:bg-[rgba(255,59,0,0.05)] rounded-none"
                   >
                     <div className="w-full h-full flex flex-row justify-between items-start px-3 py-2 md:px-4 md:py-3">
-                      <span className="text-left">Browse Hacker News<br />for trending debates</span>
-                      <MessageCircle size={20} strokeWidth={1.5} className="rounded-none" />
+                      <span className="text-left">
+                        Browse Hacker News
+                        <br />
+                        for trending debates
+                      </span>
+                      <MessageCircle
+                        size={20}
+                        strokeWidth={1.5}
+                        className="rounded-none"
+                      />
                     </div>
                   </motion.button>
                   <motion.button
@@ -225,20 +239,39 @@ export default function Home() {
                     className="p-3 md:p-5 lg:p-6 text-sm md:text-base lg:text-xl text-[#2E191E] border border-[#CAC8C7] hover:border-[#FF3B00] hover:text-[#FF3B00] transition-colors font-ppsupply font-medium text-center overflow-hidden text-ellipsis break-words whitespace-normal md:min-h-[100px] lg:min-h-[120px] flex items-center justify-center backdrop-blur-sm bg-opacity-60 bg-[rgba(245,240,255,0.15)] hover:bg-[rgba(255,59,0,0.05)] rounded-none"
                   >
                     <div className="w-full h-full flex flex-row justify-between items-start px-3 py-2 md:px-4 md:py-3 space-y-3">
-                      <span className="text-left">Play a game of<br />2048</span>
-                      <Grid3x3 size={20} strokeWidth={1.5} className="rounded-none" />
+                      <span className="text-left">
+                        Play a game of
+                        <br />
+                        2048
+                      </span>
+                      <Grid3x3
+                        size={20}
+                        strokeWidth={1.5}
+                        className="rounded-none"
+                      />
                     </div>
                   </motion.button>
                   <motion.button
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.3, delay: 0.7 }}
-                    onClick={() => startChat("Find the current price of Bitcoin and Ethereum.")}
+                    onClick={() =>
+                      startChat(
+                        "Find the current price of Bitcoin and Ethereum."
+                      )
+                    }
                     className="p-3 md:p-5 lg:p-6 text-sm md:text-base lg:text-xl text-[#2E191E] border border-[#CAC8C7] hover:border-[#FF3B00] hover:text-[#FF3B00] transition-colors font-ppsupply font-medium text-center overflow-hidden text-ellipsis break-words whitespace-normal md:min-h-[100px] lg:min-h-[120px] flex items-center justify-center backdrop-blur-sm bg-opacity-60 bg-[rgba(245,240,255,0.15)] hover:bg-[rgba(255,59,0,0.05)] rounded-none"
                   >
                     <div className="w-full h-full flex flex-row justify-between items-start px-3 py-2 md:px-4 md:py-3 space-y-3">
-                      <span className="text-left">Get the latest crypto prices<br /></span>
-                      <Search size={20} strokeWidth={1.5} className="rounded-none" />
+                      <span className="text-left">
+                        Get the latest crypto prices
+                        <br />
+                      </span>
+                      <Search
+                        size={20}
+                        strokeWidth={1.5}
+                        className="rounded-none"
+                      />
                     </div>
                   </motion.button>
                 </div>
