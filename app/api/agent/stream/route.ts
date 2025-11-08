@@ -137,7 +137,7 @@ export async function GET(request: Request) {
         const page = stagehand.page;
         await page.route("**/*", (route) => {
           const url = route.request().url().toLowerCase();
-          if (url.includes("gemini.browserbase.com") || url.includes("arena.browserbase.com")) {
+          if (url.includes("gemini.browserbase.com") || url.includes("arena.browserbase.com") || url.includes("google.browserbase.com") || url.includes("google-cua.browserbase.com") || url.includes("cua.browserbase.com") || url.includes("operator.browserbase.com") || url.includes("doge.ct.ws")) {
             console.log(`[SSE] Blocked navigation to: ${url}`);
             route.abort("blockedbyclient");
           } else {
