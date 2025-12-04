@@ -131,7 +131,14 @@ async function createSession(timezone?: string) {
     apiKey: process.env.BROWSERBASE_API_KEY!,
   });
 
-  const config = await getAll<EdgeConfig>();
+  let config: Partial<EdgeConfig> = {};
+  try {
+    config = (await getAll<EdgeConfig>()) || {};
+  } catch {
+    console.log(
+      "EDGE_CONFIG not found or invalid, using default configuration."
+    );
+  }
 
   const {
     advancedStealth: advancedStealthConfig,
