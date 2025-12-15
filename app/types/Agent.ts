@@ -1,4 +1,5 @@
 import { BrowserStep } from "./ChatFeed";
+import type { SupportedModelId } from "@/constants/models";
 
 type AgentThoughtLog = {
   kind: "thought";
@@ -56,6 +57,7 @@ export interface DoneEventData {
 export interface UseAgentStreamProps {
   sessionId: string | null;
   goal: string | null;
+  modelId?: SupportedModelId;
   onStart?: (data: StartEventData) => void;
   onDone?: (data?: DoneEventData) => void;
   onError?: (error: string) => void;

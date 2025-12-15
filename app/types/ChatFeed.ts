@@ -1,8 +1,11 @@
+import type { SupportedModelId } from "@/constants/models";
+
 export interface ChatFeedProps {
-    initialMessage: string | null;
-    onClose: () => void;
-    url?: string;
-  }
+  initialMessage: string | null;
+  onClose: () => void;
+  url?: string;
+  modelId?: SupportedModelId;
+}
   
 export interface BrowserStep {
     text: string;

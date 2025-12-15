@@ -16,10 +16,12 @@ import ChatMessagesList from "@/app/components/chat/ChatMessagesList";
 import ChatInput from "@/app/components/chat/ChatInput";
 import { useAgentStream } from "@/app/hooks/useAgentStream";
 import { ChatFeedProps, AgentState, BrowserStep } from "@/app/types/ChatFeed";
+import { DEFAULT_MODEL_ID } from "@/constants/models";
 
 export default function ChatFeed({
   initialMessage,
   onClose,
+  modelId,
 }: ChatFeedProps) {
   const renderCount = useRef(0);
   renderCount.current++;
@@ -158,13 +160,14 @@ export default function ChatFeed({
     posthog.capture("google_cua_start", {
       goal: initialMessage,
       sessionId: data.sessionId,
+      model: data.model ?? modelId ?? DEFAULT_MODEL_ID,
     });
     setHasEnded(false);
     setUiState((prev) => ({
       ...prev,
       sessionId: data.sessionId,
     }));
-  }, [initialMessage]);
+  }, [initialMessage, modelId]);
 
   const handleDone = useCallback((payload?: unknown) => {
     console.log("Agent completed with payload:", payload);
@@ -195,6 +198,7 @@ export default function ChatFeed({
   } = useAgentStream({
     sessionId: null,
     goal: initialMessage,
+    modelId: modelId ?? DEFAULT_MODEL_ID,
     onStart: handleStart,
     onDone: handleDone,
     onError: handleError,
@@ -294,6 +298,7 @@ export default function ChatFeed({
                 sessionTime={sessionTime}
                 onStop={handleDone}
                 onRestart={onClose}
+                modelId={modelId ?? undefined}
               />
 
               {!agentFinished && (

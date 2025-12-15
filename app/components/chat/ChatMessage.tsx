@@ -16,7 +16,8 @@ export default function ChatMessage({ step }: ChatMessageProps) {
   const isCompletionMessage = step.tool === "MESSAGE" && step.reasoning === "Task execution completed";
   const isPreemptive = step.tool === "MESSAGE" && !isUserInput && !isCompletionMessage;
 
-  if (isPreemptive && !step.reasoning?.length) return null;
+  // Only hide if there's no reasoning AND no text content
+  if (isPreemptive && !step.reasoning?.length && !step.text?.length) return null;
 
   return (
     <motion.div

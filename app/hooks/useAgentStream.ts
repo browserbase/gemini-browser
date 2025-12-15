@@ -23,6 +23,7 @@ const sessionCreationPromises = new Map<
 export function useAgentStream({
   sessionId,
   goal,
+  modelId,
   onStart,
   onDone,
   onError,
@@ -213,6 +214,7 @@ export function useAgentStream({
       const params = new URLSearchParams({
         sessionId: currentSessionId!,
         goal,
+        ...(modelId && { model: modelId }),
       });
 
       const es = new EventSource(`/api/agent/stream?${params.toString()}`);
@@ -479,7 +481,7 @@ export function useAgentStream({
         eventSourceRef.current.close();
       }
     };
-  }, [sessionId, goal, parseLog, isEmptyObject]);
+  }, [sessionId, goal, modelId, parseLog, isEmptyObject]);
 
   return {
     ...state,

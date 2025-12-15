@@ -8,6 +8,12 @@ import ChatFeed from "./components/ChatFeed";
 import NavBar from "./components/NavBar";
 import StagehandBanner from "./components/StagehandBanner";
 import { Code, MessageCircle, Search, Grid3x3 } from "lucide-react";
+import {
+  DEFAULT_MODEL_ID,
+  SUPPORTED_MODELS,
+  type SupportedModelId,
+  getSupportedModelById,
+} from "@/constants/models";
 
 const Tooltip = ({
   children,
@@ -52,20 +58,28 @@ export default function Home() {
   const [initialMessage, setInitialMessage] = useState<string | null>(
     () => null
   );
+  const [selectedModelId, setSelectedModelId] = useState<SupportedModelId>(
+    () => DEFAULT_MODEL_ID
+  );
+  const [chatModelId, setChatModelId] = useState<SupportedModelId>(
+    () => DEFAULT_MODEL_ID
+  );
   const inputRef = useRef<HTMLInputElement>(null);
 
   const startChat = useCallback((finalMessage: string) => {
     setInitialMessage(finalMessage);
+    setChatModelId(selectedModelId);
     setIsChatVisible(true);
 
     try {
       posthog.capture("google_cua_submit_message", {
         message: finalMessage,
+        model: selectedModelId,
       });
     } catch (e) {
       console.error(e);
     }
-  }, []);
+  }, [selectedModelId]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -145,7 +159,7 @@ export default function Home() {
                     Gemini Browser
                   </h1>
                   <p className="text-base md:text-lg font-ppsupply text-gray-500 text-center">
-                    Hit run to watch AI browse the web.
+                    Choose a model and hit run to watch AI browse the web.
                   </p>
                 </div>
 
@@ -179,6 +193,28 @@ export default function Home() {
                     <div className="absolute inset-y-0 right-0 flex items-center pr-3">
                       <AnimatedButton type="submit">Run</AnimatedButton>
                     </div>
+                  </div>
+
+                  <div className="w-full flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                    <label className="flex items-center gap-2 text-xs md:text-sm font-ppsupply text-gray-500">
+                      <span>Model</span>
+                      <select
+                        value={selectedModelId}
+                        onChange={(e) =>
+                          setSelectedModelId(e.target.value as SupportedModelId)
+                        }
+                        className="px-3 py-2 border border-[#CAC8C7] bg-white text-gray-900 font-ppsupply text-xs md:text-sm focus:outline-none focus:ring-0 focus:border-[#FF3B00] transition-colors rounded-none"
+                      >
+                        {SUPPORTED_MODELS.map((m) => (
+                          <option key={m.id} value={m.id}>
+                            {m.label} — {m.description}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                    <span className="text-xs font-ppsupply text-gray-400">
+                      {getSupportedModelById(selectedModelId).id}
+                    </span>
                   </div>
                 </form>
                 <div className="grid grid-cols-2 gap-3 md:gap-4 lg:gap-5 w-full">
@@ -280,12 +316,6 @@ export default function Home() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.4, delay: 1.0 }}
                   className="text-center text-xs text-gray-500"
-                  onAnimationComplete={() => {
-                    // Focus the input field after the last animation completes
-                    setTimeout(() => {
-                      inputRef.current?.focus();
-                    }, 100);
-                  }}
                 >
                   <p>Or type your own request</p>
                 </motion.div>
@@ -333,8 +363,9 @@ export default function Home() {
         </div>
       ) : (
         <ChatFeed
-          key={`chat-feed-${initialMessage}`}
+          key={`chat-feed-${initialMessage}-${chatModelId}`}
           initialMessage={initialMessage}
+          modelId={chatModelId}
           onClose={() => setIsChatVisible(false)}
         />
       )}

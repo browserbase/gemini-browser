@@ -98,5 +98,3 @@ export function createStagehandUserLogger(
     getLastReasoning: () => lastReasoningMessage
   });
 }
-
-

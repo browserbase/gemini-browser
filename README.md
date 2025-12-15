@@ -1,12 +1,13 @@
-# Gemini CUA Browser
+# Gemini Browser
 
 [Demo](https://gemini.browserbase.com)
 
-A powerful browser automation playground powered by Gemini's new Computer Use Agent and Browserbase. This free demo showcases the capabilities of AI-driven browser automation using Stagehand and Gemini's computer-use capabilities.
+A browser automation playground powered by Gemini + Browserbase. This demo lets you switch between **Gemini 2.5 Computer Use (CUA)** and **Gemini 3 Flash**.
 
 ## Features
 
-- 🤖 **Gemini Computer Use Agent**: Leverages Gemini's `computer-use-preview-10-2025` model for intelligent web interactions
+- 🤖 **Model switcher**: Choose between **Gemini 2.5 Computer Use (CUA)** and **Gemini 3 Flash** (`google/fiercefalcon`, non‑CUA)
+- 🖱️ **Gemini Computer Use Agent**: Uses Gemini's `computer-use-preview-10-2025` model for computer-use browsing
 - 🌐 **Real Browser Control**: Runs on browsers via Browserbase's infrastructure
 - 🎯 **Natural Language Commands**: Describe tasks in plain English and watch the AI execute them
 - 📊 **Real-time Streaming**: Server-Sent Events (SSE) for live agent feedback and progress updates
@@ -22,7 +23,7 @@ A powerful browser automation playground powered by Gemini's new Computer Use Ag
 - **Markdown**: ReactMarkdown with GitHub Flavored Markdown (remark-gfm)
 
 ### Backend
-- **AI Model**: Gemini Computer Use (`computer-use-preview-10-2025`)
+- **AI Model**: Gemini 2.5 Computer Use (CUA) or Gemini 3 Flash (`google/fiercefalcon`)
 - **Browser Automation**: Browserbase + Stagehand
 - **Agent Framework**: Stagehand with Playwright Core
 - **Streaming**: Server-Sent Events (SSE) 
@@ -38,7 +39,7 @@ A powerful browser automation playground powered by Gemini's new Computer Use Ag
 - Node.js 18.x or later
 - pnpm 10.x or later (recommended)
 - API keys:
-  - [Google AI Studio](https://aistudio.google.com/apikey) - for Computer Use Agent
+  - [Google AI Studio](https://aistudio.google.com/apikey) - for Gemini models
   - [Browserbase](https://www.browserbase.com) - for browser infrastructure
 
 ## Getting Started
