@@ -78,7 +78,7 @@ export function useAgentStream({
     if (execMatch) {
       return { kind: "summary", step: parseInt(execMatch[1], 10), text: "" };
     }
-    // Function call lines, optionally without args, and possibly multi-line JSON
+    // Function call lines, optionally without args, and possibly multi-line JSON (Gemini 2.5 CUA)
     const fnMatch = raw.match(
       /^Found function call:\s*([A-Za-z0-9_]+)(?:\s+with args:\s*([\s\S]+))?$/i
     );
@@ -99,6 +99,34 @@ export function useAgentStream({
         args,
       };
     }
+
+    // ======== Gemini 3 Flash (v3 agent) log patterns ========
+    // Tool call: "🔧 Using tool: act", "🔧 Using tool: goto", etc.
+    const v3ToolMatch = raw.match(/^🔧\s*Using tool:\s*(\w+)/i);
+    if (v3ToolMatch) {
+      // Each v3 tool call is a new step
+      stepCounterRef.current += 1;
+      return {
+        kind: "action",
+        step: stepCounterRef.current,
+        tool: v3ToolMatch[1],
+        args: {},
+      };
+    }
+
+    // Step finished: "✓ Step finished: tool-calls", "✓ Step finished: stop"
+    // For v3 agent, we use a special "v3_step_finished" kind to avoid 
+    // the summary handler resetting stepCounterRef
+    const v3StepFinishedMatch = raw.match(/^✓\s*Step finished:\s*(\S+)/i);
+    if (v3StepFinishedMatch) {
+      const finishType = v3StepFinishedMatch[1];
+      return {
+        kind: "v3_step_finished" as const,
+        step: stepCounterRef.current,
+        text: finishType === "stop" ? "Task completed" : "",
+      };
+    }
+
     return null;
   }, []);
 
@@ -383,6 +411,23 @@ export function useAgentStream({
                 invokedTools: Array.from(nextInvoked),
                 steps: updated,
               };
+            }
+
+            // Handle v3 step finished events - update existing step text without resetting counter
+            if (parsed.kind === "v3_step_finished") {
+              const trimmedText = (parsed.text || "").trim();
+              if (!trimmedText) {
+                // No text to add, just return with updated logs
+                return { ...prev, logs: newLogs };
+              }
+              // Update the last step with the finished text (e.g., "Task completed")
+              if (prev.steps.length > 0) {
+                const updated = prev.steps.map((s, idx, arr) =>
+                  idx === arr.length - 1 ? { ...s, text: trimmedText } : s
+                );
+                return { ...prev, logs: newLogs, steps: updated };
+              }
+              return { ...prev, logs: newLogs };
             }
 
             return { ...prev, logs: newLogs };

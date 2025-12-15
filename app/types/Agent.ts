@@ -19,7 +19,14 @@ type AgentActionLog = {
   args: unknown;
 };
 
-export type AgentLog = AgentThoughtLog | AgentSummaryLog | AgentActionLog;
+// Gemini 3 Flash (v3 agent) step finished event - doesn't reset step counter
+type AgentV3StepFinishedLog = {
+  kind: "v3_step_finished";
+  step: number;
+  text: string;
+};
+
+export type AgentLog = AgentThoughtLog | AgentSummaryLog | AgentActionLog | AgentV3StepFinishedLog;
 
 export interface LogEvent {
   timestamp?: string;

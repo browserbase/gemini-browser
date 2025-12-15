@@ -147,21 +147,24 @@ async function createSession(timezone?: string) {
     console.log("Edge config not available, using default settings");
   }
 
-  const advancedStealth: boolean = advancedStealthConfig ?? true;
+  // Disable advancedStealth by default - it restricts viewport to fingerprint-valid
+  // resolutions, but Gemini CUA requires 1288x711 for accurate coordinates
+  const advancedStealth: boolean = advancedStealthConfig ?? false;
   const proxies: boolean = proxiesConfig ?? true;
 
   // Build browserSettings conditionally
+  // Note: Viewport must be 1288x711 for Gemini CUA coordinate accuracy
+  // This resolution is not compatible with advancedStealth fingerprinting
   const browserSettings: Browserbase.Sessions.SessionCreateParams.BrowserSettings =
     {
       viewport: {
-        width: 2560,
-        height: 1440,
+        width: 1288,
+        height: 711,
       },
       blockAds: true,
-      advancedStealth,
-      // Only set os if advancedStealth is true
       ...(advancedStealth
         ? {
+            advancedStealth: true,
             os: "windows",
           }
         : {
