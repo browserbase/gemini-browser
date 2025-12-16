@@ -311,7 +311,7 @@ const BrowserSessionContainer: React.FC<BrowserSessionContainerProps> = ({
           <div className="h-[42px] mt-4 hidden md:block">
             {!isCompleted && sessionUrl && (
               <motion.div
-                className="w-full flex justify-center items-center space-x-1 text-sm text-[#2E191E]"
+                className="w-full flex items-center text-sm text-[#2E191E]"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{
@@ -322,7 +322,18 @@ const BrowserSessionContainer: React.FC<BrowserSessionContainerProps> = ({
                   damping: 25,
                 }}
               >
+                <div className="flex-1" />
                 <SessionControls sessionTime={sessionTime} onStop={onStop} />
+                <div className="flex-1 flex justify-end">
+                  {modelId && modelLabel && (
+                    <span
+                      className="text-sm text-gray-400 font-ppsupply max-w-[200px] truncate cursor-default"
+                      title={modelId}
+                    >
+                      {modelLabel}
+                    </span>
+                  )}
+                </div>
               </motion.div>
             )}
           </div>

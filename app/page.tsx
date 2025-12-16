@@ -12,7 +12,6 @@ import {
   DEFAULT_MODEL_ID,
   SUPPORTED_MODELS,
   type SupportedModelId,
-  getSupportedModelById,
 } from "@/constants/models";
 
 const Tooltip = ({
@@ -153,12 +152,37 @@ export default function Home() {
                 </div>
               </div>
 
-              <div className="p-8 md:p-10 lg:p-12 flex flex-col items-center gap-8 md:gap-10">
-                <div className="flex flex-col items-center gap-3 md:gap-5">
-                  <h1 className="text-2xl md:text-3xl lg:text-4xl font-ppneue text-gray-900 text-center">
-                    Gemini Browser
-                  </h1>
-                  <p className="text-base md:text-lg font-ppsupply text-gray-500 text-center">
+              <div className="p-8 md:p-10 lg:p-12 flex flex-col gap-8 md:gap-10">
+                {/* Header with title and model toggle */}
+                <div className="flex flex-col gap-6">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <h1 className="text-2xl md:text-3xl lg:text-4xl font-ppneue text-gray-900">
+                      Gemini Browser
+                    </h1>
+                    {/* Model Toggle */}
+                    <div className="flex flex-col items-end gap-2">
+                      <div className="flex border border-[#1a1a1a]">
+                        {SUPPORTED_MODELS.map((model) => (
+                          <button
+                            key={model.id}
+                            type="button"
+                            onClick={() => setSelectedModelId(model.id)}
+                            className={`px-4 py-2.5 text-sm font-ppsupply font-medium transition-all duration-200 ${
+                              selectedModelId === model.id
+                                ? "bg-[#F5A623] text-[#1a1a1a]"
+                                : "bg-[#F5F5F0] text-[#1a1a1a] hover:bg-[#EAEAE5]"
+                            }`}
+                          >
+                            {model.label.replace("Gemini ", "")}
+                          </button>
+                        ))}
+                      </div>
+                      <span className="text-xs font-ppsupply text-gray-400">
+                        {selectedModelId}
+                      </span>
+                    </div>
+                  </div>
+                  <p className="text-base md:text-lg font-ppsupply text-gray-500">
                     Choose a model and hit run to watch AI browse the web.
                   </p>
                 </div>
@@ -174,7 +198,7 @@ export default function Home() {
                     const finalMessage = message || input.placeholder;
                     startChat(finalMessage);
                   }}
-                  className="w-full max-w-[720px] md:max-w-[880px] lg:max-w-[1040px] flex flex-col items-center gap-3 md:gap-5"
+                  className="w-full flex flex-col gap-3 md:gap-5"
                 >
                   <div className="relative w-full">
                     <input
@@ -193,28 +217,6 @@ export default function Home() {
                     <div className="absolute inset-y-0 right-0 flex items-center pr-3">
                       <AnimatedButton type="submit">Run</AnimatedButton>
                     </div>
-                  </div>
-
-                  <div className="w-full flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                    <label className="flex items-center gap-2 text-xs md:text-sm font-ppsupply text-gray-500">
-                      <span>Model</span>
-                      <select
-                        value={selectedModelId}
-                        onChange={(e) =>
-                          setSelectedModelId(e.target.value as SupportedModelId)
-                        }
-                        className="px-3 py-2 border border-[#CAC8C7] bg-white text-gray-900 font-ppsupply text-xs md:text-sm focus:outline-none focus:ring-0 focus:border-[#FF3B00] transition-colors rounded-none"
-                      >
-                        {SUPPORTED_MODELS.map((m) => (
-                          <option key={m.id} value={m.id}>
-                            {m.label} — {m.description}
-                          </option>
-                        ))}
-                      </select>
-                    </label>
-                    <span className="text-xs font-ppsupply text-gray-400">
-                      {getSupportedModelById(selectedModelId).id}
-                    </span>
                   </div>
                 </form>
                 <div className="grid grid-cols-2 gap-3 md:gap-4 lg:gap-5 w-full">
