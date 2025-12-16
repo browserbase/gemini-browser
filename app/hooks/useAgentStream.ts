@@ -70,15 +70,44 @@ export function useAgentStream({
     }));
   }, []);
 
-  const parseLog = useCallback((raw: string): AgentLog | null => {
-    if (raw.startsWith("💭 ")) {
-      return { kind: "thought", text: raw.slice(2).trim() };
+  // Parse auxiliary data from Stagehand LogLine
+  const parseAuxiliaryArgs = useCallback((auxiliary: LogEvent["auxiliary"]): unknown => {
+    if (!auxiliary?.arguments) return {};
+    
+    const argValue = auxiliary.arguments.value;
+    const argType = auxiliary.arguments.type;
+    
+    if (argType === "object") {
+      try {
+        return JSON.parse(argValue);
+      } catch {
+        return { value: argValue };
+      }
+    } else if (argType === "string") {
+      // For tools like 'act', the value is the action string directly
+      return { action: argValue };
+    } else {
+      return { value: argValue };
     }
+  }, []);
+
+  const parseLog = useCallback((logEvent: LogEvent): AgentLog | null => {
+    const raw = logEvent.message;
+    const auxiliary = logEvent.auxiliary;
+    
+    // ======== Reasoning patterns ========
+    // Raw: "Reasoning: I need to..." 
+    if (/^reasoning:/i.test(raw)) {
+      return { kind: "thought", text: raw.replace(/^reasoning:\s*/i, "").trim() };
+    }
+    
+    // ======== Gemini 2.5 CUA patterns ========
     const execMatch = raw.match(/^Executing step\s+(\d+)/i);
     if (execMatch) {
       return { kind: "summary", step: parseInt(execMatch[1], 10), text: "" };
     }
-    // Function call lines, optionally without args, and possibly multi-line JSON (Gemini 2.5 CUA)
+    
+    // Function call lines (CUA format): "Found function call: toolName with args: {...}"
     const fnMatch = raw.match(
       /^Found function call:\s*([A-Za-z0-9_]+)(?:\s+with args:\s*([\s\S]+))?$/i
     );
@@ -89,7 +118,7 @@ export function useAgentStream({
         try {
           args = JSON.parse(jsonText);
         } catch {
-          args = jsonText; // keep raw if not valid JSON
+          args = jsonText;
         }
       }
       return {
@@ -100,24 +129,23 @@ export function useAgentStream({
       };
     }
 
-    // ======== Gemini 3 Flash (v3 agent) log patterns ========
-    // Tool call: "🔧 Using tool: act", "🔧 Using tool: goto", etc.
-    const v3ToolMatch = raw.match(/^🔧\s*Using tool:\s*(\w+)/i);
+    // ======== Gemini 3 Flash (v3 agent) patterns ========
+    // Raw format: "Agent calling tool: act", "Agent calling tool: goto", etc.
+    const v3ToolMatch = raw.match(/^Agent\s+calling\s+tool:\s*(\w+)/i);
     if (v3ToolMatch) {
-      // Each v3 tool call is a new step
       stepCounterRef.current += 1;
+      const args = parseAuxiliaryArgs(auxiliary);
+      
       return {
         kind: "action",
         step: stepCounterRef.current,
         tool: v3ToolMatch[1],
-        args: {},
+        args,
       };
     }
 
-    // Step finished: "✓ Step finished: tool-calls", "✓ Step finished: stop"
-    // For v3 agent, we use a special "v3_step_finished" kind to avoid 
-    // the summary handler resetting stepCounterRef
-    const v3StepFinishedMatch = raw.match(/^✓\s*Step finished:\s*(\S+)/i);
+    // Raw format: "Step finished: tool-calls", "Step finished: stop"
+    const v3StepFinishedMatch = raw.match(/^Step\s+finished:\s*(\S+)/i);
     if (v3StepFinishedMatch) {
       const finishType = v3StepFinishedMatch[1];
       return {
@@ -128,7 +156,7 @@ export function useAgentStream({
     }
 
     return null;
-  }, []);
+  }, [parseAuxiliaryArgs]);
 
   const isPlainObject = useCallback(
     (v: unknown) => typeof v === "object" && v !== null && !Array.isArray(v),
@@ -268,7 +296,7 @@ export function useAgentStream({
         if (cancelled) return;
         try {
           const payload = JSON.parse((e as MessageEvent).data) as LogEvent;
-          const parsed = parseLog(payload.message);
+          const parsed = parseLog(payload);
 
           setState((prev) => {
             const newLogs = [...prev.logs, payload];

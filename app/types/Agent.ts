@@ -28,11 +28,19 @@ type AgentV3StepFinishedLog = {
 
 export type AgentLog = AgentThoughtLog | AgentSummaryLog | AgentActionLog | AgentV3StepFinishedLog;
 
+export interface LogEventAuxiliary {
+  [key: string]: {
+    value: string;
+    type: "object" | "string" | "html" | "integer" | "float" | "boolean";
+  };
+}
+
 export interface LogEvent {
   timestamp?: string;
   level?: number;
   category?: string;
   message: string;
+  auxiliary?: LogEventAuxiliary;
 }
 
 export interface AgentStreamState {

@@ -122,7 +122,7 @@ export async function GET(request: Request) {
         modelId: selectedModel.id,
         hasInstructions: true,
       });
-      const logger = createStagehandUserLogger(send, { forwardStepEvents: false });
+      const logger = createStagehandUserLogger(send);
 
       const stagehand = new Stagehand({
         env: "BROWSERBASE",
