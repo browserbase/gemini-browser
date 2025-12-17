@@ -17,9 +17,9 @@ type AgentActionLog = {
   step: number;
   tool: string;
   args: unknown;
+  instruction?: string;
 };
 
-// Gemini 3 Flash (v3 agent) step finished event - doesn't reset step counter
 type AgentV3StepFinishedLog = {
   kind: "v3_step_finished";
   step: number;

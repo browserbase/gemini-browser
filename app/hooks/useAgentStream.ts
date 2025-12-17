@@ -70,44 +70,40 @@ export function useAgentStream({
     }));
   }, []);
 
-  // Parse auxiliary data from Stagehand LogLine
-  const parseAuxiliaryArgs = useCallback((auxiliary: LogEvent["auxiliary"]): unknown => {
-    if (!auxiliary?.arguments) return {};
+  const parseAuxiliaryArgs = useCallback((auxiliary: LogEvent["auxiliary"]): { args: unknown; instruction: string } => {
+    if (!auxiliary?.arguments) return { args: {}, instruction: "" };
     
     const argValue = auxiliary.arguments.value;
     const argType = auxiliary.arguments.type;
     
     if (argType === "object") {
       try {
-        return JSON.parse(argValue);
+        const parsed = JSON.parse(argValue);
+        const instruction = parsed.url || parsed.selector || parsed.text || "";
+        return { args: parsed, instruction };
       } catch {
-        return { value: argValue };
+        return { args: { value: argValue }, instruction: argValue };
       }
     } else if (argType === "string") {
-      // For tools like 'act', the value is the action string directly
-      return { action: argValue };
+      return { args: { action: argValue }, instruction: argValue };
     } else {
-      return { value: argValue };
+      return { args: { value: argValue }, instruction: String(argValue) };
     }
   }, []);
 
   const parseLog = useCallback((logEvent: LogEvent): AgentLog | null => {
     const raw = logEvent.message;
     const auxiliary = logEvent.auxiliary;
-    
-    // ======== Reasoning patterns ========
-    // Raw: "Reasoning: I need to..." 
+
     if (/^reasoning:/i.test(raw)) {
       return { kind: "thought", text: raw.replace(/^reasoning:\s*/i, "").trim() };
     }
-    
-    // ======== Gemini 2.5 CUA patterns ========
+
     const execMatch = raw.match(/^Executing step\s+(\d+)/i);
     if (execMatch) {
       return { kind: "summary", step: parseInt(execMatch[1], 10), text: "" };
     }
-    
-    // Function call lines (CUA format): "Found function call: toolName with args: {...}"
+
     const fnMatch = raw.match(
       /^Found function call:\s*([A-Za-z0-9_]+)(?:\s+with args:\s*([\s\S]+))?$/i
     );
@@ -129,22 +125,19 @@ export function useAgentStream({
       };
     }
 
-    // ======== Gemini 3 Flash (v3 agent) patterns ========
-    // Raw format: "Agent calling tool: act", "Agent calling tool: goto", etc.
     const v3ToolMatch = raw.match(/^Agent\s+calling\s+tool:\s*(\w+)/i);
     if (v3ToolMatch) {
       stepCounterRef.current += 1;
-      const args = parseAuxiliaryArgs(auxiliary);
-      
+      const { args, instruction } = parseAuxiliaryArgs(auxiliary);
       return {
         kind: "action",
         step: stepCounterRef.current,
         tool: v3ToolMatch[1],
         args,
+        instruction,
       };
     }
 
-    // Raw format: "Step finished: tool-calls", "Step finished: stop"
     const v3StepFinishedMatch = raw.match(/^Step\s+finished:\s*(\S+)/i);
     if (v3StepFinishedMatch) {
       const finishType = v3StepFinishedMatch[1];
@@ -383,6 +376,7 @@ export function useAgentStream({
             if (parsed.kind === "action") {
               const toolName = parsed.tool;
               const tool: BrowserStep["tool"] = toolName;
+              const actionInstruction = parsed.instruction || "";
 
               // Track invoked tool names (dedupe)
               const nextInvoked = new Set(prev.invokedTools);
@@ -410,7 +404,7 @@ export function useAgentStream({
                     JSON.stringify(s.actionArgs) ===
                     JSON.stringify(parsed.args);
                   if (sameTool && sameArgs) return s;
-                  return { ...s, tool, actionArgs: parsed.args };
+                  return { ...s, tool, actionArgs: parsed.args, instruction: actionInstruction };
                 }
               );
               // If there is no step to attach to, create one
@@ -423,7 +417,7 @@ export function useAgentStream({
                   text: "",
                   reasoning: "",
                   tool,
-                  instruction: "",
+                  instruction: actionInstruction,
                   actionArgs: parsed.args,
                 };
                 return {
@@ -441,14 +435,11 @@ export function useAgentStream({
               };
             }
 
-            // Handle v3 step finished events - update existing step text without resetting counter
             if (parsed.kind === "v3_step_finished") {
               const trimmedText = (parsed.text || "").trim();
               if (!trimmedText) {
-                // No text to add, just return with updated logs
                 return { ...prev, logs: newLogs };
               }
-              // Update the last step with the finished text (e.g., "Task completed")
               if (prev.steps.length > 0) {
                 const updated = prev.steps.map((s, idx, arr) =>
                   idx === arr.length - 1 ? { ...s, text: trimmedText } : s
