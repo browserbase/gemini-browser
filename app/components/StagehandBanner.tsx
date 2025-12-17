@@ -33,7 +33,7 @@ export default function StagehandBanner() {
 
         <div className="hidden sm:block text-white/80">•</div>
 
-        <div className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm">
+        <div className="flex items-center gap-1 sm:gap-2 text-sm sm:text-base">
           <span className="text-white/90">Get started with the</span>
           <a
             href="https://www.browserbase.com/templates/gemini-3-flash"
