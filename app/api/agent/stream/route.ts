@@ -125,6 +125,10 @@ export async function GET(request: Request) {
       const logger = createStagehandUserLogger(send);
 
       const stagehand = new Stagehand({
+        model: {
+          modelName: selectedModel.id,
+          apiKey: process.env.GOOGLE_API_KEY,
+        },
         env: "BROWSERBASE",
         browserbaseSessionID: sessionId,
         browserbaseSessionCreateParams: {
