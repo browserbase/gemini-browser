@@ -36,12 +36,12 @@ export default function StagehandBanner() {
         <div className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm">
           <span className="text-white/90">Get started with the</span>
           <a
-            href="https://www.browserbase.com/templates/gemini-cua"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="underline hover:no-underline font-semibold transition-all duration-200 hover:text-yellow-200"
-          >
-            Gemini CUA template
+            href="https://www.browserbase.com/templates/gemini-3-flash"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline hover:no-underline font-semibold transition-all duration-200 hover:text-yellow-200"
+            >
+              Gemini 3 Flash template
           </a>
         </div>
 
