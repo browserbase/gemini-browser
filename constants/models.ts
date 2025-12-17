@@ -1,6 +1,6 @@
 export type SupportedModelId =
   | "google/gemini-2.5-computer-use-preview-10-2025"
-  | "google/fiercefalcon";
+  | "google/gemini-3-flash-preview";
 
 export type SupportedModel = {
   id: SupportedModelId;
@@ -17,7 +17,7 @@ export const SUPPORTED_MODELS: SupportedModel[] = [
     cua: true,
   },
   {
-    id: "google/fiercefalcon",
+    id: "google/gemini-3-flash-preview",
     label: "Gemini 3 Flash",
     description: "Non‑CUA (Stagehand tools)",
     cua: false,

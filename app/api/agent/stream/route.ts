@@ -98,8 +98,8 @@ export async function GET(request: Request) {
         if (modelParam === "gemini-2.5-computer-use-preview-10-2025") {
           return DEFAULT_MODEL_ID;
         }
-        if (modelParam === "fiercefalcon") {
-          return "google/fiercefalcon";
+        if (modelParam === "gemini-3-flash-preview") {
+          return "google/gemini-3-flash-preview";
         }
         return null;
       })();

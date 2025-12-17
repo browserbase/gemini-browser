@@ -6,7 +6,7 @@ A browser automation playground powered by Gemini + Browserbase. This demo lets 
 
 ## Features
 
-- 🤖 **Model switcher**: Choose between **Gemini 2.5 Computer Use (CUA)** and **Gemini 3 Flash** (`google/fiercefalcon`, non‑CUA)
+- 🤖 **Model switcher**: Choose between **Gemini 2.5 Computer Use (CUA)** and **Gemini 3 Flash** (`google/gemini-3-flash-preview`, non‑CUA)
 - 🖱️ **Gemini Computer Use Agent**: Uses Gemini's `computer-use-preview-10-2025` model for computer-use browsing
 - 🌐 **Real Browser Control**: Runs on browsers via Browserbase's infrastructure
 - 🎯 **Natural Language Commands**: Describe tasks in plain English and watch the AI execute them
@@ -23,7 +23,7 @@ A browser automation playground powered by Gemini + Browserbase. This demo lets 
 - **Markdown**: ReactMarkdown with GitHub Flavored Markdown (remark-gfm)
 
 ### Backend
-- **AI Model**: Gemini 2.5 Computer Use (CUA) or Gemini 3 Flash (`google/fiercefalcon`)
+- **AI Model**: Gemini 2.5 Computer Use (CUA) or Gemini 3 Flash (`google/gemini-3-flash-preview`)
 - **Browser Automation**: Browserbase + Stagehand
 - **Agent Framework**: Stagehand with Playwright Core
 - **Streaming**: Server-Sent Events (SSE) 
