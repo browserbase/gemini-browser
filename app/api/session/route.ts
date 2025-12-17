@@ -158,14 +158,7 @@ async function createSession(timezone?: string) {
       },
       blockAds: true,
       solveCaptchas: true,
-      ...(advancedStealth
-        ? {
-            advancedStealth: true,
-            os: "windows",
-          }
-        : {
-            os: "linux",
-          }),
+      advancedStealth,
     };
 
   // Use timezone abbreviation to determine base region
