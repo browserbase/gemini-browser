@@ -4,6 +4,10 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { SessionControls } from "@/app/components/SessionControls";
 import { RotateCcwIcon } from "lucide-react";
+import {
+  SupportedModelId,
+  getSupportedModelById,
+} from "@/constants/models";
 
 interface BrowserSessionContainerProps {
   sessionUrl: string | null;
@@ -14,6 +18,7 @@ interface BrowserSessionContainerProps {
   isFromSearchParam?: boolean;
   onStop?: () => void;
   onRestart?: () => void;
+  modelId?: SupportedModelId;
 }
 
 const containerVariants = {
@@ -108,7 +113,9 @@ const BrowserSessionContainer: React.FC<BrowserSessionContainerProps> = ({
   isFromSearchParam = false,
   onStop = () => {},
   onRestart = () => {},
+  modelId,
 }) => {
+  const modelLabel = modelId ? getSupportedModelById(modelId).label : null;
   // Track the animation state of curtains
   const [curtainState, setCurtainState] = useState<
     "closed" | "opening" | "open" | "closing"
@@ -208,9 +215,16 @@ const BrowserSessionContainer: React.FC<BrowserSessionContainerProps> = ({
                 >
                   {/* Simple loading animation that will always show when session URL is not available */}
                   <div className="flex flex-col items-center space-y-6 w-full animate-in fade-in slide-in-from-bottom-5 duration-500">
-                    <h2 className="text-2xl font-semibold text-white z-10 animate-in fade-in duration-700 delay-500">
-                      Starting Gemini Browser
-                    </h2>
+                    <div className="flex flex-col items-center space-y-2">
+                      <h2 className="text-2xl font-semibold text-white z-10 animate-in fade-in duration-700 delay-500">
+                        Starting Gemini Browser
+                      </h2>
+                      {modelLabel && (
+                        <p className="text-sm text-white/70 z-10 animate-in fade-in duration-700 delay-700">
+                          {modelLabel}
+                        </p>
+                      )}
+                    </div>
                     <div className="flex flex-col items-center space-y-4 w-full animate-in fade-in duration-700 delay-500">
                       <div className="mt-4 flex justify-center">
                         <div className=" bg-gray-200 h-16 w-16 animate-pulse"></div>
@@ -278,7 +292,7 @@ const BrowserSessionContainer: React.FC<BrowserSessionContainerProps> = ({
                       }}
                       whileTap={{ scale: 0.98 }}
                     >
-                      Want to try the new model on Browserbase?
+                      Want to run this on Browserbase?
                     </motion.a>
                     <motion.button
                       type="button"
@@ -297,7 +311,7 @@ const BrowserSessionContainer: React.FC<BrowserSessionContainerProps> = ({
           <div className="h-[42px] mt-4 hidden md:block">
             {!isCompleted && sessionUrl && (
               <motion.div
-                className="w-full flex justify-center items-center space-x-1 text-sm text-[#2E191E]"
+                className="w-full flex items-center text-sm text-[#2E191E]"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{
@@ -308,7 +322,18 @@ const BrowserSessionContainer: React.FC<BrowserSessionContainerProps> = ({
                   damping: 25,
                 }}
               >
+                <div className="flex-1" />
                 <SessionControls sessionTime={sessionTime} onStop={onStop} />
+                <div className="flex-1 flex justify-end">
+                  {modelId && modelLabel && (
+                    <span
+                      className="text-sm text-gray-400 font-ppsupply max-w-[200px] truncate cursor-default"
+                      title={modelId}
+                    >
+                      {modelLabel}
+                    </span>
+                  )}
+                </div>
               </motion.div>
             )}
           </div>

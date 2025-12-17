@@ -1,4 +1,5 @@
 import { BrowserStep } from "./ChatFeed";
+import type { SupportedModelId } from "@/constants/models";
 
 type AgentThoughtLog = {
   kind: "thought";
@@ -16,15 +17,30 @@ type AgentActionLog = {
   step: number;
   tool: string;
   args: unknown;
+  instruction?: string;
 };
 
-export type AgentLog = AgentThoughtLog | AgentSummaryLog | AgentActionLog;
+type AgentV3StepFinishedLog = {
+  kind: "v3_step_finished";
+  step: number;
+  text: string;
+};
+
+export type AgentLog = AgentThoughtLog | AgentSummaryLog | AgentActionLog | AgentV3StepFinishedLog;
+
+export interface LogEventAuxiliary {
+  [key: string]: {
+    value: string;
+    type: "object" | "string" | "html" | "integer" | "float" | "boolean";
+  };
+}
 
 export interface LogEvent {
   timestamp?: string;
   level?: number;
   category?: string;
   message: string;
+  auxiliary?: LogEventAuxiliary;
 }
 
 export interface AgentStreamState {
@@ -56,6 +72,7 @@ export interface DoneEventData {
 export interface UseAgentStreamProps {
   sessionId: string | null;
   goal: string | null;
+  modelId?: SupportedModelId;
   onStart?: (data: StartEventData) => void;
   onDone?: (data?: DoneEventData) => void;
   onError?: (error: string) => void;

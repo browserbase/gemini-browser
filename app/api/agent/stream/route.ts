@@ -1,6 +1,12 @@
 import { Stagehand } from "@browserbasehq/stagehand";
 import { createStagehandUserLogger } from "../../agent/logger";
 import { AGENT_INSTRUCTIONS } from "@/constants/prompt";
+import {
+  DEFAULT_MODEL_ID,
+  getSupportedModelById,
+  isSupportedModelId,
+  SUPPORTED_MODELS,
+} from "@/constants/models";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -18,9 +24,10 @@ function sseComment(comment: string): Uint8Array {
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
-  const [sessionId, goal] = [
+  const [sessionId, goal, modelParam] = [
     searchParams.get("sessionId"),
     searchParams.get("goal"),
+    searchParams.get("model"),
   ];
 
   if (!sessionId || !goal) {
@@ -36,13 +43,11 @@ export async function GET(request: Request) {
   let stagehandRef: Stagehand | undefined;
   const stream = new ReadableStream<Uint8Array>({
     start: async (controller) => {
-      let keepAliveTimer: ReturnType<typeof setInterval> | undefined;
-      keepAliveTimer = setInterval(() => {
+      const keepAliveTimer = setInterval(() => {
         safeEnqueue(sseComment("keepalive"));
       }, 15000);
 
-      let timeoutTimer: ReturnType<typeof setTimeout> | undefined;
-      timeoutTimer = setTimeout(async () => {
+      const timeoutTimer = setTimeout(async () => {
         console.log(`[SSE] Timeout reached for session ${sessionId}`);
         send("error", { message: "Agent run timed out after 10 minutes" });
         await cleanup();
@@ -73,11 +78,11 @@ export async function GET(request: Request) {
       const cleanup = async (stagehand?: Stagehand) => {
         if (closed) return;
         closed = true;
-        if (keepAliveTimer) clearInterval(keepAliveTimer);
-        if (timeoutTimer) clearTimeout(timeoutTimer);
+        clearInterval(keepAliveTimer);
+        clearTimeout(timeoutTimer);
         if (viewportLockInterval) clearInterval(viewportLockInterval);
         try {
-          if (stagehand && !stagehand.isClosed) {
+          if (stagehand) {
             await stagehand.close();
           }
         } catch {
@@ -86,33 +91,42 @@ export async function GET(request: Request) {
         controller.close();
       };
 
-      // Keep the connection alive for proxies
-      keepAliveTimer = setInterval(() => {
-        safeEnqueue(sseComment("keepalive"));
-      }, 15000);
+      const resolvedModelId = (() => {
+        if (!modelParam) return DEFAULT_MODEL_ID;
+        if (isSupportedModelId(modelParam)) return modelParam;
+        // Back-compat: older clients may send the raw model name without provider prefix.
+        if (modelParam === "gemini-2.5-computer-use-preview-10-2025") {
+          return DEFAULT_MODEL_ID;
+        }
+        if (modelParam === "gemini-3-flash-preview") {
+          return "google/gemini-3-flash-preview";
+        }
+        return null;
+      })();
 
-      // Hard timeout at 10 minutes
-      timeoutTimer = setTimeout(async () => {
-        console.log(`[SSE] Timeout reached for session ${sessionId}`);
-        send("error", { message: "Agent run timed out after 10 minutes" });
+      if (!resolvedModelId) {
+        send("error", {
+          message: `Unsupported model: ${modelParam}. Supported: ${SUPPORTED_MODELS.map(
+            (m) => m.id
+          ).join(", ")}`,
+        });
         await cleanup();
-      }, 10 * 60 * 1000);
+        return;
+      }
+
+      const selectedModel = getSupportedModelById(resolvedModelId);
 
       console.log(`[SSE] Starting Stagehand agent run`, {
         sessionId,
         goal,
+        modelId: selectedModel.id,
         hasInstructions: true,
       });
-
-      const logger = createStagehandUserLogger(send, { forwardStepEvents: false });
+      const logger = createStagehandUserLogger(send);
 
       const stagehand = new Stagehand({
         env: "BROWSERBASE",
         browserbaseSessionID: sessionId,
-        modelName: "openai/gpt-4o",
-        modelClientOptions: {
-          apiKey: process.env.OPENAI_API_KEY,
-        },
         browserbaseSessionCreateParams: {
           projectId: process.env.BROWSERBASE_PROJECT_ID!,
           proxies: true,
@@ -123,64 +137,66 @@ export async function GET(request: Request) {
             },
           },
         },
-        useAPI: false,
         verbose: 2,
         disablePino: true,
         logger: logger,
+        disableAPI: true,
       });
       stagehandRef = stagehand;
 
       try {
-        const init = await stagehand.init();
-        console.log(`[SSE] Stagehand initialized`, init);
+        await stagehand.init();
+        console.log(`[SSE] Stagehand initialized`, {
+          sessionId: stagehand.browserbaseSessionID,
+          debugUrl: stagehand.browserbaseDebugURL,
+        });
 
-        const page = stagehand.page;
-        await page.route("**/*", (route) => {
-          const url = route.request().url().toLowerCase();
-          if (url.includes("gemini.browserbase.com") || url.includes("arena.browserbase.com") || url.includes("google.browserbase.com") || url.includes("google-cua.browserbase.com") || url.includes("cua.browserbase.com") || url.includes("operator.browserbase.com") || url.includes("doge.ct.ws")) {
-            console.log(`[SSE] Blocked navigation to: ${url}`);
-            route.abort("blockedbyclient");
-          } else {
-            route.continue();
-          }
+        const page = stagehand.context.pages()[0];
+
+        await page.goto("https://www.google.com/", {
+          waitUntil: "domcontentloaded",
         });
 
         send("start", {
           sessionId,
           goal,
-          model: "gemini-2.5-computer-use-preview-10-2025",
-          init,
+          model: selectedModel.id,
+          debugUrl: stagehand.browserbaseDebugURL,
           startedAt: new Date().toISOString(),
         });
 
         const agent = stagehand.agent({
-          provider: "google", 
-          model: "gemini-2.5-computer-use-preview-10-2025",
-          options: {
+          ...(selectedModel.cua ? { cua: true } : {}),
+          model: {
+            modelName: selectedModel.id,
             apiKey: process.env.GOOGLE_API_KEY,
           },
-          instructions: AGENT_INSTRUCTIONS,
+          systemPrompt: `${AGENT_INSTRUCTIONS}\n\nYou are currently on: ${page.url()}`,
         });
 
         const result = await agent.execute({
             instruction: goal,
-            autoScreenshot: true,
-            waitBetweenActions: 200,
             maxSteps: 100,
         });
 
         try {
-        console.log(`[SSE] metrics snapshot`, stagehand.metrics);
-        send("metrics", stagehand.metrics);
+          const metrics = await stagehand.metrics;
+          console.log(`[SSE] metrics snapshot`, metrics);
+          send("metrics", metrics);
         } catch {}
 
-          const finalMessage = logger.getLastReasoning();
-          console.log(`[SSE] done`, {
-            success: result.success,
-            completed: result.completed,
-            finalMessage: finalMessage
-          });
-          send("done", { ...result, finalMessage });
+        const loggerReasoning = logger.getLastReasoning();
+        const resultMessage = (result as { message?: string; output?: string }).message 
+          || (result as { message?: string; output?: string }).output 
+          || null;
+        const finalMessage = loggerReasoning || resultMessage;
+
+        console.log(`[SSE] done`, {
+          success: result.success,
+          completed: result.completed,
+          finalMessage,
+        });
+        send("done", { ...result, finalMessage });
 
         await cleanup(stagehand);
       } catch (error) {
@@ -192,7 +208,7 @@ export async function GET(request: Request) {
     },
     cancel: async () => {
       try {
-        if (stagehandRef && !stagehandRef.isClosed) {
+        if (stagehandRef) {
           await stagehandRef.close();
         }
       } catch {

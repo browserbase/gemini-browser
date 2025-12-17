@@ -23,6 +23,7 @@ const sessionCreationPromises = new Map<
 export function useAgentStream({
   sessionId,
   goal,
+  modelId,
   onStart,
   onDone,
   onError,
@@ -69,15 +70,40 @@ export function useAgentStream({
     }));
   }, []);
 
-  const parseLog = useCallback((raw: string): AgentLog | null => {
-    if (raw.startsWith("💭 ")) {
-      return { kind: "thought", text: raw.slice(2).trim() };
+  const parseAuxiliaryArgs = useCallback((auxiliary: LogEvent["auxiliary"]): { args: unknown; instruction: string } => {
+    if (!auxiliary?.arguments) return { args: {}, instruction: "" };
+    
+    const argValue = auxiliary.arguments.value;
+    const argType = auxiliary.arguments.type;
+    
+    if (argType === "object") {
+      try {
+        const parsed = JSON.parse(argValue);
+        const instruction = parsed.url || parsed.selector || parsed.text || "";
+        return { args: parsed, instruction };
+      } catch {
+        return { args: { value: argValue }, instruction: argValue };
+      }
+    } else if (argType === "string") {
+      return { args: { action: argValue }, instruction: argValue };
+    } else {
+      return { args: { value: argValue }, instruction: String(argValue) };
     }
+  }, []);
+
+  const parseLog = useCallback((logEvent: LogEvent): AgentLog | null => {
+    const raw = logEvent.message;
+    const auxiliary = logEvent.auxiliary;
+
+    if (/^reasoning:/i.test(raw)) {
+      return { kind: "thought", text: raw.replace(/^reasoning:\s*/i, "").trim() };
+    }
+
     const execMatch = raw.match(/^Executing step\s+(\d+)/i);
     if (execMatch) {
       return { kind: "summary", step: parseInt(execMatch[1], 10), text: "" };
     }
-    // Function call lines, optionally without args, and possibly multi-line JSON
+
     const fnMatch = raw.match(
       /^Found function call:\s*([A-Za-z0-9_]+)(?:\s+with args:\s*([\s\S]+))?$/i
     );
@@ -88,7 +114,7 @@ export function useAgentStream({
         try {
           args = JSON.parse(jsonText);
         } catch {
-          args = jsonText; // keep raw if not valid JSON
+          args = jsonText;
         }
       }
       return {
@@ -98,8 +124,32 @@ export function useAgentStream({
         args,
       };
     }
+
+    const v3ToolMatch = raw.match(/^Agent\s+calling\s+tool:\s*(\w+)/i);
+    if (v3ToolMatch) {
+      stepCounterRef.current += 1;
+      const { args, instruction } = parseAuxiliaryArgs(auxiliary);
+      return {
+        kind: "action",
+        step: stepCounterRef.current,
+        tool: v3ToolMatch[1],
+        args,
+        instruction,
+      };
+    }
+
+    const v3StepFinishedMatch = raw.match(/^Step\s+finished:\s*(\S+)/i);
+    if (v3StepFinishedMatch) {
+      const finishType = v3StepFinishedMatch[1];
+      return {
+        kind: "v3_step_finished" as const,
+        step: stepCounterRef.current,
+        text: finishType === "stop" ? "Task completed" : "",
+      };
+    }
+
     return null;
-  }, []);
+  }, [parseAuxiliaryArgs]);
 
   const isPlainObject = useCallback(
     (v: unknown) => typeof v === "object" && v !== null && !Array.isArray(v),
@@ -213,6 +263,7 @@ export function useAgentStream({
       const params = new URLSearchParams({
         sessionId: currentSessionId!,
         goal,
+        ...(modelId && { model: modelId }),
       });
 
       const es = new EventSource(`/api/agent/stream?${params.toString()}`);
@@ -238,7 +289,7 @@ export function useAgentStream({
         if (cancelled) return;
         try {
           const payload = JSON.parse((e as MessageEvent).data) as LogEvent;
-          const parsed = parseLog(payload.message);
+          const parsed = parseLog(payload);
 
           setState((prev) => {
             const newLogs = [...prev.logs, payload];
@@ -325,6 +376,7 @@ export function useAgentStream({
             if (parsed.kind === "action") {
               const toolName = parsed.tool;
               const tool: BrowserStep["tool"] = toolName;
+              const actionInstruction = parsed.instruction || "";
 
               // Track invoked tool names (dedupe)
               const nextInvoked = new Set(prev.invokedTools);
@@ -352,7 +404,7 @@ export function useAgentStream({
                     JSON.stringify(s.actionArgs) ===
                     JSON.stringify(parsed.args);
                   if (sameTool && sameArgs) return s;
-                  return { ...s, tool, actionArgs: parsed.args };
+                  return { ...s, tool, actionArgs: parsed.args, instruction: actionInstruction };
                 }
               );
               // If there is no step to attach to, create one
@@ -365,7 +417,7 @@ export function useAgentStream({
                   text: "",
                   reasoning: "",
                   tool,
-                  instruction: "",
+                  instruction: actionInstruction,
                   actionArgs: parsed.args,
                 };
                 return {
@@ -381,6 +433,20 @@ export function useAgentStream({
                 invokedTools: Array.from(nextInvoked),
                 steps: updated,
               };
+            }
+
+            if (parsed.kind === "v3_step_finished") {
+              const trimmedText = (parsed.text || "").trim();
+              if (!trimmedText) {
+                return { ...prev, logs: newLogs };
+              }
+              if (prev.steps.length > 0) {
+                const updated = prev.steps.map((s, idx, arr) =>
+                  idx === arr.length - 1 ? { ...s, text: trimmedText } : s
+                );
+                return { ...prev, logs: newLogs, steps: updated };
+              }
+              return { ...prev, logs: newLogs };
             }
 
             return { ...prev, logs: newLogs };
@@ -479,7 +545,7 @@ export function useAgentStream({
         eventSourceRef.current.close();
       }
     };
-  }, [sessionId, goal, parseLog, isEmptyObject]);
+  }, [sessionId, goal, modelId, parseLog, isEmptyObject]);
 
   return {
     ...state,

@@ -1,4 +1,5 @@
 export const toolNameMapping: Record<string, string> = {
+    // CUA model tools (Gemini 2.5)
     "open_web_browser": "Open Browser",
     "type_text_at": "Type Text",
     "click_at": "Click",
@@ -16,4 +17,14 @@ export const toolNameMapping: Record<string, string> = {
     "search": "Search",
     "key_combination": "Key Combination",
     "hover_at": "Hover",
+    // V3 Stagehand tools (Gemini 3 Flash)
+    "goto": "Navigate",
+    "click": "Click",
+    "type": "Type Text",
+    "scroll": "Scroll",
+    "screenshot": "Screenshot",
+    "ariatree": "Analyze Page",
+    "extract": "Extract Data",
+    "act": "Perform Action",
+    "observe": "Observe Page",
   };

@@ -16,7 +16,11 @@ export default function ChatMessage({ step }: ChatMessageProps) {
   const isCompletionMessage = step.tool === "MESSAGE" && step.reasoning === "Task execution completed";
   const isPreemptive = step.tool === "MESSAGE" && !isUserInput && !isCompletionMessage;
 
-  if (isPreemptive && !step.reasoning?.length) return null;
+  if (isPreemptive && !step.reasoning?.length && !step.text?.length && !step.instruction?.length) return null;
+
+  const toolDisplayName = toolNameMapping[step.tool] || step.tool;
+  const hasActionInstruction = step.instruction && step.tool !== "MESSAGE";
+  const displayInstruction = hasActionInstruction && !step.reasoning ? step.instruction : null;
 
   return (
     <motion.div
@@ -30,7 +34,7 @@ export default function ChatMessage({ step }: ChatMessageProps) {
             {step.stepNumber}
           </span>
           <span className="py-1 font-medium text-[#2E191E] text-sm">
-            {toolNameMapping[step.tool] || step.tool}
+            {toolDisplayName}
           </span>
         </div>
       </div>
@@ -55,6 +59,9 @@ export default function ChatMessage({ step }: ChatMessageProps) {
                 >
                   {step.reasoning}
                 </ReactMarkdown>
+              )}
+              {displayInstruction && (
+                <p className="text-[#2E191E]">{displayInstruction}</p>
               )}
               {step.text && (
                 <ReactMarkdown
