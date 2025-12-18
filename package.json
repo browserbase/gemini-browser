@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "@browserbasehq/sdk": "^2.6.0",
-    "@browserbasehq/stagehand": "^3.0.5", 
+    "@browserbasehq/stagehand": "^3.0.5",
     "@vercel/analytics": "^1.4.1",
     "@vercel/edge-config": "^1.4.0",
     "class-variance-authority": "^0.7.1",
@@ -19,7 +19,7 @@
     "framer-motion": "^11.0.3",
     "lucide-react": "^0.479.0",
     "moment-timezone": "^0.6.0",
-    "next": "15.1.9",
+    "next": "15.1.11",
     "playwright-core": "^1.55.0",
     "posthog-js": "1.300.0",
     "react": "19.1.2",
