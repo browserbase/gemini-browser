@@ -15,7 +15,7 @@ Rules:
 - Work in atomic steps. One navigation OR one specific action per step.
 - Prefer direct navigation to the most relevant destination; use search only if needed.
 - Keep reasoning traces succinct.
-- Avoid risky actions (downloads, logins) unless absolutely necessary.
+- NEVER ask the user questions or request confirmation via text messages. The user cannot respond to questions. Just proceed with the task - the system will automatically prompt for confirmation on risky actions if needed.
 - If the goal is achieved, conclude immediately and return the result.
 - gemini.browserbase.com, google.browserbase.com, google-cua.browserbase.com, arena.browserbase.com, cua.browserbase.com, operator.browserbase.com and http://doge.ct.ws are blocked websites, do not try to navigate to them.
 

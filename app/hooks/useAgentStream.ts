@@ -8,6 +8,7 @@ import {
   UseAgentStreamProps,
   AgentStreamState,
   LogEvent,
+  PendingSafetyConfirmation,
 } from "@/app/types/Agent";
 
 // Global trackers to avoid duplicate session creation in React Strict Mode
@@ -40,6 +41,7 @@ export function useAgentStream({
     isFinished: false,
     error: null,
     invokedTools: [],
+    pendingSafetyConfirmation: null,
   });
 
   const eventSourceRef = useRef<EventSource | null>(null);
@@ -69,6 +71,41 @@ export function useAgentStream({
       isFinished: true,
     }));
   }, []);
+
+  const respondToSafetyConfirmation = useCallback(
+    async (acknowledged: boolean) => {
+      const pending = state.pendingSafetyConfirmation;
+      if (!pending) {
+        console.warn("[useAgentStream] No pending safety confirmation to respond to");
+        return;
+      }
+
+      try {
+        const response = await fetch("/api/agent/safety-response", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            sessionId: pending.sessionId,
+            confirmationId: pending.confirmationId,
+            acknowledged,
+          }),
+        });
+
+        const result = await response.json();
+        if (!result.success) {
+          console.error("[useAgentStream] Failed to send safety response:", result.error);
+        }
+
+        setState((prev) => ({
+          ...prev,
+          pendingSafetyConfirmation: null,
+        }));
+      } catch (error) {
+        console.error("[useAgentStream] Error sending safety response:", error);
+      }
+    },
+    [state.pendingSafetyConfirmation]
+  );
 
   const parseAuxiliaryArgs = useCallback((auxiliary: LogEvent["auxiliary"]): { args: unknown; instruction: string } => {
     if (!auxiliary?.arguments) return { args: {}, instruction: "" };
@@ -463,6 +500,21 @@ export function useAgentStream({
       // Disable SSE 'step' duplication: logs already carry summary/action
       es.addEventListener("step", () => {});
 
+      es.addEventListener("safety_confirmation", (e) => {
+        if (cancelled) return;
+        try {
+          const payload = JSON.parse((e as MessageEvent).data) as PendingSafetyConfirmation;
+          console.log("[useAgentStream] Safety confirmation requested:", payload);
+          
+          setState((prev) => ({
+            ...prev,
+            pendingSafetyConfirmation: payload,
+          }));
+        } catch (err) {
+          console.error("Error parsing safety_confirmation event:", err);
+        }
+      });
+
       es.addEventListener("done", (e) => {
         try {
           const payload = JSON.parse((e as MessageEvent).data);
@@ -550,5 +602,6 @@ export function useAgentStream({
   return {
     ...state,
     stop,
+    respondToSafetyConfirmation,
   };
 }

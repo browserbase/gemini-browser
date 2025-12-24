@@ -14,6 +14,7 @@ import PinnedGoalMessage from "@/app/components/chat/PinnedGoalMessage";
 import PinnedFinalAnswer from "@/app/components/chat/PinnedFinalAnswer";
 import ChatMessagesList from "@/app/components/chat/ChatMessagesList";
 import ChatInput from "@/app/components/chat/ChatInput";
+import SafetyConfirmationDialog from "@/app/components/chat/SafetyConfirmationDialog";
 import { useAgentStream } from "@/app/hooks/useAgentStream";
 import { ChatFeedProps, AgentState, BrowserStep } from "@/app/types/ChatFeed";
 import { DEFAULT_MODEL_ID, getSupportedModelById } from "@/constants/models";
@@ -195,6 +196,8 @@ export default function ChatFeed({
     sessionUrl,
     steps,
     isFinished,
+    pendingSafetyConfirmation,
+    respondToSafetyConfirmation,
   } = useAgentStream({
     sessionId: null,
     goal: initialMessage,
@@ -349,6 +352,15 @@ export default function ChatFeed({
                 chatContainerRef={chatContainerRef}
                 isMobile={isMobile}
               />
+
+              {pendingSafetyConfirmation && (
+                <div className="py-2">
+                  <SafetyConfirmationDialog
+                    confirmation={pendingSafetyConfirmation}
+                    onRespond={respondToSafetyConfirmation}
+                  />
+                </div>
+              )}
 
               {/* Final Answer - displayed outside the list with same padding as PinnedGoalMessage */}
               {(() => {

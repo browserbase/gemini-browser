@@ -7,6 +7,8 @@ import {
   isSupportedModelId,
   SUPPORTED_MODELS,
 } from "@/constants/models";
+import { createSafetyConfirmationPromise } from "../safety-response/route";
+import type { SafetyCheck } from "@browserbasehq/stagehand";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -169,6 +171,23 @@ export async function GET(request: Request) {
           startedAt: new Date().toISOString(),
         });
 
+        const safetyConfirmationHandler = async (safetyChecks: SafetyCheck[]) => {
+          const confirmationId = crypto.randomUUID();
+
+          send("safety_confirmation", {
+            confirmationId,
+            sessionId,
+            checks: safetyChecks,
+          });
+
+          const acknowledged = await createSafetyConfirmationPromise(
+            sessionId,
+            confirmationId
+          );
+
+          return { acknowledged };
+        };
+
         const agent = stagehand.agent({
           ...(selectedModel.cua ? { cua: true } : {}),
           model: {
@@ -176,6 +195,7 @@ export async function GET(request: Request) {
             apiKey: process.env.GOOGLE_API_KEY,
           },
           systemPrompt: `${AGENT_INSTRUCTIONS}\n\nYou are currently on: ${page.url()}`,
+          onSafetyConfirmation: safetyConfirmationHandler,
         });
 
         const result = await agent.execute({

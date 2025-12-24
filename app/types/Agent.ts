@@ -43,6 +43,18 @@ export interface LogEvent {
   auxiliary?: LogEventAuxiliary;
 }
 
+export interface SafetyCheck {
+  id: string;
+  code: string;
+  message: string;
+}
+
+export interface PendingSafetyConfirmation {
+  confirmationId: string;
+  sessionId: string;
+  checks: SafetyCheck[];
+}
+
 export interface AgentStreamState {
   sessionId: string | null;
   sessionUrl: string | null;
@@ -52,6 +64,7 @@ export interface AgentStreamState {
   isFinished: boolean;
   error: string | null;
   invokedTools: string[];
+  pendingSafetyConfirmation: PendingSafetyConfirmation | null;
 }
 
 export interface StartEventData {
