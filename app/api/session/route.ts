@@ -78,7 +78,7 @@ const defaultDistributions: Record<
 
 function selectRegionWithProbability(
   baseRegion: BrowserbaseRegion,
-  distributions: Record<BrowserbaseRegion, Record<BrowserbaseRegion, number>>
+  distributions: Record<BrowserbaseRegion, Record<BrowserbaseRegion, number>>,
 ): BrowserbaseRegion {
   const distribution = distributions[baseRegion];
   if (!distribution) {
@@ -220,7 +220,7 @@ export async function POST(request: Request) {
     console.error("Error creating session:", error);
     return NextResponse.json(
       { success: false, error: "Failed to create session" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

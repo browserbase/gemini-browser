@@ -1,19 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
+import { resolveSafetyConfirmation } from "./state";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-
-const pendingSafetyResponses = new Map<string, (acknowledged: boolean) => void>();
-
-export function createSafetyConfirmationPromise(
-  sessionId: string,
-  confirmationId: string
-): Promise<boolean> {
-  const key = `${sessionId}:${confirmationId}`;
-  return new Promise((resolve) => {
-    pendingSafetyResponses.set(key, resolve);
-  });
-}
 
 export async function POST(request: NextRequest) {
   const body = await request.json();
@@ -26,19 +15,14 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const key = `${sessionId}:${confirmationId}`;
-  const resolve = pendingSafetyResponses.get(key);
+  const resolved = resolveSafetyConfirmation(sessionId, confirmationId, acknowledged);
 
-  if (!resolve) {
+  if (!resolved) {
     return NextResponse.json(
       { success: false, error: "No pending safety confirmation found" },
       { status: 404 }
     );
   }
 
-  resolve(acknowledged);
-  pendingSafetyResponses.delete(key);
-
   return NextResponse.json({ success: true, acknowledged });
 }
-

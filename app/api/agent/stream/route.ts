@@ -7,7 +7,7 @@ import {
   isSupportedModelId,
   SUPPORTED_MODELS,
 } from "@/constants/models";
-import { createSafetyConfirmationPromise } from "../safety-response/route";
+import { createSafetyConfirmationPromise } from "../safety-response/state";
 import type { SafetyCheck } from "@browserbasehq/stagehand";
 
 export const runtime = "nodejs";
@@ -16,7 +16,9 @@ export const maxDuration = 600;
 
 function sseEncode(event: string, data: unknown): Uint8Array {
   const encoder = new TextEncoder();
-  return encoder.encode(`event: ${event}\n` + `data: ${JSON.stringify(data)}\n\n`);
+  return encoder.encode(
+    `event: ${event}\n` + `data: ${JSON.stringify(data)}\n\n`,
+  );
 }
 
 function sseComment(comment: string): Uint8Array {
@@ -38,7 +40,7 @@ export async function GET(request: Request) {
       {
         status: 400,
         headers: { "Content-Type": "application/json" },
-      }
+      },
     );
   }
 
@@ -49,11 +51,14 @@ export async function GET(request: Request) {
         safeEnqueue(sseComment("keepalive"));
       }, 15000);
 
-      const timeoutTimer = setTimeout(async () => {
-        console.log(`[SSE] Timeout reached for session ${sessionId}`);
-        send("error", { message: "Agent run timed out after 10 minutes" });
-        await cleanup();
-      }, 10 * 60 * 1000);
+      const timeoutTimer = setTimeout(
+        async () => {
+          console.log(`[SSE] Timeout reached for session ${sessionId}`);
+          send("error", { message: "Agent run timed out after 10 minutes" });
+          await cleanup();
+        },
+        10 * 60 * 1000,
+      );
 
       let closed = false;
 
@@ -62,7 +67,10 @@ export async function GET(request: Request) {
         try {
           controller.enqueue(chunk);
         } catch (err) {
-          console.error(`[SSE] enqueue error`, err instanceof Error ? err.message : String(err));
+          console.error(
+            `[SSE] enqueue error`,
+            err instanceof Error ? err.message : String(err),
+          );
         }
       };
 
@@ -71,7 +79,10 @@ export async function GET(request: Request) {
         try {
           safeEnqueue(sseEncode(event, data));
         } catch (err) {
-          console.error(`[SSE] send error`, err instanceof Error ? err.message : String(err));
+          console.error(
+            `[SSE] send error`,
+            err instanceof Error ? err.message : String(err),
+          );
         }
       };
 
@@ -109,7 +120,7 @@ export async function GET(request: Request) {
       if (!resolvedModelId) {
         send("error", {
           message: `Unsupported model: ${modelParam}. Supported: ${SUPPORTED_MODELS.map(
-            (m) => m.id
+            (m) => m.id,
           ).join(", ")}`,
         });
         await cleanup();
@@ -137,6 +148,7 @@ export async function GET(request: Request) {
           projectId: process.env.BROWSERBASE_PROJECT_ID!,
           proxies: true,
           browserSettings: {
+            advancedStealth: true,
             viewport: {
               width: 1288,
               height: 711,
@@ -171,7 +183,9 @@ export async function GET(request: Request) {
           startedAt: new Date().toISOString(),
         });
 
-        const safetyConfirmationHandler = async (safetyChecks: SafetyCheck[]) => {
+        const safetyConfirmationHandler = async (
+          safetyChecks: SafetyCheck[],
+        ) => {
           const confirmationId = crypto.randomUUID();
 
           send("safety_confirmation", {
@@ -182,7 +196,7 @@ export async function GET(request: Request) {
 
           const acknowledged = await createSafetyConfirmationPromise(
             sessionId,
-            confirmationId
+            confirmationId,
           );
 
           return { acknowledged };
@@ -199,8 +213,8 @@ export async function GET(request: Request) {
         });
 
         const result = await agent.execute({
-            instruction: goal,
-            maxSteps: 100,
+          instruction: goal,
+          maxSteps: 100,
         });
 
         try {
@@ -210,9 +224,10 @@ export async function GET(request: Request) {
         } catch {}
 
         const loggerReasoning = logger.getLastReasoning();
-        const resultMessage = (result as { message?: string; output?: string }).message 
-          || (result as { message?: string; output?: string }).output 
-          || null;
+        const resultMessage =
+          (result as { message?: string; output?: string }).message ||
+          (result as { message?: string; output?: string }).output ||
+          null;
         const finalMessage = loggerReasoning || resultMessage;
 
         console.log(`[SSE] done`, {
