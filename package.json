@@ -19,7 +19,7 @@
     "framer-motion": "^11.0.3",
     "lucide-react": "^0.479.0",
     "moment-timezone": "^0.6.0",
-    "next": "15.1.9",
+    "next": "15.1.11",
     "playwright-core": "^1.55.0",
     "posthog-js": "1.300.0",
     "react": "19.1.2",
