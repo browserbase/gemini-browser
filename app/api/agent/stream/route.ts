@@ -209,12 +209,14 @@ export async function GET(request: Request) {
             apiKey: process.env.GOOGLE_API_KEY,
           },
           systemPrompt: `${AGENT_INSTRUCTIONS}\n\nYou are currently on: ${page.url()}`,
-          onSafetyConfirmation: safetyConfirmationHandler,
         });
 
         const result = await agent.execute({
           instruction: goal,
           maxSteps: 100,
+          callbacks: {
+            onSafetyConfirmation: safetyConfirmationHandler,
+          },
         });
 
         try {
