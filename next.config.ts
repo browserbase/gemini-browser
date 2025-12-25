@@ -21,6 +21,7 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
+  transpilePackages: ["@browserbasehq/stagehand"],
   async headers() {
     return [
       {
