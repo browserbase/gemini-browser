@@ -1,4 +1,4 @@
-import { Stagehand } from "@browserbasehq/stagehand";
+import { V3 as Stagehand, SafetyCheck } from "@browserbasehq/stagehand";
 import { createStagehandUserLogger } from "../../agent/logger";
 import { AGENT_INSTRUCTIONS } from "@/constants/prompt";
 import {
@@ -8,7 +8,6 @@ import {
   SUPPORTED_MODELS,
 } from "@/constants/models";
 import { createSafetyConfirmationPromise } from "../safety-response/state";
-import type { SafetyCheck } from "@browserbasehq/stagehand";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
