@@ -147,7 +147,7 @@ export async function GET(request: Request) {
           projectId: process.env.BROWSERBASE_PROJECT_ID!,
           proxies: true,
           browserSettings: {
-            advancedStealth: false,
+            advancedStealth: true,
             viewport: {
               width: 1288,
               height: 711,
