@@ -1,4 +1,4 @@
-import { V3 as Stagehand, SafetyCheck } from "@browserbasehq/stagehand";
+import { Stagehand, SafetyCheck } from "@browserbasehq/stagehand";
 import { createStagehandUserLogger } from "../../agent/logger";
 import { AGENT_INSTRUCTIONS } from "@/constants/prompt";
 import {

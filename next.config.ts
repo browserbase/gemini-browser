@@ -21,6 +21,7 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
+  serverExternalPackages: ["@browserbasehq/stagehand"],
   async headers() {
     return [
       {
