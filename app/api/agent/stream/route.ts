@@ -44,13 +44,31 @@ export async function GET(request: Request) {
   }
 
   let stagehandRef: Stagehand | undefined;
+  let closed = false;
+  let keepAliveTimer: ReturnType<typeof setInterval> | undefined;
+  let timeoutTimer: ReturnType<typeof setTimeout> | undefined;
+
   const stream = new ReadableStream<Uint8Array>({
     start: async (controller) => {
-      const keepAliveTimer = setInterval(() => {
+      const safeEnqueue = (chunk: Uint8Array) => {
+        if (closed) return;
+        try {
+          controller.enqueue(chunk);
+        } catch {
+          closed = true;
+        }
+      };
+
+      const send = (event: string, data: unknown) => {
+        if (closed) return;
+        safeEnqueue(sseEncode(event, data));
+      };
+
+      keepAliveTimer = setInterval(() => {
         safeEnqueue(sseComment("keepalive"));
       }, 15000);
 
-      const timeoutTimer = setTimeout(
+      timeoutTimer = setTimeout(
         async () => {
           console.log(`[SSE] Timeout reached for session ${sessionId}`);
           send("error", { message: "Agent run timed out after 10 minutes" });
@@ -59,48 +77,20 @@ export async function GET(request: Request) {
         10 * 60 * 1000,
       );
 
-      let closed = false;
-
-      const safeEnqueue = (chunk: Uint8Array) => {
-        if (closed) return;
-        try {
-          controller.enqueue(chunk);
-        } catch (err) {
-          console.error(
-            `[SSE] enqueue error`,
-            err instanceof Error ? err.message : String(err),
-          );
-        }
-      };
-
-      const send = (event: string, data: unknown) => {
-        if (closed) return;
-        try {
-          safeEnqueue(sseEncode(event, data));
-        } catch (err) {
-          console.error(
-            `[SSE] send error`,
-            err instanceof Error ? err.message : String(err),
-          );
-        }
-      };
-
       let viewportLockInterval: ReturnType<typeof setInterval> | undefined;
 
       const cleanup = async (stagehand?: Stagehand) => {
         if (closed) return;
         closed = true;
-        clearInterval(keepAliveTimer);
-        clearTimeout(timeoutTimer);
+        if (keepAliveTimer) clearInterval(keepAliveTimer);
+        if (timeoutTimer) clearTimeout(timeoutTimer);
         if (viewportLockInterval) clearInterval(viewportLockInterval);
         try {
-          if (stagehand) {
-            await stagehand.close();
-          }
-        } catch {
-          console.error(`[SSE] error closing stagehand`, stagehand);
-        }
-        controller.close();
+          if (stagehand) await stagehand.close();
+        } catch {}
+        try {
+          controller.close();
+        } catch {}
       };
 
       const resolvedModelId = (() => {
@@ -247,13 +237,12 @@ export async function GET(request: Request) {
       }
     },
     cancel: async () => {
+      closed = true;
+      if (keepAliveTimer) clearInterval(keepAliveTimer);
+      if (timeoutTimer) clearTimeout(timeoutTimer);
       try {
-        if (stagehandRef) {
-          await stagehandRef.close();
-        }
-      } catch {
-        // no-op
-      }
+        if (stagehandRef) await stagehandRef.close();
+      } catch {}
     },
   });
 
