@@ -126,32 +126,32 @@ export async function GET(request: Request) {
       });
       const logger = createStagehandUserLogger(send);
 
-      const stagehand = new Stagehand({
-        model: {
-          modelName: selectedModel.id,
-          apiKey: process.env.GOOGLE_API_KEY,
-        },
-        env: "BROWSERBASE",
-        browserbaseSessionID: sessionId,
-        browserbaseSessionCreateParams: {
-          projectId: process.env.BROWSERBASE_PROJECT_ID!,
-          proxies: true,
-          browserSettings: {
-            advancedStealth: true,
-            viewport: {
-              width: 1288,
-              height: 711,
+      try {
+        const stagehand = new Stagehand({
+          model: {
+            modelName: selectedModel.id,
+            apiKey: process.env.GOOGLE_API_KEY,
+          },
+          env: "BROWSERBASE",
+          browserbaseSessionID: sessionId,
+          browserbaseSessionCreateParams: {
+            projectId: process.env.BROWSERBASE_PROJECT_ID!,
+            proxies: true,
+            browserSettings: {
+              advancedStealth: true,
+              viewport: {
+                width: 1288,
+                height: 711,
+              },
             },
           },
-        },
-        verbose: 2,
-        disablePino: true,
-        logger: logger,
-        disableAPI: true,
-      });
-      stagehandRef = stagehand;
+          verbose: 2,
+          disablePino: true,
+          logger: logger,
+          disableAPI: true,
+        });
+        stagehandRef = stagehand;
 
-      try {
         await stagehand.init();
         console.log(`[SSE] Stagehand initialized`, {
           sessionId: stagehand.browserbaseSessionID,
@@ -233,7 +233,7 @@ export async function GET(request: Request) {
         const message = error instanceof Error ? error.message : String(error);
         console.error(`[SSE] error`, message);
         send("error", { message });
-        await cleanup(stagehand);
+        await cleanup(stagehandRef);
       }
     },
     cancel: async () => {
