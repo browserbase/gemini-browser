@@ -12,8 +12,8 @@ importers:
         specifier: ^2.6.0
         version: 2.6.0
       '@browserbasehq/stagehand':
-        specifier: 3.0.7-alpha-e021674f9641c1c5f9d0c1817c3fdf599eea124d
-        version: 3.0.7-alpha-e021674f9641c1c5f9d0c1817c3fdf599eea124d(@cfworker/json-schema@4.1.1)(@opentelemetry/api@1.9.0)(deepmerge@4.3.1)(dotenv@16.6.1)(zod@3.25.76)
+        specifier: 3.0.7
+        version: 3.0.7(@cfworker/json-schema@4.1.1)(@opentelemetry/api@1.9.0)(deepmerge@4.3.1)(dotenv@16.6.1)(zod@3.25.76)
       '@vercel/analytics':
         specifier: ^1.4.1
         version: 1.6.1(next@15.1.11(@opentelemetry/api@1.9.0)(react-dom@19.1.2(react@19.1.2))(react@19.1.2))(react@19.1.2)
@@ -227,8 +227,8 @@ packages:
   '@browserbasehq/sdk@2.6.0':
     resolution: {integrity: sha512-83iXP5D7xMm8Wyn66TUaUrgoByCmAJuoMoZQI3sGg3JAiMlTfnCIMqyVBoNSaItaPIkaCnrsj6LiusmXV2X9YA==}
 
-  '@browserbasehq/stagehand@3.0.7-alpha-e021674f9641c1c5f9d0c1817c3fdf599eea124d':
-    resolution: {integrity: sha512-7zC6HCSCX+dNkoXUOy2ZmAM/XucG+0nzSfhzQiNYDBAt01+113m47mjJnZyxo3ncL5JZhlzQubHAyhzPT/AR0g==}
+  '@browserbasehq/stagehand@3.0.7':
+    resolution: {integrity: sha512-8VEDKFDksYl1407RYtDRWxmE58W5r6CtMsz3WX1w8wypxt8ZhS1ywYt95YeF5h5R/TborZAszocuYkmeKJHm9Q==}
     peerDependencies:
       deepmerge: ^4.3.1
       dotenv: ^16.4.5
@@ -3561,7 +3561,7 @@ snapshots:
     transitivePeerDependencies:
       - encoding
 
-  '@browserbasehq/stagehand@3.0.7-alpha-e021674f9641c1c5f9d0c1817c3fdf599eea124d(@cfworker/json-schema@4.1.1)(@opentelemetry/api@1.9.0)(deepmerge@4.3.1)(dotenv@16.6.1)(zod@3.25.76)':
+  '@browserbasehq/stagehand@3.0.7(@cfworker/json-schema@4.1.1)(@opentelemetry/api@1.9.0)(deepmerge@4.3.1)(dotenv@16.6.1)(zod@3.25.76)':
     dependencies:
       '@ai-sdk/provider': 2.0.0
       '@anthropic-ai/sdk': 0.39.0
