@@ -145,10 +145,10 @@ export async function GET(request: Request) {
               },
             },
           },
-          verbose: 2,
-          disablePino: true,
-          logger: logger,
-          disableAPI: true,
+        verbose: 2,
+        disablePino: true,
+        logger: logger,
+        disableAPI: true,
         });
         stagehandRef = stagehand;
 
@@ -192,7 +192,7 @@ export async function GET(request: Request) {
         };
 
         const agent = stagehand.agent({
-          ...(selectedModel.cua ? { cua: true } : {}),
+          ...(selectedModel.cua ? { mode: "cua" } : {}),
           model: {
             modelName: selectedModel.id,
             apiKey: process.env.GOOGLE_API_KEY,
