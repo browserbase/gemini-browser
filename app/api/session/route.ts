@@ -152,10 +152,15 @@ async function createSession(timezone?: string) {
 
   const browserSettings: Browserbase.Sessions.SessionCreateParams.BrowserSettings =
     {
-      viewport: {
+      viewport: advancedStealth ? {
+        width: 2560,
+        height: 1440,
+      } : {
         width: 1288,
         height: 711,
       },
+      // @ts-expect-error - os is not a valid property
+      os: advancedStealth ? "windows" : undefined,
       blockAds: true,
       solveCaptchas: true,
       advancedStealth,
