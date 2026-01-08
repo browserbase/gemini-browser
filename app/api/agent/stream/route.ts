@@ -145,10 +145,10 @@ export async function GET(request: Request) {
               },
             },
           },
-        verbose: 2,
-        disablePino: true,
-        logger: logger,
-        disableAPI: true,
+          verbose: 2,
+          disablePino: true,
+          logger: logger,
+          disableAPI: true,
         });
         stagehandRef = stagehand;
 

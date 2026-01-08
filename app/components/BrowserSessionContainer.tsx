@@ -4,10 +4,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { SessionControls } from "@/app/components/SessionControls";
 import { RotateCcwIcon } from "lucide-react";
-import {
-  SupportedModelId,
-  getSupportedModelById,
-} from "@/constants/models";
+import { SupportedModelId, getSupportedModelById } from "@/constants/models";
 
 interface BrowserSessionContainerProps {
   sessionUrl: string | null;
@@ -134,7 +131,7 @@ const BrowserSessionContainer: React.FC<BrowserSessionContainerProps> = ({
           // After animation delay, set to fully open
           const openCompleteTimer = setTimeout(
             () => setCurtainState("open"),
-            800
+            800,
           );
           return () => clearTimeout(openCompleteTimer);
         }, 1000); // Wait 1 second before starting to open
@@ -201,7 +198,7 @@ const BrowserSessionContainer: React.FC<BrowserSessionContainerProps> = ({
               sessionUrl ? (
                 <iframe
                   src={sessionUrl}
-                  className={`w-full h-full border-none ${!isFromSearchParam ? 'pointer-events-none' : ''}`}
+                  className={`w-full h-full border-none ${!isFromSearchParam ? "pointer-events-none" : ""}`}
                   sandbox="allow-same-origin allow-scripts allow-forms"
                   allow="clipboard-read; clipboard-write"
                   loading="lazy"

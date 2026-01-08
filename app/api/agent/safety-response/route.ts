@@ -10,17 +10,25 @@ export async function POST(request: NextRequest) {
 
   if (!sessionId || !confirmationId || typeof acknowledged !== "boolean") {
     return NextResponse.json(
-      { success: false, error: "Missing required fields: sessionId, confirmationId, acknowledged" },
-      { status: 400 }
+      {
+        success: false,
+        error:
+          "Missing required fields: sessionId, confirmationId, acknowledged",
+      },
+      { status: 400 },
     );
   }
 
-  const resolved = resolveSafetyConfirmation(sessionId, confirmationId, acknowledged);
+  const resolved = resolveSafetyConfirmation(
+    sessionId,
+    confirmationId,
+    acknowledged,
+  );
 
   if (!resolved) {
     return NextResponse.json(
       { success: false, error: "No pending safety confirmation found" },
-      { status: 404 }
+      { status: 404 },
     );
   }
 

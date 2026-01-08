@@ -1,8 +1,11 @@
-const pendingSafetyResponses = new Map<string, (acknowledged: boolean) => void>();
+const pendingSafetyResponses = new Map<
+  string,
+  (acknowledged: boolean) => void
+>();
 
 export function createSafetyConfirmationPromise(
   sessionId: string,
-  confirmationId: string
+  confirmationId: string,
 ): Promise<boolean> {
   const key = `${sessionId}:${confirmationId}`;
   return new Promise((resolve) => {
@@ -13,7 +16,7 @@ export function createSafetyConfirmationPromise(
 export function resolveSafetyConfirmation(
   sessionId: string,
   confirmationId: string,
-  acknowledged: boolean
+  acknowledged: boolean,
 ): boolean {
   const key = `${sessionId}:${confirmationId}`;
   const resolve = pendingSafetyResponses.get(key);

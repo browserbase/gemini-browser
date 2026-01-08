@@ -7,9 +7,7 @@ interface PinnedFinalAnswerProps {
   message: string;
 }
 
-export default function PinnedFinalAnswer({
-  message,
-}: PinnedFinalAnswerProps) {
+export default function PinnedFinalAnswer({ message }: PinnedFinalAnswerProps) {
   return (
     <div className="relative -mx-4 md:-mx-6 mt-4">
       <motion.div

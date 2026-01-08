@@ -11,7 +11,9 @@ export function createStagehandUserLogger(send: SendFn) {
 
     if (category !== "agent") return;
 
-    const isVerboseInit = msg.includes("creating v3 agent instance") && msg.includes("systemprompt");
+    const isVerboseInit =
+      msg.includes("creating v3 agent instance") &&
+      msg.includes("systemprompt");
     if (isVerboseInit) return;
 
     if (msg.includes("reasoning:")) {
@@ -22,6 +24,6 @@ export function createStagehandUserLogger(send: SendFn) {
   };
 
   return Object.assign(logger, {
-    getLastReasoning: () => lastReasoningMessage
+    getLastReasoning: () => lastReasoningMessage,
   });
 }

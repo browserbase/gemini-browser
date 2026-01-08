@@ -93,11 +93,7 @@ export default function NavBar({
           >
             <span className="flex items-center text-[#10100D]">
               Close
-              <X
-                size={16}
-                className="ml-2 text-[#10100D]"
-                strokeWidth={2}
-              />
+              <X size={16} className="ml-2 text-[#10100D]" strokeWidth={2} />
             </span>
           </motion.button>
         )}

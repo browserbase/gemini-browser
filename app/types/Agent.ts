@@ -26,7 +26,11 @@ type AgentV3StepFinishedLog = {
   text: string;
 };
 
-export type AgentLog = AgentThoughtLog | AgentSummaryLog | AgentActionLog | AgentV3StepFinishedLog;
+export type AgentLog =
+  | AgentThoughtLog
+  | AgentSummaryLog
+  | AgentActionLog
+  | AgentV3StepFinishedLog;
 
 export interface LogEventAuxiliary {
   [key: string]: {

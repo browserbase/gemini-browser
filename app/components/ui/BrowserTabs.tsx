@@ -106,7 +106,7 @@ export default function BrowserTabs({
               {
                 "bg-[rgb(245,240,255)] text-gray-800 border-[rgb(179,170,170)]":
                   page.id === activePage?.id,
-              }
+              },
             )}
           >
             {page.faviconUrl && (

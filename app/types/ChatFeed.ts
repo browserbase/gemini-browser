@@ -6,20 +6,20 @@ export interface ChatFeedProps {
   url?: string;
   modelId?: SupportedModelId;
 }
-  
+
 export interface BrowserStep {
-    text: string;
-    reasoning: string;
-    tool: "MESSAGE" | string;
-    instruction: string;
-    stepNumber?: number;
-    messageId?: string;
-    actionArgs?: unknown;
+  text: string;
+  reasoning: string;
+  tool: "MESSAGE" | string;
+  instruction: string;
+  stepNumber?: number;
+  messageId?: string;
+  actionArgs?: unknown;
 }
-  
+
 export interface AgentState {
-    sessionId: string | null;
-    sessionUrl: string | null;
-    steps: BrowserStep[];
-    isLoading: boolean;
+  sessionId: string | null;
+  sessionUrl: string | null;
+  steps: BrowserStep[];
+  isLoading: boolean;
 }

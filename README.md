@@ -16,6 +16,7 @@ A browser automation playground powered by Gemini + Browserbase. This demo lets 
 ## Tech Stack
 
 ### Frontend
+
 - **Framework**: Next.js 15 with React 19 and TypeScript
 - **Styling**: Tailwind CSS with custom fonts (PP Neue, PP Supply)
 - **Animation**: Framer Motion for smooth transitions
@@ -23,13 +24,15 @@ A browser automation playground powered by Gemini + Browserbase. This demo lets 
 - **Markdown**: ReactMarkdown with GitHub Flavored Markdown (remark-gfm)
 
 ### Backend
+
 - **AI Model**: Gemini 2.5 Computer Use (CUA) or Gemini 3 Flash (`google/gemini-3-flash-preview`)
 - **Browser Automation**: Browserbase + Stagehand
 - **Agent Framework**: Stagehand with Playwright Core
-- **Streaming**: Server-Sent Events (SSE) 
+- **Streaming**: Server-Sent Events (SSE)
 - **Runtime**: Node.js with Next.js API routes
 
 ### Infrastructure
+
 - **Analytics**: PostHog for user tracking
 - **Configuration**: Vercel Edge Config for region distribution
 - **Deployment**: Optimized for Vercel with 600s max duration
@@ -45,22 +48,26 @@ A browser automation playground powered by Gemini + Browserbase. This demo lets 
 ## Getting Started
 
 ### 1. Clone the repository
+
 ```bash
 git clone https://github.com/browserbase/gemini-browser
 cd gemini-browser
 ```
 
 ### 2. Install dependencies
+
 ```bash
 pnpm install
 ```
 
 ### 3. Configure environment variables
+
 ```bash
 cp .env.example .env.local
 ```
 
 Edit `.env.local` with your credentials:
+
 ```env
 # Google AI Studio API Key
 GOOGLE_API_KEY=your_google_api_key
@@ -81,11 +88,13 @@ EDGE_CONFIG=your_edge_config_url
 ```
 
 ### 4. Start the development server
+
 ```bash
 pnpm dev
 ```
 
 ### 5. Open your browser
+
 Navigate to [http://localhost:3000](http://localhost:3000)
 
 ## Usage

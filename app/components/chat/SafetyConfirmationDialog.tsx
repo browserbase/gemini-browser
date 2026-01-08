@@ -31,7 +31,10 @@ function parseCheckMessage(message: string): ParsedMessage {
 }
 
 function SafetyCheckItem({ check }: { check: SafetyCheck }) {
-  const parsed = useMemo(() => parseCheckMessage(check.message), [check.message]);
+  const parsed = useMemo(
+    () => parseCheckMessage(check.message),
+    [check.message],
+  );
 
   return (
     <div className="space-y-3">
@@ -40,9 +43,7 @@ function SafetyCheckItem({ check }: { check: SafetyCheck }) {
           {parsed.explanation}
         </p>
       ) : parsed.raw ? (
-        <p className="text-[#2E191E] text-sm leading-relaxed">
-          {parsed.raw}
-        </p>
+        <p className="text-[#2E191E] text-sm leading-relaxed">{parsed.raw}</p>
       ) : null}
     </div>
   );
