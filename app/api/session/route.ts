@@ -147,7 +147,7 @@ async function createSession(timezone?: string) {
     console.log("Edge config not available, using default settings");
   }
 
-  const advancedStealth: boolean = advancedStealthConfig ?? false;
+  const advancedStealth: boolean = advancedStealthConfig ?? true;
   const proxies: boolean = proxiesConfig ?? true;
 
   const browserSettings: Browserbase.Sessions.SessionCreateParams.BrowserSettings =
