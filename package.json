@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "@browserbasehq/sdk": "^2.6.0",
-    "@browserbasehq/stagehand": "3.0.7",
+    "@browserbasehq/stagehand": "3.0.8-alpha-6fbf5fc811e5e5d9d22f10c5309fbd336892263a",
     "@vercel/analytics": "^1.4.1",
     "@vercel/edge-config": "^1.4.0",
     "class-variance-authority": "^0.7.1",
