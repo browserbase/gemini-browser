@@ -24,7 +24,10 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
-  serverExternalPackages: ["@browserbasehq/stagehand"],
+  serverExternalPackages: [
+    "@browserbasehq/stagehand",
+    "@browserbasehq/orca",
+  ],
   async headers() {
     return [
       {
