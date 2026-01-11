@@ -139,9 +139,11 @@ export async function GET(request: Request) {
             proxies: true,
             browserSettings: {
               advancedStealth: true,
+              // @ts-expect-error - os is not a valid property
+              os: "windows",
               viewport: {
-                width: 1288,
-                height: 711,
+                width: 2560,
+                height: 1440,
               },
             },
           },
