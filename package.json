@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "@browserbasehq/sdk": "^2.6.0",
-    "@browserbasehq/stagehand": "npm:@browserbasehq/orca@3.0.8-google-cua-1",
+    "@browserbasehq/stagehand": "npm:@browserbasehq/orca@3.0.8-google-cua-2",
     "@vercel/analytics": "^1.4.1",
     "@vercel/edge-config": "^1.4.0",
     "class-variance-authority": "^0.7.1",
