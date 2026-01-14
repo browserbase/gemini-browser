@@ -206,9 +206,11 @@ export async function GET(request: Request) {
         const result = await agent.execute({
           instruction: goal,
           maxSteps: 100,
-          callbacks: {
-            onSafetyConfirmation: safetyConfirmationHandler,
-          },
+          ...(selectedModel.cua && {
+            callbacks: {
+              onSafetyConfirmation: safetyConfirmationHandler,
+            },
+          }),
         });
 
         try {
