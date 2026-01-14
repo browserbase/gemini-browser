@@ -151,6 +151,7 @@ export async function GET(request: Request) {
           disablePino: true,
           logger: logger,
           disableAPI: true,
+          experimental: true,
         });
         stagehandRef = stagehand;
 
