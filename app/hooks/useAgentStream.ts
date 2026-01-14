@@ -8,6 +8,7 @@ import {
   UseAgentStreamProps,
   AgentStreamState,
   LogEvent,
+  PendingSafetyConfirmation,
 } from "@/app/types/Agent";
 
 // Global trackers to avoid duplicate session creation in React Strict Mode
@@ -29,7 +30,7 @@ export function useAgentStream({
   onError,
 }: UseAgentStreamProps) {
   console.log(
-    `[useAgentStream] Hook called with goal: "${goal?.substring(0, 50)}...", sessionId: ${sessionId}`
+    `[useAgentStream] Hook called with goal: "${goal?.substring(0, 50)}...", sessionId: ${sessionId}`,
   );
   const [state, setState] = useState<AgentStreamState>({
     sessionId: sessionId,
@@ -40,6 +41,7 @@ export function useAgentStream({
     isFinished: false,
     error: null,
     invokedTools: [],
+    pendingSafetyConfirmation: null,
   });
 
   const eventSourceRef = useRef<EventSource | null>(null);
@@ -70,101 +72,153 @@ export function useAgentStream({
     }));
   }, []);
 
-  const parseAuxiliaryArgs = useCallback((auxiliary: LogEvent["auxiliary"]): { args: unknown; instruction: string } => {
-    if (!auxiliary?.arguments) return { args: {}, instruction: "" };
-    
-    const argValue = auxiliary.arguments.value;
-    const argType = auxiliary.arguments.type;
-    
-    if (argType === "object") {
+  const respondToSafetyConfirmation = useCallback(
+    async (acknowledged: boolean) => {
+      const pending = state.pendingSafetyConfirmation;
+      if (!pending) {
+        console.warn(
+          "[useAgentStream] No pending safety confirmation to respond to",
+        );
+        return;
+      }
+
       try {
-        const parsed = JSON.parse(argValue);
-        const instruction = parsed.url || parsed.selector || parsed.text || "";
-        return { args: parsed, instruction };
-      } catch {
-        return { args: { value: argValue }, instruction: argValue };
-      }
-    } else if (argType === "string") {
-      return { args: { action: argValue }, instruction: argValue };
-    } else {
-      return { args: { value: argValue }, instruction: String(argValue) };
-    }
-  }, []);
+        const response = await fetch("/api/agent/safety-response", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            sessionId: pending.sessionId,
+            confirmationId: pending.confirmationId,
+            acknowledged,
+          }),
+        });
 
-  const parseLog = useCallback((logEvent: LogEvent): AgentLog | null => {
-    const raw = logEvent.message;
-    const auxiliary = logEvent.auxiliary;
-
-    if (/^reasoning:/i.test(raw)) {
-      return { kind: "thought", text: raw.replace(/^reasoning:\s*/i, "").trim() };
-    }
-
-    const execMatch = raw.match(/^Executing step\s+(\d+)/i);
-    if (execMatch) {
-      return { kind: "summary", step: parseInt(execMatch[1], 10), text: "" };
-    }
-
-    const fnMatch = raw.match(
-      /^Found function call:\s*([A-Za-z0-9_]+)(?:\s+with args:\s*([\s\S]+))?$/i
-    );
-    if (fnMatch) {
-      let args: unknown = {};
-      const jsonText = (fnMatch[2] || "").trim();
-      if (jsonText) {
-        try {
-          args = JSON.parse(jsonText);
-        } catch {
-          args = jsonText;
+        const result = await response.json();
+        if (!result.success) {
+          console.error(
+            "[useAgentStream] Failed to send safety response:",
+            result.error,
+          );
         }
+
+        setState((prev) => ({
+          ...prev,
+          pendingSafetyConfirmation: null,
+        }));
+      } catch (error) {
+        console.error("[useAgentStream] Error sending safety response:", error);
       }
-      return {
-        kind: "action",
-        step: stepCounterRef.current,
-        tool: fnMatch[1],
-        args,
-      };
-    }
+    },
+    [state.pendingSafetyConfirmation],
+  );
 
-    const v3ToolMatch = raw.match(/^Agent\s+calling\s+tool:\s*(\w+)/i);
-    if (v3ToolMatch) {
-      stepCounterRef.current += 1;
-      const { args, instruction } = parseAuxiliaryArgs(auxiliary);
-      return {
-        kind: "action",
-        step: stepCounterRef.current,
-        tool: v3ToolMatch[1],
-        args,
-        instruction,
-      };
-    }
+  const parseAuxiliaryArgs = useCallback(
+    (
+      auxiliary: LogEvent["auxiliary"],
+    ): { args: unknown; instruction: string } => {
+      if (!auxiliary?.arguments) return { args: {}, instruction: "" };
 
-    const v3StepFinishedMatch = raw.match(/^Step\s+finished:\s*(\S+)/i);
-    if (v3StepFinishedMatch) {
-      const finishType = v3StepFinishedMatch[1];
-      return {
-        kind: "v3_step_finished" as const,
-        step: stepCounterRef.current,
-        text: finishType === "stop" ? "Task completed" : "",
-      };
-    }
+      const argValue = auxiliary.arguments.value;
+      const argType = auxiliary.arguments.type;
 
-    return null;
-  }, [parseAuxiliaryArgs]);
+      if (argType === "object") {
+        try {
+          const parsed = JSON.parse(argValue);
+          const instruction =
+            parsed.url || parsed.selector || parsed.text || "";
+          return { args: parsed, instruction };
+        } catch {
+          return { args: { value: argValue }, instruction: argValue };
+        }
+      } else if (argType === "string") {
+        return { args: { action: argValue }, instruction: argValue };
+      } else {
+        return { args: { value: argValue }, instruction: String(argValue) };
+      }
+    },
+    [],
+  );
+
+  const parseLog = useCallback(
+    (logEvent: LogEvent): AgentLog | null => {
+      const raw = logEvent.message;
+      const auxiliary = logEvent.auxiliary;
+
+      if (/^reasoning:/i.test(raw)) {
+        return {
+          kind: "thought",
+          text: raw.replace(/^reasoning:\s*/i, "").trim(),
+        };
+      }
+
+      const execMatch = raw.match(/^Executing step\s+(\d+)/i);
+      if (execMatch) {
+        return { kind: "summary", step: parseInt(execMatch[1], 10), text: "" };
+      }
+
+      const fnMatch = raw.match(
+        /^Found function call:\s*([A-Za-z0-9_]+)(?:\s+with args:\s*([\s\S]+))?$/i,
+      );
+      if (fnMatch) {
+        let args: unknown = {};
+        const jsonText = (fnMatch[2] || "").trim();
+        if (jsonText) {
+          try {
+            args = JSON.parse(jsonText);
+          } catch {
+            args = jsonText;
+          }
+        }
+        return {
+          kind: "action",
+          step: stepCounterRef.current,
+          tool: fnMatch[1],
+          args,
+        };
+      }
+
+      const v3ToolMatch = raw.match(/^Agent\s+calling\s+tool:\s*(\w+)/i);
+      if (v3ToolMatch) {
+        stepCounterRef.current += 1;
+        const { args, instruction } = parseAuxiliaryArgs(auxiliary);
+        return {
+          kind: "action",
+          step: stepCounterRef.current,
+          tool: v3ToolMatch[1],
+          args,
+          instruction,
+        };
+      }
+
+      const v3StepFinishedMatch = raw.match(/^Step\s+finished:\s*(\S+)/i);
+      if (v3StepFinishedMatch) {
+        const finishType = v3StepFinishedMatch[1];
+        return {
+          kind: "v3_step_finished" as const,
+          step: stepCounterRef.current,
+          text: finishType === "stop" ? "Task completed" : "",
+        };
+      }
+
+      return null;
+    },
+    [parseAuxiliaryArgs],
+  );
 
   const isPlainObject = useCallback(
     (v: unknown) => typeof v === "object" && v !== null && !Array.isArray(v),
-    []
+    [],
   );
   const isEmptyObject = useCallback(
     (v: unknown) =>
       isPlainObject(v) &&
       Object.keys(v as Record<string, unknown>).length === 0,
-    [isPlainObject]
+    [isPlainObject],
   );
 
   useEffect(() => {
     console.log(
-      `[useAgentStream] useEffect triggered with goal: "${goal?.substring(0, 50)}..."`
+      `[useAgentStream] useEffect triggered with goal: "${goal?.substring(0, 50)}..."`,
     );
     if (!goal) {
       console.log(`[useAgentStream] No goal, returning`);
@@ -212,12 +266,12 @@ export function useAgentStream({
               const sessionData = await sessionResponse.json();
               if (!sessionData.success) {
                 throw new Error(
-                  sessionData.error || "Failed to create session"
+                  sessionData.error || "Failed to create session",
                 );
               }
 
               console.log(
-                `[useAgentStream] Session created successfully: ${sessionData.sessionId}`
+                `[useAgentStream] Session created successfully: ${sessionData.sessionId}`,
               );
               return {
                 sessionId: sessionData.sessionId as string,
@@ -309,7 +363,7 @@ export function useAgentStream({
               }
               const displayStep = Math.max(
                 1,
-                parsed.step - stepOffsetRef.current
+                parsed.step - stepOffsetRef.current,
               );
               stepCounterRef.current = displayStep;
 
@@ -317,7 +371,7 @@ export function useAgentStream({
 
               // Update existing step with matching number if present; else append
               const existingIndex = prev.steps.findIndex(
-                (s) => s.stepNumber === displayStep
+                (s) => s.stepNumber === displayStep,
               );
               if (existingIndex >= 0) {
                 const existing = prev.steps[existingIndex];
@@ -368,7 +422,7 @@ export function useAgentStream({
                 };
               }
               const updated = prev.steps.map((s, idx, arr) =>
-                idx === arr.length - 1 ? { ...s, reasoning: parsed.text } : s
+                idx === arr.length - 1 ? { ...s, reasoning: parsed.text } : s,
               );
               return { ...prev, logs: newLogs, steps: updated };
             }
@@ -392,7 +446,7 @@ export function useAgentStream({
               }
               const displayStep = Math.max(
                 1,
-                parsed.step - stepOffsetRef.current
+                parsed.step - stepOffsetRef.current,
               );
 
               // Prefer updating the step with matching number; else update the last
@@ -404,8 +458,13 @@ export function useAgentStream({
                     JSON.stringify(s.actionArgs) ===
                     JSON.stringify(parsed.args);
                   if (sameTool && sameArgs) return s;
-                  return { ...s, tool, actionArgs: parsed.args, instruction: actionInstruction };
-                }
+                  return {
+                    ...s,
+                    tool,
+                    actionArgs: parsed.args,
+                    instruction: actionInstruction,
+                  };
+                },
               );
               // If there is no step to attach to, create one
               const hasTarget =
@@ -442,7 +501,7 @@ export function useAgentStream({
               }
               if (prev.steps.length > 0) {
                 const updated = prev.steps.map((s, idx, arr) =>
-                  idx === arr.length - 1 ? { ...s, text: trimmedText } : s
+                  idx === arr.length - 1 ? { ...s, text: trimmedText } : s,
                 );
                 return { ...prev, logs: newLogs, steps: updated };
               }
@@ -462,6 +521,26 @@ export function useAgentStream({
 
       // Disable SSE 'step' duplication: logs already carry summary/action
       es.addEventListener("step", () => {});
+
+      es.addEventListener("safety_confirmation", (e) => {
+        if (cancelled) return;
+        try {
+          const payload = JSON.parse(
+            (e as MessageEvent).data,
+          ) as PendingSafetyConfirmation;
+          console.log(
+            "[useAgentStream] Safety confirmation requested:",
+            payload,
+          );
+
+          setState((prev) => ({
+            ...prev,
+            pendingSafetyConfirmation: payload,
+          }));
+        } catch (err) {
+          console.error("Error parsing safety_confirmation event:", err);
+        }
+      });
 
       es.addEventListener("done", (e) => {
         try {
@@ -550,5 +629,6 @@ export function useAgentStream({
   return {
     ...state,
     stop,
+    respondToSafetyConfirmation,
   };
 }

@@ -78,7 +78,7 @@ const defaultDistributions: Record<
 
 function selectRegionWithProbability(
   baseRegion: BrowserbaseRegion,
-  distributions: Record<BrowserbaseRegion, Record<BrowserbaseRegion, number>>
+  distributions: Record<BrowserbaseRegion, Record<BrowserbaseRegion, number>>,
 ): BrowserbaseRegion {
   const distribution = distributions[baseRegion];
   if (!distribution) {
@@ -147,15 +147,22 @@ async function createSession(timezone?: string) {
     console.log("Edge config not available, using default settings");
   }
 
-  const advancedStealth: boolean = advancedStealthConfig ?? false;
+  const advancedStealth: boolean = advancedStealthConfig ?? true;
   const proxies: boolean = proxiesConfig ?? true;
 
   const browserSettings: Browserbase.Sessions.SessionCreateParams.BrowserSettings =
     {
-      viewport: {
-        width: 1288,
-        height: 711,
-      },
+      viewport: advancedStealth
+        ? {
+            width: 2560,
+            height: 1440,
+          }
+        : {
+            width: 1288,
+            height: 711,
+          },
+      // @ts-expect-error - os is not a valid property
+      os: advancedStealth ? "windows" : undefined,
       blockAds: true,
       solveCaptchas: true,
       advancedStealth,
@@ -220,7 +227,7 @@ export async function POST(request: Request) {
     console.error("Error creating session:", error);
     return NextResponse.json(
       { success: false, error: "Failed to create session" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

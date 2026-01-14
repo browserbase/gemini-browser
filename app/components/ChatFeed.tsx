@@ -14,6 +14,7 @@ import PinnedGoalMessage from "@/app/components/chat/PinnedGoalMessage";
 import PinnedFinalAnswer from "@/app/components/chat/PinnedFinalAnswer";
 import ChatMessagesList from "@/app/components/chat/ChatMessagesList";
 import ChatInput from "@/app/components/chat/ChatInput";
+import SafetyConfirmationDialog from "@/app/components/chat/SafetyConfirmationDialog";
 import { useAgentStream } from "@/app/hooks/useAgentStream";
 import { ChatFeedProps, AgentState, BrowserStep } from "@/app/types/ChatFeed";
 import { DEFAULT_MODEL_ID, getSupportedModelById } from "@/constants/models";
@@ -25,9 +26,11 @@ export default function ChatFeed({
 }: ChatFeedProps) {
   const renderCount = useRef(0);
   renderCount.current++;
-  console.log(`[ChatFeed] Component rendered #${renderCount.current} with initialMessage: "${initialMessage?.substring(0, 50)}..."`);
+  console.log(
+    `[ChatFeed] Component rendered #${renderCount.current} with initialMessage: "${initialMessage?.substring(0, 50)}..."`,
+  );
   const [activePage, setActivePage] = useState<SessionLiveURLs.Page | null>(
-    null
+    null,
   );
   const [sessionTime, setSessionTime] = useState(0);
   const { width } = useWindowSize();
@@ -52,7 +55,8 @@ export default function ChatFeed({
     steps: [],
   });
 
-  const activePageUrl = activePage?.debuggerFullscreenUrl ?? activePage?.debuggerUrl ?? null;
+  const activePageUrl =
+    activePage?.debuggerFullscreenUrl ?? activePage?.debuggerUrl ?? null;
 
   const [userInput, setUserInput] = useState("");
   const [isWaitingForInput, setIsWaitingForInput] = useState(false);
@@ -100,14 +104,40 @@ export default function ChatFeed({
   }, [uiState.sessionId]);
 
   // Update the handleUserInput function
-  const handleUserInput = useCallback(
-    async (input: string) => {
-      if (!input.trim()) return;
+  const handleUserInput = useCallback(async (input: string) => {
+    if (!input.trim()) return;
 
-      // Add user message to chat
-      const userStep: BrowserStep = {
-        text: input,
-        reasoning: "User input",
+    // Add user message to chat
+    const userStep: BrowserStep = {
+      text: input,
+      reasoning: "User input",
+      tool: "MESSAGE",
+      instruction: "",
+      stepNumber: agentStateRef.current.steps.length + 1,
+    };
+
+    agentStateRef.current = {
+      ...agentStateRef.current,
+      steps: [...agentStateRef.current.steps, userStep],
+    };
+
+    setUiState((prev) => ({
+      ...prev,
+      steps: agentStateRef.current.steps,
+    }));
+
+    setIsWaitingForInput(false);
+    setUserInput("");
+
+    try {
+      console.log("User input received:", input);
+    } catch (error) {
+      console.error("Error handling user input:", error);
+
+      // Add error message to chat
+      const errorStep: BrowserStep = {
+        text: "Sorry, there was an error processing your request. Please try again.",
+        reasoning: "Error handling user input",
         tool: "MESSAGE",
         instruction: "",
         stepNumber: agentStateRef.current.steps.length + 1,
@@ -115,7 +145,7 @@ export default function ChatFeed({
 
       agentStateRef.current = {
         ...agentStateRef.current,
-        steps: [...agentStateRef.current.steps, userStep],
+        steps: [...agentStateRef.current.steps, errorStep],
       };
 
       setUiState((prev) => ({
@@ -123,66 +153,52 @@ export default function ChatFeed({
         steps: agentStateRef.current.steps,
       }));
 
-      setIsWaitingForInput(false);
-      setUserInput("");
+      setIsWaitingForInput(true);
+    }
+  }, []);
 
-      try {
-        console.log("User input received:", input);
-      } catch (error) {
-        console.error("Error handling user input:", error);
-
-        // Add error message to chat
-        const errorStep: BrowserStep = {
-          text: "Sorry, there was an error processing your request. Please try again.",
-          reasoning: "Error handling user input",
-          tool: "MESSAGE",
-          instruction: "",
-          stepNumber: agentStateRef.current.steps.length + 1,
-        };
-
-        agentStateRef.current = {
-          ...agentStateRef.current,
-          steps: [...agentStateRef.current.steps, errorStep],
-        };
-
-        setUiState((prev) => ({
-          ...prev,
-          steps: agentStateRef.current.steps,
-        }));
-
-        setIsWaitingForInput(true);
-      }
+  const handleStart = useCallback(
+    (data: {
+      sessionId: string;
+      goal?: string;
+      model?: string;
+      init?: unknown;
+      startedAt?: string;
+    }) => {
+      posthog.capture("google_cua_start", {
+        goal: initialMessage,
+        sessionId: data.sessionId,
+        model: data.model ?? modelId ?? DEFAULT_MODEL_ID,
+      });
+      setHasEnded(false);
+      setUiState((prev) => ({
+        ...prev,
+        sessionId: data.sessionId,
+      }));
     },
-    []
+    [initialMessage, modelId],
   );
 
-  const handleStart = useCallback((data: { sessionId: string; goal?: string; model?: string; init?: unknown; startedAt?: string }) => {
-    posthog.capture("google_cua_start", {
-      goal: initialMessage,
-      sessionId: data.sessionId,
-      model: data.model ?? modelId ?? DEFAULT_MODEL_ID,
-    });
-    setHasEnded(false);
-    setUiState((prev) => ({
-      ...prev,
-      sessionId: data.sessionId,
-    }));
-  }, [initialMessage, modelId]);
-
-  const handleDone = useCallback((payload?: unknown) => {
-    console.log("Agent completed with payload:", payload);
-    setHasEnded(true);
-    // Terminate session
-    if (uiState.sessionId) {
-      fetch("/api/session", {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ sessionId: uiState.sessionId }),
-      }).catch((error) => {
-        console.log("Error during session termination (can be ignored):", error);
-      });
-    }
-  }, [uiState.sessionId]);
+  const handleDone = useCallback(
+    (payload?: unknown) => {
+      console.log("Agent completed with payload:", payload);
+      setHasEnded(true);
+      // Terminate session
+      if (uiState.sessionId) {
+        fetch("/api/session", {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ sessionId: uiState.sessionId }),
+        }).catch((error) => {
+          console.log(
+            "Error during session termination (can be ignored):",
+            error,
+          );
+        });
+      }
+    },
+    [uiState.sessionId],
+  );
 
   const handleError = useCallback((errorMessage: string) => {
     console.error("Agent stream error:", errorMessage);
@@ -195,6 +211,8 @@ export default function ChatFeed({
     sessionUrl,
     steps,
     isFinished,
+    pendingSafetyConfirmation,
+    respondToSafetyConfirmation,
   } = useAgentStream({
     sessionId: null,
     goal: initialMessage,
@@ -214,7 +232,6 @@ export default function ChatFeed({
       steps,
     }));
   }, [sessionId, sessionUrl, steps]);
-  
 
   // Spring configuration for smoother animations
   const springConfig = {
@@ -239,8 +256,6 @@ export default function ChatFeed({
       transition: { duration: 0.2 },
     },
   };
-
-
 
   return (
     <motion.div
@@ -325,7 +340,11 @@ export default function ChatFeed({
             {/* Chat sidebar */}
             <div
               className={`w-full md:w-[450px] min-w-0 md:min-w-[360px] px-4 md:px-6 ${
-                uiState.steps.find(step => step.tool === "MESSAGE" && step.instruction === "Final Answer")
+                uiState.steps.find(
+                  (step) =>
+                    step.tool === "MESSAGE" &&
+                    step.instruction === "Final Answer",
+                )
                   ? ""
                   : "pb-4 md:pb-6"
               } flex flex-col flex-1 overflow-hidden`}
@@ -350,10 +369,21 @@ export default function ChatFeed({
                 isMobile={isMobile}
               />
 
+              {pendingSafetyConfirmation && (
+                <div className="py-2">
+                  <SafetyConfirmationDialog
+                    confirmation={pendingSafetyConfirmation}
+                    onRespond={respondToSafetyConfirmation}
+                  />
+                </div>
+              )}
+
               {/* Final Answer - displayed outside the list with same padding as PinnedGoalMessage */}
               {(() => {
                 const finalAnswer = uiState.steps.find(
-                  step => step.tool === "MESSAGE" && step.instruction === "Final Answer"
+                  (step) =>
+                    step.tool === "MESSAGE" &&
+                    step.instruction === "Final Answer",
                 );
                 return finalAnswer ? (
                   <PinnedFinalAnswer message={finalAnswer.text || ""} />

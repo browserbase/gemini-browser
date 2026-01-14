@@ -1,8 +1,7 @@
 {
-    "functions": {
-      "app/api/**/*": {
-        "maxDuration": 600
-      }
+  "functions": {
+    "app/api/**/*": {
+      "maxDuration": 600
     }
   }
-  
+}

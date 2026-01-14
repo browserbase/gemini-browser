@@ -1,4 +1,4 @@
-import { Stagehand } from "@browserbasehq/stagehand";
+import { Stagehand, SafetyCheck } from "@browserbasehq/stagehand";
 import { createStagehandUserLogger } from "../../agent/logger";
 import { AGENT_INSTRUCTIONS } from "@/constants/prompt";
 import {
@@ -7,6 +7,7 @@ import {
   isSupportedModelId,
   SUPPORTED_MODELS,
 } from "@/constants/models";
+import { createSafetyConfirmationPromise } from "../safety-response/state";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -14,7 +15,9 @@ export const maxDuration = 600;
 
 function sseEncode(event: string, data: unknown): Uint8Array {
   const encoder = new TextEncoder();
-  return encoder.encode(`event: ${event}\n` + `data: ${JSON.stringify(data)}\n\n`);
+  return encoder.encode(
+    `event: ${event}\n` + `data: ${JSON.stringify(data)}\n\n`,
+  );
 }
 
 function sseComment(comment: string): Uint8Array {
@@ -36,59 +39,58 @@ export async function GET(request: Request) {
       {
         status: 400,
         headers: { "Content-Type": "application/json" },
-      }
+      },
     );
   }
 
   let stagehandRef: Stagehand | undefined;
+  let closed = false;
+  let keepAliveTimer: ReturnType<typeof setInterval> | undefined;
+  let timeoutTimer: ReturnType<typeof setTimeout> | undefined;
+
   const stream = new ReadableStream<Uint8Array>({
     start: async (controller) => {
-      const keepAliveTimer = setInterval(() => {
-        safeEnqueue(sseComment("keepalive"));
-      }, 15000);
-
-      const timeoutTimer = setTimeout(async () => {
-        console.log(`[SSE] Timeout reached for session ${sessionId}`);
-        send("error", { message: "Agent run timed out after 10 minutes" });
-        await cleanup();
-      }, 10 * 60 * 1000);
-
-      let closed = false;
-
       const safeEnqueue = (chunk: Uint8Array) => {
         if (closed) return;
         try {
           controller.enqueue(chunk);
-        } catch (err) {
-          console.error(`[SSE] enqueue error`, err instanceof Error ? err.message : String(err));
+        } catch {
+          closed = true;
         }
       };
 
       const send = (event: string, data: unknown) => {
         if (closed) return;
-        try {
-          safeEnqueue(sseEncode(event, data));
-        } catch (err) {
-          console.error(`[SSE] send error`, err instanceof Error ? err.message : String(err));
-        }
+        safeEnqueue(sseEncode(event, data));
       };
+
+      keepAliveTimer = setInterval(() => {
+        safeEnqueue(sseComment("keepalive"));
+      }, 15000);
+
+      timeoutTimer = setTimeout(
+        async () => {
+          console.log(`[SSE] Timeout reached for session ${sessionId}`);
+          send("error", { message: "Agent run timed out after 10 minutes" });
+          await cleanup();
+        },
+        10 * 60 * 1000,
+      );
 
       let viewportLockInterval: ReturnType<typeof setInterval> | undefined;
 
       const cleanup = async (stagehand?: Stagehand) => {
         if (closed) return;
         closed = true;
-        clearInterval(keepAliveTimer);
-        clearTimeout(timeoutTimer);
+        if (keepAliveTimer) clearInterval(keepAliveTimer);
+        if (timeoutTimer) clearTimeout(timeoutTimer);
         if (viewportLockInterval) clearInterval(viewportLockInterval);
         try {
-          if (stagehand) {
-            await stagehand.close();
-          }
-        } catch {
-          console.error(`[SSE] error closing stagehand`, stagehand);
-        }
-        controller.close();
+          if (stagehand) await stagehand.close();
+        } catch {}
+        try {
+          controller.close();
+        } catch {}
       };
 
       const resolvedModelId = (() => {
@@ -107,7 +109,7 @@ export async function GET(request: Request) {
       if (!resolvedModelId) {
         send("error", {
           message: `Unsupported model: ${modelParam}. Supported: ${SUPPORTED_MODELS.map(
-            (m) => m.id
+            (m) => m.id,
           ).join(", ")}`,
         });
         await cleanup();
@@ -124,31 +126,35 @@ export async function GET(request: Request) {
       });
       const logger = createStagehandUserLogger(send);
 
-      const stagehand = new Stagehand({
-        model: {
-          modelName: selectedModel.id,
-          apiKey: process.env.GOOGLE_API_KEY,
-        },
-        env: "BROWSERBASE",
-        browserbaseSessionID: sessionId,
-        browserbaseSessionCreateParams: {
-          projectId: process.env.BROWSERBASE_PROJECT_ID!,
-          proxies: true,
-          browserSettings: {
-            viewport: {
-              width: 1288,
-              height: 711,
+      try {
+        const stagehand = new Stagehand({
+          model: {
+            modelName: selectedModel.id,
+            apiKey: process.env.GOOGLE_API_KEY,
+          },
+          env: "BROWSERBASE",
+          browserbaseSessionID: sessionId,
+          browserbaseSessionCreateParams: {
+            projectId: process.env.BROWSERBASE_PROJECT_ID!,
+            proxies: true,
+            browserSettings: {
+              advancedStealth: true,
+              // @ts-expect-error - os is not a valid property
+              os: "windows",
+              viewport: {
+                width: 2560,
+                height: 1440,
+              },
             },
           },
-        },
-        verbose: 2,
-        disablePino: true,
-        logger: logger,
-        disableAPI: true,
-      });
-      stagehandRef = stagehand;
+          verbose: 2,
+          disablePino: true,
+          logger: logger,
+          disableAPI: true,
+          experimental: true,
+        });
+        stagehandRef = stagehand;
 
-      try {
         await stagehand.init();
         console.log(`[SSE] Stagehand initialized`, {
           sessionId: stagehand.browserbaseSessionID,
@@ -169,8 +175,27 @@ export async function GET(request: Request) {
           startedAt: new Date().toISOString(),
         });
 
+        const safetyConfirmationHandler = async (
+          safetyChecks: SafetyCheck[],
+        ) => {
+          const confirmationId = crypto.randomUUID();
+
+          send("safety_confirmation", {
+            confirmationId,
+            sessionId,
+            checks: safetyChecks,
+          });
+
+          const acknowledged = await createSafetyConfirmationPromise(
+            sessionId,
+            confirmationId,
+          );
+
+          return { acknowledged };
+        };
+
         const agent = stagehand.agent({
-          ...(selectedModel.cua ? { cua: true } : {}),
+          ...(selectedModel.cua ? { mode: "cua" } : {}),
           model: {
             modelName: selectedModel.id,
             apiKey: process.env.GOOGLE_API_KEY,
@@ -179,8 +204,13 @@ export async function GET(request: Request) {
         });
 
         const result = await agent.execute({
-            instruction: goal,
-            maxSteps: 100,
+          instruction: goal,
+          maxSteps: 100,
+          ...(selectedModel.cua && {
+            callbacks: {
+              onSafetyConfirmation: safetyConfirmationHandler,
+            },
+          }),
         });
 
         try {
@@ -190,9 +220,10 @@ export async function GET(request: Request) {
         } catch {}
 
         const loggerReasoning = logger.getLastReasoning();
-        const resultMessage = (result as { message?: string; output?: string }).message 
-          || (result as { message?: string; output?: string }).output 
-          || null;
+        const resultMessage =
+          (result as { message?: string; output?: string }).message ||
+          (result as { message?: string; output?: string }).output ||
+          null;
         const finalMessage = loggerReasoning || resultMessage;
 
         console.log(`[SSE] done`, {
@@ -207,17 +238,16 @@ export async function GET(request: Request) {
         const message = error instanceof Error ? error.message : String(error);
         console.error(`[SSE] error`, message);
         send("error", { message });
-        await cleanup(stagehand);
+        await cleanup(stagehandRef);
       }
     },
     cancel: async () => {
+      closed = true;
+      if (keepAliveTimer) clearInterval(keepAliveTimer);
+      if (timeoutTimer) clearTimeout(timeoutTimer);
       try {
-        if (stagehandRef) {
-          await stagehandRef.close();
-        }
-      } catch {
-        // no-op
-      }
+        if (stagehandRef) await stagehandRef.close();
+      } catch {}
     },
   });
 

@@ -6,10 +6,10 @@
 @layer utilities {
   /* Hide scrollbar for all browsers */
   .hide-scrollbar {
-    -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;  /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
   }
-  
+
   /* Hide scrollbar for Chrome, Safari and Opera */
   .hide-scrollbar::-webkit-scrollbar {
     display: none;
@@ -27,7 +27,7 @@
       box-shadow: 0 0 5px rgba(255, 59, 0, 0.5);
     }
   }
-  
+
   .pulse-glow-red {
     animation: pulse-glow 2s infinite;
   }
@@ -35,7 +35,6 @@
 
 @layer base {
   :root {
-
     --background: 0 0% 100%;
 
     --foreground: 240 10% 3.9%;
@@ -58,10 +57,9 @@
 
     --ring: 240 10% 3.9%;
 
-    --radius: 0.5rem
+    --radius: 0.5rem;
   }
   .dark {
-
     --background: 240 10% 3.9%;
 
     --foreground: 0 0% 98%;
@@ -85,8 +83,6 @@
     --ring: 240 4.9% 83.9%;
   }
 }
-
-
 
 @layer base {
   * {
