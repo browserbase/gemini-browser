@@ -12,8 +12,8 @@ importers:
         specifier: ^2.6.0
         version: 2.6.0
       '@browserbasehq/stagehand':
-        specifier: npm:@browserbasehq/orca@3.0.8-google-cua-2
-        version: '@browserbasehq/orca@3.0.8-google-cua-2(@cfworker/json-schema@4.1.1)(@opentelemetry/api@1.9.0)(deepmerge@4.3.1)(dotenv@16.6.1)(zod@3.25.76)'
+        specifier: ^3.0.8
+        version: 3.0.8(@cfworker/json-schema@4.1.1)(@opentelemetry/api@1.9.0)(deepmerge@4.3.1)(dotenv@16.6.1)(zod@3.25.76)
       '@vercel/analytics':
         specifier: ^1.4.1
         version: 1.6.1(next@15.1.11(@opentelemetry/api@1.9.0)(react-dom@19.1.2(react@19.1.2))(react@19.1.2))(react@19.1.2)
@@ -224,15 +224,15 @@ packages:
   '@anthropic-ai/sdk@0.39.0':
     resolution: {integrity: sha512-eMyDIPRZbt1CCLErRCi3exlAvNkBtRe+kW5vvJyef93PmNr/clstYgHhtvmkxN82nlKgzyGPCyGxrm0JQ1ZIdg==}
 
-  '@browserbasehq/orca@3.0.8-google-cua-2':
-    resolution: {integrity: sha512-SNYkAZPW2O6KbN6FrfjQkshajm/TWOhrTKyEl1LOd0lfAXzi37+dIiAvk0KtWH6NHB7pClgGeSRLou88QfP23Q==}
+  '@browserbasehq/sdk@2.6.0':
+    resolution: {integrity: sha512-83iXP5D7xMm8Wyn66TUaUrgoByCmAJuoMoZQI3sGg3JAiMlTfnCIMqyVBoNSaItaPIkaCnrsj6LiusmXV2X9YA==}
+
+  '@browserbasehq/stagehand@3.0.8':
+    resolution: {integrity: sha512-ppI4PmqjRnFEpTtaQyRzKZgL4uVzscOQsDjBpQlvZNhhEp3da1wBaP1ml/hMfsuAmY9wOUwdN4V0uyyRbxWAdA==}
     peerDependencies:
       deepmerge: ^4.3.1
       dotenv: ^16.4.5
       zod: ^3.25.76 || ^4.2.0
-
-  '@browserbasehq/sdk@2.6.0':
-    resolution: {integrity: sha512-83iXP5D7xMm8Wyn66TUaUrgoByCmAJuoMoZQI3sGg3JAiMlTfnCIMqyVBoNSaItaPIkaCnrsj6LiusmXV2X9YA==}
 
   '@cfworker/json-schema@4.1.1':
     resolution: {integrity: sha512-gAmrUZSGtKc3AiBL71iNWxDsyUC5uMaKKGdvzYsBoTW/xi42JQHl7eKV2OYzCUqvc+D2RCcf7EXY2iCyFIk6og==}
@@ -3549,7 +3549,19 @@ snapshots:
     transitivePeerDependencies:
       - encoding
 
-  '@browserbasehq/orca@3.0.8-google-cua-2(@cfworker/json-schema@4.1.1)(@opentelemetry/api@1.9.0)(deepmerge@4.3.1)(dotenv@16.6.1)(zod@3.25.76)':
+  '@browserbasehq/sdk@2.6.0':
+    dependencies:
+      '@types/node': 18.19.130
+      '@types/node-fetch': 2.6.13
+      abort-controller: 3.0.0
+      agentkeepalive: 4.6.0
+      form-data-encoder: 1.7.2
+      formdata-node: 4.4.1
+      node-fetch: 2.7.0
+    transitivePeerDependencies:
+      - encoding
+
+  '@browserbasehq/stagehand@3.0.8(@cfworker/json-schema@4.1.1)(@opentelemetry/api@1.9.0)(deepmerge@4.3.1)(dotenv@16.6.1)(zod@3.25.76)':
     dependencies:
       '@ai-sdk/provider': 2.0.0
       '@anthropic-ai/sdk': 0.39.0
@@ -3601,18 +3613,6 @@ snapshots:
       - react-native-b4a
       - supports-color
       - utf-8-validate
-
-  '@browserbasehq/sdk@2.6.0':
-    dependencies:
-      '@types/node': 18.19.130
-      '@types/node-fetch': 2.6.13
-      abort-controller: 3.0.0
-      agentkeepalive: 4.6.0
-      form-data-encoder: 1.7.2
-      formdata-node: 4.4.1
-      node-fetch: 2.7.0
-    transitivePeerDependencies:
-      - encoding
 
   '@cfworker/json-schema@4.1.1': {}
 
