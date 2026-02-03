@@ -78,6 +78,12 @@ export async function GET(request: Request) {
       );
 
       let viewportLockInterval: ReturnType<typeof setInterval> | undefined;
+      let fetchHandler:
+        | ((params: { requestId: string; request: { url: string } }) => void)
+        | undefined;
+      let mainSessionForFetch:
+        | { off: <P = unknown>(event: string, handler: (params: P) => void) => void }
+        | undefined;
 
       const cleanup = async (stagehand?: Stagehand) => {
         if (closed) return;
@@ -85,6 +91,14 @@ export async function GET(request: Request) {
         if (keepAliveTimer) clearInterval(keepAliveTimer);
         if (timeoutTimer) clearTimeout(timeoutTimer);
         if (viewportLockInterval) clearInterval(viewportLockInterval);
+        // Clean up Fetch event listener
+        if (mainSessionForFetch && fetchHandler) {
+          try {
+            mainSessionForFetch.off("Fetch.requestPaused", fetchHandler);
+          } catch (err) {
+            console.error(`[SSE] error removing fetch handler:`, err);
+          }
+        }
         try {
           if (stagehand) await stagehand.close();
         } catch {}
@@ -162,6 +176,44 @@ export async function GET(request: Request) {
         });
 
         const page = stagehand.context.pages()[0];
+
+        // Enable Fetch domain to intercept requests
+        await page.sendCDP("Fetch.enable", {
+          patterns: [{ urlPattern: "*" }],
+        });
+
+        // Get the main session to listen for Fetch events
+        const mainSession = page.getSessionForFrame(page.mainFrameId());
+        mainSessionForFetch = mainSession;
+
+        // Set up event listener for Fetch.requestPaused events
+        fetchHandler = (params: {
+          requestId: string;
+          request: { url: string };
+        }) => {
+          const url = params.request.url.toLowerCase();
+          if (
+            url.includes("gemini.browserbase.com") ||
+            url.includes("arena.browserbase.com") ||
+            url.includes("google.browserbase.com") ||
+            url.includes("google-cua.browserbase.com") ||
+            url.includes("cua.browserbase.com") ||
+            url.includes("operator.browserbase.com") ||
+            url.includes("doge.ct.ws")
+          ) {
+            console.log(`[SSE] Blocked navigation to: ${url}`);
+            page.sendCDP("Fetch.failRequest", {
+                requestId: params.requestId,
+                errorReason: "BlockedByClient",
+              });
+          } else {
+            page.sendCDP("Fetch.continueRequest", {
+              requestId: params.requestId,
+            });
+          }
+        };
+
+        mainSession.on("Fetch.requestPaused", fetchHandler);
 
         await page.goto("https://www.google.com/", {
           waitUntil: "domcontentloaded",
