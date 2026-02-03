@@ -163,6 +163,24 @@ export async function GET(request: Request) {
 
         const page = stagehand.context.pages()[0];
 
+        await page.route("**/*", (route) => {
+          const url = route.request().url().toLowerCase();
+          if (
+            url.includes("gemini.browserbase.com") ||
+            url.includes("arena.browserbase.com") ||
+            url.includes("google.browserbase.com") ||
+            url.includes("google-cua.browserbase.com") ||
+            url.includes("cua.browserbase.com") ||
+            url.includes("operator.browserbase.com") ||
+            url.includes("doge.ct.ws")
+          ) {
+            console.log(`[SSE] Blocked navigation to: ${url}`);
+            route.abort("blockedbyclient");
+          } else {
+            route.continue();
+          }
+        });
+
         await page.goto("https://www.google.com/", {
           waitUntil: "domcontentloaded",
         });
