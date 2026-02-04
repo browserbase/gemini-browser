@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "@browserbasehq/sdk": "^2.6.0",
-    "@browserbasehq/stagehand": "npm:@browserbasehq/orca@3.0.8-google-cua-2",
+    "@browserbasehq/stagehand": "3.0.8",
     "@vercel/analytics": "^1.4.1",
     "@vercel/edge-config": "^1.4.0",
     "class-variance-authority": "^0.7.1",
@@ -26,8 +26,8 @@
     "react-dom": "19.1.2",
     "react-markdown": "^10.1.0",
     "remark-gfm": "^4.0.1",
-    "tailwind-scrollbar": "3.1.0",
     "tailwind-merge": "^3.0.2",
+    "tailwind-scrollbar": "3.1.0",
     "tailwindcss-animate": "^1.0.7",
     "usehooks-ts": "^3.1.1"
   },
