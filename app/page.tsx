@@ -232,15 +232,17 @@ export default function Home() {
                         "Find the most recently opened non-draft PR on Github for Browserbase's Stagehand project and make sure the combination-evals in the PR validation passed.",
                       )
                     }
-                    className="p-3 md:p-5 lg:p-6 text-sm md:text-base lg:text-xl text-[#2E191E] border border-[#CAC8C7] hover:border-[#FF3B00] hover:text-[#FF3B00] transition-colors font-ppsupply font-medium text-center overflow-hidden text-ellipsis break-words whitespace-normal md:min-h-[100px] lg:min-h-[120px] flex items-center justify-center backdrop-blur-sm bg-opacity-60 bg-[rgba(245,240,255,0.15)] hover:bg-[rgba(255,59,0,0.05)] rounded-none"
+                    className="p-3 md:p-5 lg:p-6 text-sm md:text-base lg:text-xl text-[#2E191E] border border-[#CAC8C7] hover:border-[#FF3B00] hover:text-[#FF3B00] transition-colors font-ppsupply font-medium text-left overflow-hidden text-ellipsis break-words whitespace-normal md:min-h-[100px] lg:min-h-[120px] flex items-start justify-start backdrop-blur-sm bg-opacity-60 bg-[rgba(245,240,255,0.15)] hover:bg-[rgba(255,59,0,0.05)] rounded-none"
                   >
-                    <div className="w-full h-full flex flex-row justify-between items-start px-3 py-2 md:px-4 md:py-3 space-y-3">
+                    <div className="w-full h-full flex flex-row justify-between items-start gap-3">
                       <span className="text-left">
-                        Review a pull request
-                        <br />
-                        on Github
+                        Review a pull request on Github
                       </span>
-                      <Code className="" size={20} strokeWidth={1.5} />
+                      <Code
+                        className="shrink-0 mt-0.5"
+                        size={20}
+                        strokeWidth={1.5}
+                      />
                     </div>
                   </motion.button>
 
@@ -253,18 +255,16 @@ export default function Home() {
                         "Go to Hacker News and find the most controversial post from today, then read the top 3 comments and summarize the debate.",
                       )
                     }
-                    className="p-3 md:p-5 lg:p-6 text-sm md:text-base lg:text-xl text-[#2E191E] border border-[#CAC8C7] hover:border-[#FF3B00] hover:text-[#FF3B00] transition-colors font-ppsupply font-medium text-center overflow-hidden text-ellipsis break-words whitespace-normal md:min-h-[100px] lg:min-h-[120px] flex items-center justify-center backdrop-blur-sm bg-opacity-60 bg-[rgba(245,240,255,0.15)] hover:bg-[rgba(255,59,0,0.05)] rounded-none"
+                    className="p-3 md:p-5 lg:p-6 text-sm md:text-base lg:text-xl text-[#2E191E] border border-[#CAC8C7] hover:border-[#FF3B00] hover:text-[#FF3B00] transition-colors font-ppsupply font-medium text-left overflow-hidden text-ellipsis break-words whitespace-normal md:min-h-[100px] lg:min-h-[120px] flex items-start justify-start backdrop-blur-sm bg-opacity-60 bg-[rgba(245,240,255,0.15)] hover:bg-[rgba(255,59,0,0.05)] rounded-none"
                   >
-                    <div className="w-full h-full flex flex-row justify-between items-start px-3 py-2 md:px-4 md:py-3">
+                    <div className="w-full h-full flex flex-row justify-between items-start gap-3">
                       <span className="text-left">
-                        Browse Hacker News
-                        <br />
-                        for trending debates
+                        Browse Hacker News for trending debates
                       </span>
                       <MessageCircle
                         size={20}
                         strokeWidth={1.5}
-                        className="rounded-none"
+                        className="shrink-0 mt-0.5"
                       />
                     </div>
                   </motion.button>
@@ -279,16 +279,12 @@ export default function Home() {
                     }
                     className="p-3 md:p-5 lg:p-6 text-sm md:text-base lg:text-xl text-[#2E191E] border border-[#CAC8C7] hover:border-[#FF3B00] hover:text-[#FF3B00] transition-colors font-ppsupply font-medium text-center overflow-hidden text-ellipsis break-words whitespace-normal md:min-h-[100px] lg:min-h-[120px] flex items-center justify-center backdrop-blur-sm bg-opacity-60 bg-[rgba(245,240,255,0.15)] hover:bg-[rgba(255,59,0,0.05)] rounded-none"
                   >
-                    <div className="w-full h-full flex flex-row justify-between items-start px-3 py-2 md:px-4 md:py-3 space-y-3">
-                      <span className="text-left">
-                        Play a game of
-                        <br />
-                        2048
-                      </span>
+                    <div className="w-full h-full flex flex-row justify-between items-start gap-3">
+                      <span className="text-left">Play a game of 2048</span>
                       <Grid3x3
                         size={20}
                         strokeWidth={1.5}
-                        className="rounded-none"
+                        className="shrink-0 mt-0.5"
                       />
                     </div>
                   </motion.button>
@@ -303,15 +299,14 @@ export default function Home() {
                     }
                     className="p-3 md:p-5 lg:p-6 text-sm md:text-base lg:text-xl text-[#2E191E] border border-[#CAC8C7] hover:border-[#FF3B00] hover:text-[#FF3B00] transition-colors font-ppsupply font-medium text-center overflow-hidden text-ellipsis break-words whitespace-normal md:min-h-[100px] lg:min-h-[120px] flex items-center justify-center backdrop-blur-sm bg-opacity-60 bg-[rgba(245,240,255,0.15)] hover:bg-[rgba(255,59,0,0.05)] rounded-none"
                   >
-                    <div className="w-full h-full flex flex-row justify-between items-start px-3 py-2 md:px-4 md:py-3 space-y-3">
+                    <div className="w-full h-full flex flex-row justify-between items-start gap-3">
                       <span className="text-left">
                         Get the latest crypto prices
-                        <br />
                       </span>
                       <Search
                         size={20}
                         strokeWidth={1.5}
-                        className="rounded-none"
+                        className="shrink-0 mt-0.5"
                       />
                     </div>
                   </motion.button>
