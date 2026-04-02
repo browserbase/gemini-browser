@@ -212,8 +212,18 @@ async function getDebugUrl(sessionId: string) {
   return session.debuggerFullscreenUrl;
 }
 
+const BLOCKED_UA_PATTERNS = [/axios\//i, /python-requests\//i, /curl\//i, /node-fetch\//i, /got\//i, /undici\//i];
+
 export async function POST(request: Request) {
   try {
+    const userAgent = request.headers.get("user-agent") ?? "";
+    if (BLOCKED_UA_PATTERNS.some((pattern) => pattern.test(userAgent))) {
+      return NextResponse.json(
+        { success: false, error: "Access denied" },
+        { status: 403 },
+      );
+    }
+
     try {
       const verification = await checkBotId({
         advancedOptions: {
