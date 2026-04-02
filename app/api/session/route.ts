@@ -212,7 +212,7 @@ async function getDebugUrl(sessionId: string) {
   return session.debuggerFullscreenUrl;
 }
 
-const BLOCKED_UA_PATTERNS = [/axios\//i, /python-requests\//i, /curl\//i, /node-fetch\//i, /got\//i, /undici\//i];
+const BLOCKED_UA_PATTERNS = [/axios\//i, /python-requests\//i, /curl\//i, /node-fetch\//i, /got\//i, /undici\//i, /Go-http-client\//i];
 
 export async function POST(request: Request) {
   try {
