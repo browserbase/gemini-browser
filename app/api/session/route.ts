@@ -220,7 +220,6 @@ export async function POST(request: Request) {
           checkLevel: "deepAnalysis",
         },
       });
-      console.log("BotID verification:", JSON.stringify(verification));
       if (verification.isBot) {
         return NextResponse.json(
           { success: false, error: "Access denied" },
