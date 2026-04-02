@@ -1,5 +1,6 @@
 import Browserbase from "@browserbasehq/sdk";
 import { getAll } from "@vercel/edge-config";
+import { checkBotId } from "botid/server";
 import { NextResponse } from "next/server";
 
 type BrowserbaseRegion =
@@ -213,6 +214,22 @@ async function getDebugUrl(sessionId: string) {
 
 export async function POST(request: Request) {
   try {
+    try {
+      const verification = await checkBotId({
+        advancedOptions: {
+          checkLevel: "deepAnalysis",
+        },
+      });
+      if (verification.isBot) {
+        return NextResponse.json(
+          { success: false, error: "Access denied" },
+          { status: 403 },
+        );
+      }
+    } catch (botIdError) {
+      console.warn("BotID check failed, skipping:", botIdError);
+    }
+
     const body = await request.json();
     const timezone = body.timezone as string;
     const { session } = await createSession(timezone);
