@@ -150,7 +150,7 @@ export default function Home() {
                     <div className="w-3 h-3  bg-yellow-500 hover:scale-110 transition-transform" />
                   </Tooltip>
                   <Tooltip text="@kylejeong21 & @miguel_gonzf were here">
-                    <div className="w-3 h-3  bg-[#00C851] hover:scale-110 transition-transform" />
+                    <div className="w-3 h-3  bg-green-500 hover:scale-110 transition-transform" />
                   </Tooltip>
                 </div>
               </div>
@@ -164,16 +164,16 @@ export default function Home() {
                     </h1>
                     {/* Model Toggle */}
                     <div className="flex flex-col items-end gap-2">
-                      <div className="flex border border-[#1a1a1a]">
+                      <div className="flex border border-[#CAC8C7] bg-[#F5F5F0] rounded-sm">
                         {SUPPORTED_MODELS.map((model) => (
                           <button
                             key={model.id}
                             type="button"
                             onClick={() => setSelectedModelId(model.id)}
-                            className={`px-4 py-2.5 text-sm font-ppsupply font-medium transition-all duration-200 ${
+                            className={`px-4 py-2.5 text-sm font-ppsupply font-medium transition-all duration-200 rounded-sm ${
                               selectedModelId === model.id
-                                ? "bg-[#00C851] text-white"
-                                : "bg-[#F5F5F0] text-[#1a1a1a] hover:bg-[#EAEAE5]"
+                                ? "bg-white text-[#1a1a1a] shadow-sm border border-[#CAC8C7]"
+                                : "text-gray-400 hover:text-gray-600"
                             }`}
                           >
                             {model.label.replace("Gemini ", "")}
