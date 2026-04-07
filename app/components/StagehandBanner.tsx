@@ -9,7 +9,7 @@ export default function StagehandBanner() {
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: 0.1 }}
-      className="w-full bg-gradient-to-r from-[#FF3B00] to-[#F14A1C] text-white py-3 px-4 sm:px-8 relative overflow-hidden"
+      className="w-full bg-gradient-to-r from-[#FF4500] to-[#FF4500] text-white py-3 px-4 sm:px-8 relative overflow-hidden"
     >
       {/* Background decoration */}
       <div className="absolute inset-0 bg-black/10"></div>
@@ -23,7 +23,7 @@ export default function StagehandBanner() {
               href="https://www.stagehand.dev/"
               target="_blank"
               rel="noopener noreferrer"
-              className="underline hover:no-underline font-semibold transition-all duration-200 hover:text-yellow-200"
+              className="underline hover:no-underline font-semibold transition-all duration-200 hover:text-white/70"
             >
               Stagehand
             </a>
@@ -39,7 +39,7 @@ export default function StagehandBanner() {
             href="https://www.browserbase.com/templates/gemini-3-flash"
             target="_blank"
             rel="noopener noreferrer"
-            className="underline hover:no-underline font-semibold transition-all duration-200 hover:text-yellow-200"
+            className="underline hover:no-underline font-semibold transition-all duration-200 hover:text-white/70"
           >
             Gemini 3 Flash template
           </a>
@@ -49,7 +49,7 @@ export default function StagehandBanner() {
           href="https://www.stagehand.dev/"
           target="_blank"
           rel="noopener noreferrer"
-          className="ml-auto hidden sm:flex items-center gap-1 text-xs hover:text-yellow-200 transition-colors duration-200"
+          className="ml-auto hidden sm:flex items-center gap-1 text-xs hover:text-white/70 transition-colors duration-200"
         >
           <span>Learn more</span>
           <ExternalLink size={12} />

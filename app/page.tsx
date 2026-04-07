@@ -164,16 +164,16 @@ export default function Home() {
                     </h1>
                     {/* Model Toggle */}
                     <div className="flex flex-col items-end gap-2">
-                      <div className="flex border border-[#1a1a1a]">
+                      <div className="flex border border-[#CAC8C7] bg-[#F5F5F0] rounded-sm">
                         {SUPPORTED_MODELS.map((model) => (
                           <button
                             key={model.id}
                             type="button"
                             onClick={() => setSelectedModelId(model.id)}
-                            className={`px-4 py-2.5 text-sm font-ppsupply font-medium transition-all duration-200 ${
+                            className={`px-4 py-2.5 text-sm font-ppsupply font-medium transition-all duration-200 rounded-sm ${
                               selectedModelId === model.id
-                                ? "bg-[#F5A623] text-[#1a1a1a]"
-                                : "bg-[#F5F5F0] text-[#1a1a1a] hover:bg-[#EAEAE5]"
+                                ? "bg-white text-[#1a1a1a] shadow-sm border border-[#CAC8C7]"
+                                : "text-gray-400 hover:text-gray-600"
                             }`}
                           >
                             {model.label.replace("Gemini ", "")}
@@ -209,7 +209,7 @@ export default function Home() {
                       name="message"
                       type="text"
                       placeholder="What's the price of NVIDIA stock?"
-                      className="w-full px-4 py-3 sm:pr-[140px] pr-[100px] border border-[#CAC8C7] text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-0 focus:border-[#FF3B00] font-ppsupply text-sm md:text-base md:py-5 lg:py-6 transition-all duration-300 focus:pulse-glow-red focus:backdrop-blur-sm focus:bg-opacity-95 focus:bg-white"
+                      className="w-full px-4 py-3 sm:pr-[140px] pr-[100px] border border-[#CAC8C7] text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-0 focus:border-[#FF4500] font-ppsupply text-sm md:text-base md:py-5 lg:py-6 transition-all duration-300 focus:pulse-glow-red focus:backdrop-blur-sm focus:bg-opacity-95 focus:bg-white"
                       style={{
                         textOverflow: "ellipsis",
                         whiteSpace: "nowrap",
@@ -232,7 +232,7 @@ export default function Home() {
                         "Find the most recently opened non-draft PR on Github for Browserbase's Stagehand project and make sure the combination-evals in the PR validation passed.",
                       )
                     }
-                    className="p-3 md:p-5 lg:p-6 text-sm md:text-base lg:text-xl text-[#2E191E] border border-[#CAC8C7] hover:border-[#FF3B00] hover:text-[#FF3B00] transition-colors font-ppsupply font-medium text-center overflow-hidden text-ellipsis break-words whitespace-normal md:min-h-[100px] lg:min-h-[120px] flex items-center justify-center backdrop-blur-sm bg-opacity-60 bg-[rgba(245,240,255,0.15)] hover:bg-[rgba(255,59,0,0.05)] rounded-none"
+                    className="p-3 md:p-5 lg:p-6 text-sm md:text-base lg:text-xl text-[#2E191E] border border-[#CAC8C7] hover:border-[#FF4500] hover:text-[#FF4500] transition-colors font-ppsupply font-medium text-center overflow-hidden text-ellipsis break-words whitespace-normal md:min-h-[100px] lg:min-h-[120px] flex items-center justify-center backdrop-blur-sm bg-opacity-60 bg-[rgba(245,240,255,0.15)] hover:bg-[rgba(255,69,0,0.05)] rounded-none"
                   >
                     <div className="w-full h-full flex flex-row justify-between items-start px-3 py-2 md:px-4 md:py-3 space-y-3">
                       <span className="text-left">
@@ -253,7 +253,7 @@ export default function Home() {
                         "Go to Hacker News and find the most controversial post from today, then read the top 3 comments and summarize the debate.",
                       )
                     }
-                    className="p-3 md:p-5 lg:p-6 text-sm md:text-base lg:text-xl text-[#2E191E] border border-[#CAC8C7] hover:border-[#FF3B00] hover:text-[#FF3B00] transition-colors font-ppsupply font-medium text-center overflow-hidden text-ellipsis break-words whitespace-normal md:min-h-[100px] lg:min-h-[120px] flex items-center justify-center backdrop-blur-sm bg-opacity-60 bg-[rgba(245,240,255,0.15)] hover:bg-[rgba(255,59,0,0.05)] rounded-none"
+                    className="p-3 md:p-5 lg:p-6 text-sm md:text-base lg:text-xl text-[#2E191E] border border-[#CAC8C7] hover:border-[#FF4500] hover:text-[#FF4500] transition-colors font-ppsupply font-medium text-center overflow-hidden text-ellipsis break-words whitespace-normal md:min-h-[100px] lg:min-h-[120px] flex items-center justify-center backdrop-blur-sm bg-opacity-60 bg-[rgba(245,240,255,0.15)] hover:bg-[rgba(255,69,0,0.05)] rounded-none"
                   >
                     <div className="w-full h-full flex flex-row justify-between items-start px-3 py-2 md:px-4 md:py-3">
                       <span className="text-left">
@@ -277,7 +277,7 @@ export default function Home() {
                         "Play a game of 2048 on https://www.2048.org/. Just try to win and I'll watch. Good luck!",
                       )
                     }
-                    className="p-3 md:p-5 lg:p-6 text-sm md:text-base lg:text-xl text-[#2E191E] border border-[#CAC8C7] hover:border-[#FF3B00] hover:text-[#FF3B00] transition-colors font-ppsupply font-medium text-center overflow-hidden text-ellipsis break-words whitespace-normal md:min-h-[100px] lg:min-h-[120px] flex items-center justify-center backdrop-blur-sm bg-opacity-60 bg-[rgba(245,240,255,0.15)] hover:bg-[rgba(255,59,0,0.05)] rounded-none"
+                    className="p-3 md:p-5 lg:p-6 text-sm md:text-base lg:text-xl text-[#2E191E] border border-[#CAC8C7] hover:border-[#FF4500] hover:text-[#FF4500] transition-colors font-ppsupply font-medium text-center overflow-hidden text-ellipsis break-words whitespace-normal md:min-h-[100px] lg:min-h-[120px] flex items-center justify-center backdrop-blur-sm bg-opacity-60 bg-[rgba(245,240,255,0.15)] hover:bg-[rgba(255,69,0,0.05)] rounded-none"
                   >
                     <div className="w-full h-full flex flex-row justify-between items-start px-3 py-2 md:px-4 md:py-3 space-y-3">
                       <span className="text-left">
@@ -301,7 +301,7 @@ export default function Home() {
                         "Find the current price of Bitcoin and Ethereum.",
                       )
                     }
-                    className="p-3 md:p-5 lg:p-6 text-sm md:text-base lg:text-xl text-[#2E191E] border border-[#CAC8C7] hover:border-[#FF3B00] hover:text-[#FF3B00] transition-colors font-ppsupply font-medium text-center overflow-hidden text-ellipsis break-words whitespace-normal md:min-h-[100px] lg:min-h-[120px] flex items-center justify-center backdrop-blur-sm bg-opacity-60 bg-[rgba(245,240,255,0.15)] hover:bg-[rgba(255,59,0,0.05)] rounded-none"
+                    className="p-3 md:p-5 lg:p-6 text-sm md:text-base lg:text-xl text-[#2E191E] border border-[#CAC8C7] hover:border-[#FF4500] hover:text-[#FF4500] transition-colors font-ppsupply font-medium text-center overflow-hidden text-ellipsis break-words whitespace-normal md:min-h-[100px] lg:min-h-[120px] flex items-center justify-center backdrop-blur-sm bg-opacity-60 bg-[rgba(245,240,255,0.15)] hover:bg-[rgba(255,69,0,0.05)] rounded-none"
                   >
                     <div className="w-full h-full flex flex-row justify-between items-start px-3 py-2 md:px-4 md:py-3 space-y-3">
                       <span className="text-left">
@@ -344,7 +344,7 @@ export default function Home() {
                 animate={{ opacity: 0.1 }}
                 transition={{ duration: 0.5 }}
               >
-                <div className="absolute top-0 right-0 sm:w-20 sm:h-20 w-16 h-16 bg-[#FF3B00] rounded-full blur-xl"></div>
+                <div className="absolute top-0 right-0 sm:w-20 sm:h-20 w-16 h-16 bg-[#FF4500] rounded-full blur-xl"></div>
                 <div className="absolute bottom-0 left-0 w-16 h-16 bg-blue-400 rounded-full blur-xl"></div>
               </motion.div>
 
@@ -357,7 +357,7 @@ export default function Home() {
                 Powered by{" "}
                 <motion.a
                   href="https://browserbase.com"
-                  className="text-[#FF3B00] hover:underline relative"
+                  className="text-[#FF4500] hover:underline relative"
                   whileHover={{ scale: 1.05 }}
                 >
                   Browserbase & Stagehand
