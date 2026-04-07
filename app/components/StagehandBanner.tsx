@@ -9,7 +9,7 @@ export default function StagehandBanner() {
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: 0.1 }}
-      className="w-full bg-gradient-to-r from-[#FF3B00] to-[#F14A1C] text-white py-3 px-4 sm:px-8 relative overflow-hidden"
+      className="w-full bg-gradient-to-r from-[#FF4500] to-[#FF4500] text-white py-3 px-4 sm:px-8 relative overflow-hidden"
     >
       {/* Background decoration */}
       <div className="absolute inset-0 bg-black/10"></div>

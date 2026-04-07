@@ -67,7 +67,7 @@ export default function SafetyConfirmationDialog({
       {/* Header */}
       <div className="px-5 py-4 border-b border-[#CAC8C7] bg-white/50">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 flex items-center justify-center bg-[#FF3B00] text-white">
+          <div className="w-8 h-8 flex items-center justify-center bg-[#FF4500] text-white">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"
@@ -112,7 +112,7 @@ export default function SafetyConfirmationDialog({
         </motion.button>
         <motion.button
           onClick={() => onRespond(true)}
-          className="flex-1 px-4 py-3 bg-[#FF3B00] hover:bg-[#E63500] text-white font-medium text-sm transition-colors"
+          className="flex-1 px-4 py-3 bg-[#FF4500] hover:bg-[#E63E00] text-white font-medium text-sm transition-colors"
           whileTap={{ scale: 0.98 }}
         >
           Allow

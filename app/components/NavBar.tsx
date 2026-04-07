@@ -54,15 +54,15 @@ export default function NavBar({
           target="_blank"
           rel="noopener noreferrer"
         >
-          <button className="flex items-center justify-center px-3 py-2 bg-white gap-1 text-sm font-medium border border-[#F14A1C] transition-all duration-200 hover:bg-[#F14A1C] group h-full">
+          <button className="flex items-center justify-center px-3 py-2 bg-white gap-1 text-sm font-medium border border-[#FF4500] transition-all duration-200 hover:bg-[#FF4500] group h-full">
             <Layers
               size={20}
-              className="sm:mr-2 text-[#F14A1C] group-hover:text-white transition-colors duration-200"
+              className="sm:mr-2 text-[#FF4500] group-hover:text-white transition-colors duration-200"
               strokeWidth={2}
               strokeLinecap="square"
               strokeLinejoin="miter"
             />
-            <span className="hidden sm:inline text-[#F14A1C] group-hover:text-white transition-colors duration-200">
+            <span className="hidden sm:inline text-[#FF4500] group-hover:text-white transition-colors duration-200">
               Deploy
             </span>
           </button>

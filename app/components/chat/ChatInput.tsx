@@ -50,18 +50,18 @@ export default function ChatInput({
         value={userInput}
         onChange={(e) => setUserInput(e.target.value)}
         placeholder="Type your message..."
-        className="flex-1 px-2 sm:px-4 py-2 border focus:outline-none focus:ring-1 focus:ring-[#FF3B00] focus:border-transparent font-ppsupply transition-all text-sm sm:text-base"
+        className="flex-1 px-2 sm:px-4 py-2 border focus:outline-none focus:ring-1 focus:ring-[#FF4500] focus:border-transparent font-ppsupply transition-all text-sm sm:text-base"
         style={{
           // backgroundColor: "rgba(245, 240, 255, 0.75)",
           backdropFilter: "blur(8px)",
-          borderColor: "rgba(255, 59, 0, 0.5)",
+          borderColor: "rgba(255, 69, 0, 0.5)",
           borderWidth: "2px",
         }}
       />
       <button
         type="submit"
         disabled={!userInput.trim()}
-        className="px-2 sm:px-4 py-2 bg-[#FF3B00] text-white font-ppsupply disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#E63500] transition-colors text-sm sm:text-base whitespace-nowrap"
+        className="px-2 sm:px-4 py-2 bg-[#FF4500] text-white font-ppsupply disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#E63E00] transition-colors text-sm sm:text-base whitespace-nowrap"
       >
         Send
       </button>
