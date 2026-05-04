@@ -1,3 +1,5 @@
+> **This repository is no longer actively maintained.** The source code has been moved to [browserbase/gtm-demos](https://github.com/browserbase/gtm-demos/tree/main/apps/gemini-browser).
+
 # Gemini Browser
 
 [Demo](https://gemini.browserbase.com)
